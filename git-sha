@@ -1,0 +1,15 @@
+#!/bin/sh
+set -e
+
+usage () {
+    echo "usage: git sha <object>" >&2
+}
+
+if [ $# -eq 1 ]; then
+    object=$1
+else
+    usage
+    exit 2
+fi
+
+git rev-parse "$object"
