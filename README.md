@@ -22,6 +22,21 @@ Accepts options, too, so you can use
 to force-push.
 
 
+### git is-headless
+
+Tests if `HEAD` is pointing to a branch head, or is detached.
+
+
+### git local-branch-exists / git remote-branch-exists / git tag-exists
+
+Tests if the given local branch, remote branch, or tag exists.
+
+
+### git is-headless
+
+Tests if `HEAD` is pointing to a branch head, or is detached.
+
+
 ### git is-merged-into
 
 Tests if X is merged into Y:
@@ -125,7 +140,7 @@ conflict.)
     * mybranch
 
 
-### git has-local-changes
+### git has-local-changes / git is-clean / git is-dirty
 
 Helper function that determines whether there are local changes in the working
 tree, by returning a 0 (local changes) or 1 (no local changes) exit code.

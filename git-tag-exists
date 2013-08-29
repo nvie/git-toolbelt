@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+
+usage () {
+    echo "usage: git tag-exists <tag>" >&2
+    echo >&2
+    echo "Will return with an exit code of 0 or 1." >&2
+}
+
+if [ $# -eq 1 ]; then
+    tag=$1
+else
+    usage
+    exit 2
+fi
+
+git show-ref --tags --quiet --verify -- "refs/tags/$tag"

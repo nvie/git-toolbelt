@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+
+usage () {
+    echo "usage: git local-branch-exists <branch>" >&2
+    echo >&2
+    echo "Will return with an exit code of 0 or 1." >&2
+}
+
+if [ $# -eq 1 ]; then
+    branch=$1
+else
+    usage
+    exit 2
+fi
+
+git show-ref --heads --quiet --verify -- "refs/heads/$branch"

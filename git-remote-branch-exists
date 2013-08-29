@@ -1,0 +1,21 @@
+#!/bin/sh
+set -e
+
+usage () {
+    echo "usage: git remote-branch-exists [<remote>] <branch>" >&2
+    echo >&2
+    echo "Will return with an exit code of 0 or 1." >&2
+}
+
+if [ $# -eq 1 ]; then
+    remote=origin
+    branch=$1
+elif [ $# -eq 2 ]; then
+    remote=$1
+    branch=$2
+else
+    usage
+    exit 2
+fi
+
+git show-ref --quiet --verify -- "refs/remotes/$remote/$branch"
