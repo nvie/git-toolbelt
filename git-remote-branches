@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+
+usage () {
+    echo "git remote-branches [<remote>]"
+}
+
+remote_branches () {
+    git branch --remotes --no-color | cut -c3-
+}
+
+if [ $# -eq 1 ]; then
+    remote_branches | grep -Ee "^$1/"
+elif [ $# -eq 0 ]; then
+    remote_branches
+else
+    usage
+    exit 2
+fi

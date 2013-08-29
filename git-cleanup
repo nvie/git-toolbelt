@@ -1,0 +1,89 @@
+#!/bin/sh
+set -e
+
+#
+# This will clean up any branch (both locally and remotely) that has been
+# merged into any of the known "trunks".  Trunks are any of:
+#
+#   - master (local) + origin/master
+#   - develop (local) + origin/develop
+#
+
+#
+# The Algorithm[tm]:
+# - Find the smallest set of common ancestors for those trunks.  (There can
+#   actually be multiple, although unlikely.)
+# - For each local branch, check if any of the common ancestors contains it,
+#   but not vice-versa (prevents newly-created branches from being deleted)
+# - Idem for each remote branch
+#
+
+find_common_base () {
+    if [ $# -eq 1 ]; then
+        git sha "$1"
+    else
+        git merge-base "$1" "$2"
+    fi
+}
+
+find_branch_base () {
+    branch="$1"
+    base_point=""
+
+    if git local-branch-exists "$branch"; then
+        base_point=$(find_common_base "$branch" $base_point)
+    fi
+
+    if git remote-branch-exists origin "$branch"; then
+        base_point=$(find_common_base "origin/$branch" $base_point)
+    fi
+
+    if [ -n "$base_point" ]; then
+        echo "$base_point"
+    fi
+}
+
+
+find_bases () {
+    find_branch_base master
+    find_branch_base develop
+}
+
+bases=$(find_bases)
+
+for branch in $(git local-branches); do
+    for base in $bases; do
+        if git contains "$base" "$branch"; then
+            if ! git contains "$branch" "$base"; then
+                # Actually delete
+                if ! git branch -D "$branch"; then
+                    echo "Errors deleting local branch $branch" >&2
+                fi
+                break
+            fi
+        fi
+    done
+done
+
+# Pruning first will remove any remote tracking branches that don't exist in
+# the remote anymore anyway.
+git remote prune origin >/dev/null 2>/dev/null
+
+branches_to_remove=""
+for branch in $(git remote-branches origin); do
+    for base in $bases; do
+        if git contains "$base" "$branch"; then
+            if ! git contains "$branch" "$base"; then
+                branchname=$(echo "$branch" | cut -d/ -f2-)
+                branches_to_remove="$branches_to_remove $branchname"
+                break
+            fi
+        fi
+    done
+done
+
+if [ -n "$branches_to_remove" ]; then
+    if ! git push origin --delete $branches_to_remove; then
+        echo "Errors deleting branch from origin $branch" >&2
+    fi
+fi

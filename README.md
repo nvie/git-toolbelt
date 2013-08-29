@@ -27,6 +27,13 @@ to force-push.
 Tests if `HEAD` is pointing to a branch head, or is detached.
 
 
+### git local-branches / git remote-branches
+
+Returns a list of local or remote branches, but contrary to Git's default
+commands for this, returns them machine-processable.  In the case of remote
+branches, can be asked to return only the branches in a specific remote.
+
+
 ### git local-branch-exists / git remote-branch-exists / git tag-exists
 
 Tests if the given local branch, remote branch, or tag exists.
@@ -73,12 +80,9 @@ after all?  You can undo the last merge using `git unmerge`.
 
 ### git cleanup
 
-Deletes all local and remote branches that have already been merged into master
-or develop (or any other branch you consider a long-running branch). Keeps
-other branches lying around.
-
-Considers and respects the remote branch states, too. Will be most conservative
-with deletions.
+Deletes all branches that have already been merged into master or develop.
+Keeps other branches lying around.  Removes branches both locally and in the
+origin remote.  Will be most conservative with deletions.
 
 
 ### git fixup
