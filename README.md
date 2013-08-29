@@ -44,6 +44,12 @@ Unstages everything.  Leaves the working tree intact.
 Alias to `git reset HEAD`.
 
 
+### git unmerge
+
+Ever created a merge accidentally, or decided that you didn't want to merge
+after all?  You can undo the last merge using `git unmerge`.
+
+
 ### git cleanup
 
 Deletes all local and remote branches that have already been merged into master
