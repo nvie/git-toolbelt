@@ -78,6 +78,14 @@ Ever created a merge accidentally, or decided that you didn't want to merge
 after all?  You can undo the last merge using `git undo-merge`.
 
 
+### git undo-commit
+
+Ever committed too soon, or by accident?  Or on the wrong branch?  You can now
+undo your last commit and you won't lose any data.  All the changes in the
+commit will be staged (like right before the commit) and the commit itself is
+gone.
+
+
 ### git cleanup
 
 Deletes all branches that have already been merged into master or develop.
