@@ -1,0 +1,21 @@
+#!/bin/sh
+set -e
+
+usage () {
+    echo "usage: git commit-to <branch> ..." >&2
+}
+
+if [ $# -eq 0 ]; then
+    usage
+    exit 2
+fi
+
+branch="$1"
+shift 1
+
+# TODO: FIXME: There is a lot that can go wrong here.  Basically, that's not
+# a problem at all in itself, but we need a mechanism to reliably recover back
+# to the starting position.
+git commit "$@"
+git cherry-pick-to "$branch"
+git reset --hard HEAD~1

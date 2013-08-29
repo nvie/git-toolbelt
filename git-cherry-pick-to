@@ -1,0 +1,27 @@
+#!/bin/sh
+set -e
+
+usage () {
+    echo "usage: git cherry-pick-to <branch> ..." >&2
+}
+
+if [ $# -eq 0 ]; then
+    usage
+    exit 2
+fi
+
+branch="$1"
+shift 1
+
+# TODO: FIXME: There is a lot that can go wrong here.  Basically, that's not
+# a problem at all in itself, but we need a mechanism to reliably recover back
+# to the starting position.
+git aa
+git stash
+commit=$(git sha HEAD)
+orig_branch=$(git current-branch)
+git checkout "$branch"
+git cherry-pick "$commit"
+git checkout "$orig_branch"
+git stash pop
+git cc
