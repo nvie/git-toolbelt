@@ -1,0 +1,4 @@
+#!/bin/sh
+set -e
+curr=$(git current-branch)
+git push -u origin "$@" "$curr"
