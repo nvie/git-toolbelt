@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+
+usage () {
+    echo "usage: git is-ancestor <branch> <branch>" >&2
+    echo >&2
+    echo "Returns whether the first branch is an ancestor of the second." >&2
+    echo "Will return with an exit code of 0 or 1." >&2
+}
+
+if [ $# -eq 2 ]; then
+    first=$1
+    second=$2
+else
+    usage
+    exit 2
+fi
+
+git contains "$second" "$first"

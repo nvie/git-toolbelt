@@ -1,0 +1,21 @@
+#!/bin/sh
+set -e
+
+usage () {
+    echo "usage: git contains <branch> <branch>" >&2
+    echo >&2
+    echo "Returns whether the first branch contains the second." >&2
+    echo "Will return with an exit code of 0 or 1." >&2
+}
+
+if [ $# -eq 2 ]; then
+    first=$1
+    second=$2
+else
+    usage
+    exit 2
+fi
+
+second_sha=$(git sha "$second")
+ancestor_sha=$(git merge-base "$first" "$second")
+[ "$ancestor_sha" = "$second_sha" ]

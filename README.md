@@ -37,11 +37,18 @@ Tests if the given local branch, remote branch, or tag exists.
 Tests if `HEAD` is pointing to a branch head, or is detached.
 
 
-### git is-merged-into
+### git contains / git is-ancestor
 
 Tests if X is merged into Y:
 
-    $ git is-merged-into X Y
+    $ git contains X Y  # does X contain Y?
+    $ git is-ancestor X Y  # is X an ancestor of Y?
+
+**CAVEAT:**  
+Both express almost the opposite, but `X contains Y` does not mean
+`not (X is-ancestor Y)`, since (1) X and Y can point to the same
+commit, or the branches may have no common history and thus be
+unrelated completely.
 
 
 ### git aa
