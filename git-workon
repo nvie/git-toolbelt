@@ -1,0 +1,36 @@
+#!/bin/sh
+set -e
+
+usage () {
+    echo "usage: git workon <branch>" >&2
+}
+
+if [ $# -eq 1 ]; then
+    branch=$1
+else
+    usage
+    exit 2
+fi
+
+if git local-branch-exists "$branch"; then
+    git checkout "$branch"
+
+    # Set upstream if remote tracking branch exists
+    if git remote-branch-exists origin "$branch"; then
+        git branch -u "origin/$branch" "$branch"
+    fi
+else
+    if git remote-branch-exists origin "$branch"; then
+        git checkout -b "$branch" "origin/$branch"
+    else
+        echo "Unknown branch '$branch'." >&2
+        exit 1
+    fi
+fi
+
+if git is-clean; then
+    git pull --rebase
+else
+    echo "Not pulling latest changes, because working tree is dirty." >&2
+    exit 0
+fi
