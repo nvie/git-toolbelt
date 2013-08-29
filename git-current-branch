@@ -1,8 +1,10 @@
 #!/bin/sh
 set -e
-if git is-headless; then
+curr=$(git rev-parse --abbrev-ref HEAD)
+if [ "$curr" = "HEAD" ]; then
     echo "Not on a branch." >&2
     exit 1
 else
-    git rev-parse --abbrev-ref HEAD
+    echo "$curr"
+    exit 0
 fi

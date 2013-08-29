@@ -45,10 +45,9 @@ Tests if X is merged into Y:
     $ git is-ancestor X Y  # is X an ancestor of Y?
 
 **CAVEAT:**  
-Both express almost the opposite, but `X contains Y` does not mean
-`not (X is-ancestor Y)`, since (1) X and Y can point to the same
-commit, or the branches may have no common history and thus be
-unrelated completely.
+Even though they might look like opposites, `X contains Y` does not mean `not
+(X is-ancestor Y)`, since (1) X and Y can point to the same commit, or the
+branches may have no common history and thus be unrelated completely.
 
 
 ### git aa
