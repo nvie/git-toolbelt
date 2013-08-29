@@ -72,10 +72,10 @@ Unstages everything.  Leaves the working tree intact.
 Alias to `git reset HEAD`.
 
 
-### git unmerge
+### git undo-merge
 
 Ever created a merge accidentally, or decided that you didn't want to merge
-after all?  You can undo the last merge using `git unmerge`.
+after all?  You can undo the last merge using `git undo-merge`.
 
 
 ### git cleanup
