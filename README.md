@@ -2,12 +2,73 @@
 
 Helper tools to make everyday life with Git much easier.
 
+Everyday helpful commands:
+
+* git-current-branch
+* git-sha
+* git-cleanup
+* git-fixup
+* git-local-branches
+* git-remote-branches
+* git-workon
+
+Common aliases:
+
+* git-aa
+* git-cc
+
+Commands to help novices out:
+
+* git-drop-local-changes
+* git-push-current
+* git-undo-commit
+* git-undo-merge
+
+Commands that simplify scripting. These commands typically only return exit
+codes and have no output.
+
+* git-contains / git is-ancestor
+* git-has-local-changes / git-is-clean / git-is-dirty
+* git-local-branch-exists
+* git-remote-branch-exists
+* git-tag-exists
+
+Advanced usage:
+
+* git-commit-to
+* git-cherry-pick-to
+* git-delouse
+
+
 
 ### git current-branch
 
 Returns the name of the current branch, if any.  Why doesn't this come with git?
 
+```console
+$ git current-branch
+master
+```
+
 Alias to `git rev-parse --abbrev-ref HEAD`.
+
+
+### git sha
+
+Returns the SHA value for the specified object, or the current branch head, if
+nothing is provided.
+
+```console
+$ git sha <some-object>
+```
+
+Typical example:
+
+```console
+$ git sha HEAD
+```
+
+Shows the commit SHA for the latest commit.
 
 
 ### git push-current
@@ -17,7 +78,9 @@ the remote branch.  Shorthand for `git push -u origin <current-branch>`.
 
 Accepts options, too, so you can use
 
-    $ git push-current -f
+```console
+$ git push-current -f
+```
 
 to force-push.
 
