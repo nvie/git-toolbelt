@@ -14,11 +14,6 @@ fi
 
 if git local-branch-exists "$branch"; then
     git checkout "$branch"
-
-    # Set upstream if remote tracking branch exists
-    if git remote-branch-exists origin "$branch"; then
-        git branch -u "origin/$branch" "$branch"
-    fi
 else
     if git remote-branch-exists origin "$branch"; then
         git checkout -b "$branch" "origin/$branch"
@@ -28,9 +23,7 @@ else
     fi
 fi
 
-if git is-clean; then
-    git pull --rebase
-else
-    echo "Not pulling latest changes, because working tree is dirty." >&2
-    exit 0
+# Set upstream if remote tracking branch exists
+if git remote-branch-exists origin "$branch"; then
+    git branch -u "origin/$branch" "$branch"
 fi
