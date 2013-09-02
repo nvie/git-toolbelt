@@ -27,8 +27,9 @@ Commands to help novices out:
 Commands that simplify scripting. These commands typically only return exit
 codes and have no output.
 
-* git-contains / git is-ancestor
+* git-is-headless
 * git-has-local-changes / git-is-clean / git-is-dirty
+* git-contains / git is-ancestor
 * git-local-branch-exists
 * git-remote-branch-exists
 * git-tag-exists
@@ -100,11 +101,6 @@ branches, can be asked to return only the branches in a specific remote.
 ### git local-branch-exists / git remote-branch-exists / git tag-exists
 
 Tests if the given local branch, remote branch, or tag exists.
-
-
-### git is-headless
-
-Tests if `HEAD` is pointing to a branch head, or is detached.
 
 
 ### git contains / git is-ancestor
