@@ -14,8 +14,8 @@ Everyday helpful commands:
 
 Common aliases:
 
-* git-aa
-* git-cc
+* git-stage-all
+* git-unstage-all
 
 Commands to help novices out:
 
@@ -116,7 +116,7 @@ Even though they might look like opposites, `X contains Y` does not mean `not
 branches may have no common history and thus be unrelated completely.
 
 
-### git aa
+### git stage-all
 
 Mimics the index / staging area to match the working tree exactly.  Adds files,
 removes files, etc.
@@ -124,7 +124,7 @@ removes files, etc.
 Alias to `git add --all`.
 
 
-### git cc
+### git unstage-all
 
 Unstages everything.  Leaves the working tree intact.
 
