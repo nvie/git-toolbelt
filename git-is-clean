@@ -1,3 +1,40 @@
 #!/bin/sh
 set -e
-git has-local-changes
+
+is_index_clean () {
+    git diff-index --cached --quiet --ignore-submodules --exit-code HEAD --
+}
+
+is_worktree_clean () {
+    git diff --no-ext-diff --ignore-submodules --quiet --exit-code
+}
+
+check_index=0
+check_worktree=0
+while getopts iw flag; do
+    case "$flag" in
+        i) check_index=1;;
+        w) check_worktree=1;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+# If nothing is explicitly specified, check everything
+if [ $check_index -eq 0 -a $check_worktree -eq 0 ]; then
+    check_index=1
+    check_worktree=1
+fi
+
+if [ $check_index -eq 1 ]; then
+    if ! is_index_clean; then
+        exit 1
+    fi
+fi
+
+if [ $check_worktree -eq 1 ]; then
+    if ! is_worktree_clean; then
+        exit 1
+    fi
+fi
+
+exit 0
