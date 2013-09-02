@@ -1,6 +1,15 @@
 #!/bin/sh
 set -e
 
+usage () {
+    echo "usage: git is-{clean,dirty} [-wih]" >&2
+    echo >&2
+    echo "Options:" >&2
+    echo "-w    Check if worktree is {clean,dirty}" >&2
+    echo "-i    Check if index is {clean,dirty}" >&2
+    echo "-h    Show this help" >&2
+}
+
 is_index_clean () {
     git diff-index --cached --quiet --ignore-submodules --exit-code HEAD --
 }
@@ -11,10 +20,11 @@ is_worktree_clean () {
 
 check_index=0
 check_worktree=0
-while getopts iw flag; do
+while getopts iwh flag; do
     case "$flag" in
         i) check_index=1;;
         w) check_worktree=1;;
+        h) usage; exit 2;;
     esac
 done
 shift $(($OPTIND - 1))
