@@ -10,6 +10,7 @@ Everyday helpful commands:
 * git-fixup
 * git-local-branches
 * git-remote-branches
+* git-repo
 * git-workon
 
 Common aliases:
@@ -27,6 +28,7 @@ Commands to help novices out:
 Commands that simplify scripting. These commands typically only return exit
 codes and have no output.
 
+* git-is-repo
 * git-is-headless
 * git-has-local-changes / git-is-clean / git-is-dirty
 * git-contains / git is-ancestor
@@ -215,6 +217,25 @@ conflict.)
     $ git branch  # did not switch branches
       master
     * mybranch
+
+
+### git is-repo
+
+Helper function that determines whether the current directory has a Git repo
+associated to it.  Scriptable equivalent of `git repo`.
+
+
+### git repo
+
+Prints the location of the Git directory, typically `.git`, but could differ
+based on the setup.  Will return with a non-zero exit code if not in a repo.
+
+    $ cd /path/to/my/worktree
+    $ git repo
+    .git
+    $ cd /tmp
+    $ git repo
+    fatal: Not a git repository (or any of the parent directories): .git
 
 
 ### git has-local-changes / git is-clean / git is-dirty

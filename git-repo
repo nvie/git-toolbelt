@@ -1,0 +1,25 @@
+#!/bin/sh
+set -e
+
+usage () {
+    echo "usage: git repo [-qh]" >&2
+    echo >&2
+    echo "Options:" >&2
+    echo "-q    Quiet (only return with exit code 0 if a git repo is found)" >&2
+    echo "-h    Show this help" >&2
+}
+
+quiet=0
+while getopts qh flag; do
+    case "$flag" in
+        q) quiet=1;;
+        h) usage; exit 2;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+if [ $quiet -eq 1 ]; then
+    git rev-parse --git-dir >/dev/null 2>/dev/null
+else
+    git rev-parse --git-dir
+fi
