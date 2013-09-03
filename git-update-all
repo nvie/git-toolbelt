@@ -1,0 +1,33 @@
+#!/bin/sh
+set -e
+
+if git is-dirty; then
+    echo "Cannot do this while your working copy has local changes.  Stash or commit them first." >&2
+    exit 2
+fi
+
+curr=$(git current-branch)
+git fetch
+
+for branch in $(git local-branches); do
+    if git remote-branch-exists origin "$branch"; then
+        if [ "$branch" != "$(git current-branch)" ]; then
+            git checkout --quiet "$branch" >/dev/null 2>/dev/null
+        fi
+
+        orig_sha=$(git sha -s "$branch")
+        new_sha=$(git sha -s origin/"$branch")
+        if [ "$orig_sha" != "$new_sha" ] && git contains origin/"$branch" "$branch"; then
+            if git merge --quiet --ff-only "origin/$branch"; then
+                echo "updated '$branch' to latest 'origin/$branch' ($orig_sha...$new_sha)"
+            else
+                echo "warning: could not fast-forward '$branch' to 'origin/$branch': branches have diverged." >&2
+            fi
+        else
+            echo "skipping: branch '$branch' is already up-to-date or newer than 'origin/$branch'" >&2
+        fi
+    else
+        echo "skipping: branch '$branch' is not on 'origin'" >&2
+    fi
+done
+git checkout --quiet "$curr"

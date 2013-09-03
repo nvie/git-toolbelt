@@ -13,6 +13,7 @@ Everyday helpful commands:
 * git-local-commits
 * git-repo
 * git-root
+* git-update-all
 * git-workon
 
 Common aliases:
@@ -278,6 +279,14 @@ removing any unknown local files from the work tree. Anything that is already
 committed remains safe.
 
 ??? issue a git pull, too? Typical beginners will want this.
+
+
+### git update-all
+
+Updates all local branch heads to the remote's equivalent.  This is the same as
+checking out all local branches one-by-one and pulling the latest upstream
+changes.  Will only update if a pull succeeds cleanly (i.e. is a fast-forward
+pull).
 
 
 ### git force-checkout
