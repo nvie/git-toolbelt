@@ -71,6 +71,9 @@ Typical example:
 
 ```console
 $ git sha HEAD
+f688d7543c5d52f5f78b3db1b0dd1616059299a4
+$ git sha -s HEAD
+f688d75
 ```
 
 Shows the commit SHA for the latest commit.
