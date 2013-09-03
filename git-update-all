@@ -1,6 +1,22 @@
 #!/bin/sh
 set -e
 
+usage () {
+    echo "usage: git update-all [-h]" >&2
+    echo >&2
+    echo "Updates (pulls) upstream changes on all local branches." >&2
+    echo >&2
+    echo "Options:" >&2
+    echo "-h    Show this help" >&2
+}
+
+while getopts h flag; do
+    case "$flag" in
+        h) usage; exit 2;;
+    esac
+done
+shift $(($OPTIND - 1))
+
 if git is-dirty; then
     echo "Cannot do this while your working copy has local changes.  Stash or commit them first." >&2
     exit 2
