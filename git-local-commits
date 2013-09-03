@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+curr=$(git current-branch)
+if ! git remote-branch-exists origin "$curr"; then
+    echo "Branch not pushed to remote yet." >&2
+    exit 1
+fi
+
+git log origin/"$curr"..."$curr" "$@"
