@@ -12,6 +12,7 @@ Everyday helpful commands:
 * git-remote-branches
 * git-local-commits
 * git-repo
+* git-root
 * git-workon
 
 Common aliases:
@@ -237,10 +238,20 @@ Helper function that determines whether the current directory has a Git repo
 associated to it.  Scriptable equivalent of `git repo`.
 
 
-### git repo
+### git root / git repo
 
-Prints the location of the Git directory, typically `.git`, but could differ
-based on the setup.  Will return with a non-zero exit code if not in a repo.
+`git root` prints the root location of the working tree.
+
+    $ cd /path/to/worktree
+    $ cd some/dir/in/worktree
+    $ pwd
+    /path/to/worktree/some/project/dir
+    $ git root
+    /path/to/worktree
+
+`git repo` prints the location of the Git directory, typically `.git`, but
+could differ based on your setup.  Will return with a non-zero exit code if not
+in a repo.
 
     $ cd /path/to/my/worktree
     $ git repo
