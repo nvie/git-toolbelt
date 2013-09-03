@@ -10,6 +10,7 @@ Everyday helpful commands:
 * git-fixup
 * git-local-branches
 * git-remote-branches
+* git-local-commits
 * git-repo
 * git-workon
 
@@ -31,6 +32,7 @@ codes and have no output.
 * git-is-repo
 * git-is-headless
 * git-has-local-changes / git-is-clean / git-is-dirty
+* git-has-local-commits
 * git-contains / git is-ancestor
 * git-local-branch-exists
 * git-remote-branch-exists
@@ -103,6 +105,13 @@ branches, can be asked to return only the branches in a specific remote.
 ### git local-branch-exists / git remote-branch-exists / git tag-exists
 
 Tests if the given local branch, remote branch, or tag exists.
+
+
+### git local-commits / git has-local-commits
+
+Returns a list of commits that are still in your local repo, but haven't been
+pushed to `origin`.  `git has-local-commits` is the scriptable equivalent that
+only returns an exit code if such commits exist.
 
 
 ### git contains / git is-ancestor

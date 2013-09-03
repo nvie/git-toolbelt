@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+
+num_commits=$(git local-commits --pretty=oneline | wc -l)
+[ $num_commits -gt 0 ]
