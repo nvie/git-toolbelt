@@ -1,0 +1,30 @@
+#!/bin/sh
+set -e
+    
+usage () {
+    echo "usage: git merged [-uh] [<branch>]" >&2
+    echo >&2
+    echo "Shows what local branches have been merged into branch (defaults to master)." >&2
+    echo >&2
+    echo "Options:" >&2
+    echo "-u    Show unmerged branches instead of merged branches" >&2
+    echo "-h    Show this help" >&2
+}
+
+unmerged=0
+while getopts uh flag; do
+    case "$flag" in
+        u) unmerged=1;;
+        h) usage; exit 2;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+if [ $unmerged -eq 1 ]; then
+    opts="--no-merged"
+else
+    opts="--merged"
+fi
+
+base="${1-master}"
+git branch $opts "$base" | cut -c3- | grep -vxF "$base"

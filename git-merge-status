@@ -1,0 +1,45 @@
+#!/bin/sh
+#!/bin/sh
+set -e
+    
+usage () {
+    echo "usage: git merge-status [-h] [<branch>]" >&2
+    echo >&2
+    echo "Shows merge status of all local branches against branch (defaults to master)." >&2
+    echo >&2
+    echo "Options:" >&2
+    echo "-h    Show this help" >&2
+}
+
+while getopts h flag; do
+    case "$flag" in
+        h) usage; exit 2;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+bulletize () {
+    sed -Ee 's/^/  - &/'
+}
+
+fail_if_empty () {
+    empty=1
+    while read line; do
+        echo "$line"
+        empty=0
+    done
+    test $empty -eq 0
+}
+
+base="${1-master}"
+
+echo "Merged into $base:"
+if ! git merged "$base" | bulletize | fail_if_empty; then
+    echo "(no branches)"
+fi
+
+echo
+echo "Not merged into $base:"
+if ! git merged -u "$base" | bulletize | fail_if_empty; then
+    echo "(no branches)"
+fi

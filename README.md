@@ -15,6 +15,7 @@ Everyday helpful commands:
 * git-root
 * git-update-all
 * git-workon
+* git-merged / git-unmerged / git-merge-status
 
 Common aliases:
 
@@ -287,6 +288,16 @@ Updates all local branch heads to the remote's equivalent.  This is the same as
 checking out all local branches one-by-one and pulling the latest upstream
 changes.  Will only update if a pull succeeds cleanly (i.e. is a fast-forward
 pull).
+
+
+### git-merged / git-unmerged / git-merge-status
+
+This trio of subcommands makes it easy to inspect merge status of local
+branches.  Use them to check whether any local branches have or haven't been
+merged into the target branch (defaults to master).
+
+git-merge-status is a useful command that presents both lists in a single
+overview (not for machine processing).
 
 
 ### git force-checkout
