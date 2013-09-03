@@ -14,8 +14,21 @@ is_index_clean () {
     git diff-index --cached --quiet --ignore-submodules --exit-code HEAD --
 }
 
+has_unstaged_changes () {
+    # As per this discussion[1], picking the 'git diff' solution over the other
+    # alternatives.  This does mean, however, that we need to check explicitly
+    # for any untracked files in the repo in another function.
+    # [1]: https://gist.github.com/sindresorhus/3898739
+    ! git diff --no-ext-diff --ignore-submodules --quiet --exit-code
+}
+
+has_untracked_files () {
+    num_untracked_files=$(git ls-files --other --exclude-standard | wc -l)
+    [ $num_untracked_files -gt 0 ]
+}
+
 is_worktree_clean () {
-    git diff --no-ext-diff --ignore-submodules --quiet --exit-code
+    ! has_unstaged_changes && ! has_untracked_files
 }
 
 check_index=0
