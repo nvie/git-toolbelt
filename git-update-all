@@ -7,7 +7,7 @@ if git is-dirty; then
 fi
 
 curr=$(git current-branch)
-git fetch
+git fetch --quiet
 
 for branch in $(git local-branches); do
     if git remote-branch-exists origin "$branch"; then
