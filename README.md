@@ -11,6 +11,7 @@ Everyday helpful commands:
 * git-local-branches
 * git-remote-branches
 * git-local-commits
+* git-recent-branches
 * git-repo
 * git-root
 * git-update-all
@@ -111,6 +112,23 @@ branches, can be asked to return only the branches in a specific remote.
 ### git local-branch-exists / git remote-branch-exists / git tag-exists
 
 Tests if the given local branch, remote branch, or tag exists.
+
+
+### git recent-branches
+
+Returns a list of local branches that saw changes since the specified date
+range.  Example:
+
+    $ git local-branches
+    master
+    foo
+    bar
+    qux
+    $ git recent-branches 1.month.ago
+    master
+    foo
+    $ git recent-branches 1.day.ago
+    foo
 
 
 ### git local-commits / git has-local-commits
