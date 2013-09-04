@@ -1,4 +1,31 @@
 #!/bin/sh
 set -e
+    
+usage () {
+    echo "usage: git push-current [-fh] [<remote>]" >&2
+    echo >&2
+    echo "Pushes the current branch to the given remote.  Assumes 'origin' by default." >&2
+    echo >&2
+    echo "Options:" >&2
+    echo "-f    Force push (use with care!)" >&2
+    echo "-h    Show this help" >&2
+}
+
+force=0
+while getopts fh flag; do
+    case "$flag" in
+        f) force=1;;
+        h) usage; exit 2;;
+    esac
+done
+shift $(($OPTIND - 1))
+
 curr=$(git current-branch)
-git push -u origin "$@" "$curr"
+remote=${1-origin}
+
+opts=""
+if [ $force -eq 1 ]; then
+    opts="-f"
+fi
+
+git push $opts -u "$remote" "$curr"
