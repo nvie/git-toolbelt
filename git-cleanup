@@ -67,15 +67,41 @@ done
 
 # Pruning first will remove any remote tracking branches that don't exist in
 # the remote anymore anyway.
-git remote prune origin >/dev/null 2>/dev/null
+for remote in $(git remote); do
+    git remote prune "$remote" >/dev/null 2>/dev/null
 
+    branches_to_remove=""
+    for branch in $(git remote-branches "$remote"); do
+        for base in $bases; do
+            if git contains "$base" "$branch"; then
+                if ! git contains "$branch" "$base"; then
+                    branchname=$(echo "$branch" | cut -d/ -f2-)
+                    branches_to_remove="$branches_to_remove $branchname"
+                    break
+                fi
+            fi
+        done
+    done
+
+    if [ -n "$branches_to_remove" ]; then
+        if ! git push "$remote" --delete $branches_to_remove; then
+            echo "Errors deleting branches $branches_to_remove from remote '$remote'" >&2
+        fi
+    fi
+done
+
+# Delete any remaining local remote-tracking branches of remotes that are gone
+# This is an atypical situation that has occurred to me personally after having
+# used the command:
+#
+#     $ hub merge <some-github-url>
+#
 branches_to_remove=""
-for branch in $(git remote-branches origin); do
+for branch in $(git remote-branches); do
     for base in $bases; do
         if git contains "$base" "$branch"; then
             if ! git contains "$branch" "$base"; then
-                branchname=$(echo "$branch" | cut -d/ -f2-)
-                branches_to_remove="$branches_to_remove $branchname"
+                branches_to_remove="$branches_to_remove $branch"
                 break
             fi
         fi
@@ -83,7 +109,5 @@ for branch in $(git remote-branches origin); do
 done
 
 if [ -n "$branches_to_remove" ]; then
-    if ! git push origin --delete $branches_to_remove; then
-        echo "Errors deleting branch from origin $branch" >&2
-    fi
+    git branch -dr $branches_to_remove
 fi
