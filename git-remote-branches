@@ -6,7 +6,9 @@ usage () {
 }
 
 remote_branches () {
-    git branch --remotes --no-color | cut -c3-
+    git branch --remotes --no-color \
+        | grep -v ' -> ' \
+        | cut -c3-
 }
 
 if [ $# -eq 1 ]; then
