@@ -26,6 +26,7 @@ Common aliases:
 Commands to help novices out:
 
 * git-drop-local-changes
+* git-stash-everything
 * git-push-current
 * git-undo-commit
 * git-undo-merge
@@ -298,6 +299,16 @@ removing any unknown local files from the work tree. Anything that is already
 committed remains safe.
 
 ??? issue a git pull, too? Typical beginners will want this.
+
+
+### git stash-everything
+
+The stash behaviour you (probably) always wanted.  This actually stashes
+everything what's in your index, in your working tree, and even stashes away
+your untracked files, leaving a totally clean working tree.
+
+Using "git stash pop" will recover all changes, including index state, locally
+modified files, and untracked files.
 
 
 ### git update-all
