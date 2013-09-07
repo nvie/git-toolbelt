@@ -1,0 +1,83 @@
+#!/bin/sh
+set -e
+
+usage () {
+    echo "usage: git committer-info [-ah] <pattern>" >&2
+    echo >&2
+    echo "Show contribution stats for any committer matching the given pattern." >&2
+    echo >&2
+    echo "Options:" >&2
+    echo "-a    Consider all branches (instead of only the current branch)" >&2
+    echo "-h    Show this help" >&2
+}
+
+all=0
+while getopts ah flag; do
+    case "$flag" in
+        q) all=1;;
+        h) usage; exit 2;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+author=$1
+
+count_by_dow () {
+    awk '
+    BEGIN {
+        map["Mon"] = 0
+        map["Tue"] = 0
+        map["Wed"] = 0
+        map["Thu"] = 0
+        map["Fri"] = 0
+        map["Sat"] = 0
+        map["Sun"] = 0
+    }
+
+    {
+        map[$1] += 1
+    }
+
+    function round(x, ival, aval, fraction)
+    {
+        ival = int(x)    # integer part, int() truncates
+     
+        # see if fractional part
+        if (ival == x)   # no fraction
+           return ival   # ensure no decimals
+     
+        if (x < 0) {
+           aval = -x     # absolute value
+           ival = int(aval)
+           fraction = aval - ival
+           if (fraction >= .5)
+              return int(x) - 1   # -2.5 --> -3
+           else
+              return int(x)       # -2.3 --> -2
+        } else {
+           fraction = x - ival
+           if (fraction >= .5)
+              return ival + 1
+           else
+              return ival
+        }
+    }
+     
+    END {
+        total = map["Mon"] + map["Tue"] + map["Wed"] + map["Thu"] + map["Fri"] + map["Sat"] + map["Sun"]
+        printf("%s %6s %4s%%\n", "Mon", map["Mon"], round(map["Mon"] / total * 100))
+        printf("%s %6s %4s%%\n", "Tue", map["Tue"], round(map["Tue"] / total * 100))
+        printf("%s %6s %4s%%\n", "Wed", map["Wed"], round(map["Wed"] / total * 100))
+        printf("%s %6s %4s%%\n", "Thu", map["Thu"], round(map["Thu"] / total * 100))
+        printf("%s %6s %4s%%\n", "Fri", map["Fri"], round(map["Fri"] / total * 100))
+        printf("%s %6s %4s%%\n", "Sat", map["Sat"], round(map["Sat"] / total * 100))
+        printf("%s %6s %4s%%\n", "Sun", map["Sun"], round(map["Sun"] / total * 100))
+    }
+    '
+}
+
+opts=""
+if [ $all -eq 1 ]; then
+    opts="--all"
+fi
+git log $opts --author="$author" --format="%ad" | count_by_dow

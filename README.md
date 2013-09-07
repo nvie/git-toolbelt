@@ -4,24 +4,25 @@ Helper tools to make everyday life with Git much easier.
 
 Everyday helpful commands:
 
-* git-current-branch
-* git-sha
 * git-cleanup
+* git-current-branch
 * git-fixup
 * git-local-branches
-* git-remote-branches
 * git-local-commits
+* git-merged / git-unmerged / git-merge-status
 * git-recent-branches
+* git-remote-branches
 * git-repo
 * git-root
-* git-update-all
-* git-workon
-* git-merged / git-unmerged / git-merge-status
-
-Common aliases:
-
+* git-sha
 * git-stage-all
 * git-unstage-all
+* git-update-all
+* git-workon
+
+Statistics:
+
+* git-committer-info
 
 Commands to help novices out:
 
@@ -329,7 +330,14 @@ git-merge-status is a useful command that presents both lists in a single
 overview (not for machine processing).
 
 
-### git force-checkout
+### git-committer-info
+
+Shows contribution stats for the given committer, like "most productive day",
+"most productive hour", "average commit size", etc.
+
+
+
+### TODO: git force-checkout
 
 Don't care about your local working copy's state and really want to switch to
 another branch? git force-checkout lets you do this.
@@ -351,7 +359,7 @@ a branch anyway. **You do agree to lose data when using this command.**
     Switched to branch 'master'
 
 
-### git conflicts
+### TODO: git conflicts
 
 Generates a summary for all (specified) branches that will merged
 uncleanly—i.e. will have merge conflicts later on.
