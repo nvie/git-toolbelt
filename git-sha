@@ -2,17 +2,20 @@
 set -e
 
 usage () {
-    echo "usage: git sha [-s] <object>" >&2
+    echo "usage: git sha [-sq] <object>" >&2
     echo >&2
     echo "Options:" >&2
     echo "-s    Output short SHAs" >&2
+    echo "-q    Be quiet (only return exit code 0 when object exists)" >&2
     echo "-h    Show this help" >&2
 }
 
 short=0
-while getopts sh flag; do
+quiet=0
+while getopts sqh flag; do
     case "$flag" in
         s) short=1;;
+        q) quiet=1;;
         h) usage; exit 2;;
     esac
 done
@@ -38,6 +41,8 @@ if [ $status -ne 0 ]; then
     echo "Invalid object: '$object'" >&2
     exit 1
 else
-    echo "$output"
+    if [ $quiet -eq 0 ]; then
+        echo "$output"
+    fi
     exit 0
 fi
