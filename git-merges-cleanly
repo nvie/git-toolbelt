@@ -1,0 +1,41 @@
+#!/bin/sh
+set -e
+
+usage () {
+    echo "usage: git merges-cleanly [-h] <branch>" >&2
+    echo >&2
+    echo "Performes a temporal merge against the given branch (but aborts or undoes" >&2
+    echo "the merge) and reports success or failure through the exit code." >&2
+    echo >&2
+    echo "Options:" >&2
+    echo "-h    Show this help" >&2
+}
+
+while getopts h flag; do
+    case "$flag" in
+        h) usage; exit 2;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+if [ $# -ne 1 ]; then
+    usage
+    exit 2
+fi
+
+branch=$1
+
+git sha -q "$1"
+
+if git is-dirty; then
+  echo "Can't check when you have local changes." >&2
+  exit 2
+fi
+
+if git merge --quiet "$branch" >/dev/null 2>/dev/null; then
+  git undo-merge >/dev/null 2>/dev/null
+  exit 0
+else
+  git merge --abort >/dev/null 2>/dev/null
+  exit 1
+fi

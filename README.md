@@ -359,17 +359,18 @@ a branch anyway. **You do agree to lose data when using this command.**
     Switched to branch 'master'
 
 
-### TODO: git conflicts
+### git conflicts
 
-Generates a summary for all (specified) branches that will merged
-uncleanly—i.e. will have merge conflicts later on.
+Generates a summary for all local branches that will merge uncleanly—i.e. will
+lead to merge conflicts later on.
 
     $ git branch
       develop
     * mybranch
       master
       other-branch
-    $ git conflicts -a
-    mybranch <-> develop: ok
-    mybranch <-> master: ok
-    mybranch <-> other-branch: CONFLICTS
+    $ git conflicts
+    develop... merges cleanly
+    master...  merges cleanly
+    other-branch... CONFLICTS AHEAD
+
