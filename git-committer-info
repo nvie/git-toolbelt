@@ -2,25 +2,36 @@
 set -e
 
 usage () {
-    echo "usage: git committer-info [-ah] <pattern>" >&2
+    echo "usage: git committer-info [-aAh] <pattern> [<pattern> ...]" >&2
     echo >&2
     echo "Show contribution stats for any committer matching the given pattern." >&2
     echo >&2
     echo "Options:" >&2
-    echo "-a    Consider all branches (instead of only the current branch)" >&2
+    echo "-A    Consider all branches (instead of only the current branch)" >&2
+    echo "-a    Print for all committers" >&2
     echo "-h    Show this help" >&2
 }
 
-all=0
-while getopts ah flag; do
+all_branches=0
+all_committers=0
+while getopts aAh flag; do
     case "$flag" in
-        q) all=1;;
+        a) all_committers=1;;
+        A) all_branches=1;;
         h) usage; exit 2;;
     esac
 done
 shift $(($OPTIND - 1))
 
-author=$1
+if [ $all_committers -eq 1 ]; then
+    committers=$(git shortlog -s | cut -f2-)
+else
+    if [ $# -eq 0 ]; then
+        usage
+        exit 2
+    fi
+    committers=$(for item in "$@"; do echo "$item"; done)
+fi
 
 count_by_dow () {
     awk '
@@ -78,8 +89,22 @@ count_by_dow () {
     '
 }
 
+indent () {
+    sed -Ee 's/^/    /'
+}
+
 opts=""
-if [ $all -eq 1 ]; then
+if [ $all_branches -eq 1 ]; then
     opts="--all"
 fi
-git log $opts --author="$author" --format="%ad" | count_by_dow
+
+first=1
+echo "$committers" | while read committer; do
+    if [ $first -ne 1 ]; then
+        echo ""
+    else
+        first=0
+    fi
+    echo "$committer:"
+    git log $opts --author="$committer" --format="%ad" | count_by_dow | indent
+done
