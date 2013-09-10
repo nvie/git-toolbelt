@@ -13,15 +13,18 @@ fi
 branch="$1"
 shift 1
 
+if git is-dirty -a; then
+    echo 'Cannot use this command safely when you have local files marked "assumed unchanged".' >&2
+    exit 2
+fi
+
 # TODO: FIXME: There is a lot that can go wrong here.  Basically, that's not
 # a problem at all in itself, but we need a mechanism to reliably recover back
 # to the starting position.
-git aa
-git stash
+git stash-everything
 commit=$(git sha HEAD)
 orig_branch=$(git current-branch)
 git checkout "$branch"
 git cherry-pick "$commit"
 git checkout "$orig_branch"
 git stash pop
-git cc
