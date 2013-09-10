@@ -46,6 +46,7 @@ codes and have no output.
 
 Advanced usage:
 
+* git-assume / git-unassume / git-show-assumed
 * git-commit-to
 * git-cherry-pick-to
 * git-delouse
@@ -374,3 +375,41 @@ lead to merge conflicts later on.
     master...  merges cleanly
     other-branch... CONFLICTS AHEAD
 
+
+### git-assume / git-unassume / git-show-assumed
+
+Git supports marking files "assumed unchanged", meaning any change in the file
+locally will not be shown in status reports, or be added when you stage all
+files.  This feature can be useful to toggle some switches locally, or
+experiment with different settings, without running the risk of accidentally
+committing this local data (that should remain untouched in the repo).
+
+Notice that status reports won't show these files anymore, so it's also easily
+to lose track of these marked assumptions, and you probably run into weird
+issues if you don't remember this. (This is the reason why I put these scripts
+in the "advanced" category.)
+
+Basic usage:
+
+    $ git status
+     M foo.txt
+     M bar.txt
+     M qux.txt
+    $ git assume foo.txt
+    $ git status
+     M bar.txt
+     M qux.txt
+    $ git show-assumed
+    foo.txt
+    $ git commit -am 'Commit everything.'
+    $ git status
+    nothing to commit, working directory clean
+    $ git is-clean && echo "clean" || echo "not clean"
+    not clean
+    $ git unassume -a
+    $ git status
+     M foo.txt
+
+As you can see, `git-is-clean` is aware of any lurking "assumed unchanged"
+files, and won't report a clean working tree, as these assumed unchanged files
+often block the ability to check out different branches.

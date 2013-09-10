@@ -7,6 +7,7 @@ usage () {
     echo "Options:" >&2
     echo "-w    Check if worktree is {clean,dirty}" >&2
     echo "-i    Check if index is {clean,dirty}" >&2
+    echo "-a    Check if any files are marked (un)assumed unchanged" >&2
     echo "-h    Show this help" >&2
 }
 
@@ -31,21 +32,28 @@ is_worktree_clean () {
     ! has_unstaged_changes && ! has_untracked_files
 }
 
+is_assumed_unchanged () {
+    git show-assumed -q
+}
+
 check_index=0
 check_worktree=0
-while getopts iwh flag; do
+check_assume=0
+while getopts iwah flag; do
     case "$flag" in
         i) check_index=1;;
         w) check_worktree=1;;
+        a) check_assume=1;;
         h) usage; exit 2;;
     esac
 done
 shift $(($OPTIND - 1))
 
 # If nothing is explicitly specified, check everything
-if [ $check_index -eq 0 -a $check_worktree -eq 0 ]; then
+if [ $check_index -eq 0 -a $check_worktree -eq 0 -a $check_assume -eq 0 ]; then
     check_index=1
     check_worktree=1
+    check_assume=1
 fi
 
 if [ $check_index -eq 1 ]; then
@@ -56,6 +64,12 @@ fi
 
 if [ $check_worktree -eq 1 ]; then
     if ! is_worktree_clean; then
+        exit 1
+    fi
+fi
+
+if [ $check_assume -eq 1 ]; then
+    if ! is_assumed_unchanged; then
         exit 1
     fi
 fi
