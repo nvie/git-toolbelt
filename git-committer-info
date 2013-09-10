@@ -72,6 +72,8 @@ count_by_dow () {
         printf("%s %6s %4s%%\n", "Fri", map["Fri"], round(map["Fri"] / total * 100))
         printf("%s %6s %4s%%\n", "Sat", map["Sat"], round(map["Sat"] / total * 100))
         printf("%s %6s %4s%%\n", "Sun", map["Sun"], round(map["Sun"] / total * 100))
+        printf("     -----\n");
+        printf("    %6s\n", total);
     }
     '
 }
