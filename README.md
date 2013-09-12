@@ -19,6 +19,7 @@ Everyday helpful commands:
 * git-unstage-all
 * git-update-all
 * git-workon
+* git-modified
 
 Statistics:
 
@@ -84,6 +85,24 @@ f688d75
 ```
 
 Shows the commit SHA for the latest commit.
+
+
+### git modified
+
+Returns a list of locally modified files.  In contrast to git status, it does
+not include any detailed file status, and never includes non-existing files.
+
+This makes it ideal for the following use-case:
+
+```console
+$ vim (git modified)
+```
+
+If you want to locally modified files that are already staged, too, use:
+
+```console
+$ vim (git modified -i)
+```
 
 
 ### git push-current
