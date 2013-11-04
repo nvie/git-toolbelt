@@ -2,10 +2,13 @@
 set -e
 
 usage () {
-    echo "usage: git modified [-iqh]" >&2
+    echo "usage: git modified [-iqh] [<commit>]" >&2
     echo >&2
     echo "Prints list of files that are locally modified (and exist).  The index is not " >&2
     echo "considered, unless the -i flag is provided." >&2
+    echo "" >&2
+    echo "If a commit is provided, opens all files that locally exist that have been " >&2
+    echo "changed in that commit." >&2
     echo >&2
     echo "This script is ideal for passing all locally modified files into your editor, like:" >&2
     echo '    $ vim `git modified`' >&2
@@ -26,6 +29,11 @@ while getopts iqh flag; do
     esac
 done
 shift $(($OPTIND - 1))
+
+commit=""
+if [ $# -ge 1 ]; then
+    commit="$1"
+fi
 
 #
 # git status cheat sheet:
@@ -81,8 +89,16 @@ fail_if_empty () {
     test $empty -eq 0
 }
 
-if [ $index -eq 1 ]; then
-    modified_in_index | fail_if_empty
+if [ -z "$commit" ]; then
+    if [ $index -eq 1 ]; then
+        modified_in_index | fail_if_empty
+    else
+        modified_locally | fail_if_empty
+    fi
 else
-    modified_locally | fail_if_empty
+    git log -1 --name-status --pretty=format:"" "$commit" | cut -f2- | while read f; do
+        if [ -f "$f" ]; then
+            echo "$f"
+        fi
+    done | fail_if_empty
 fi
