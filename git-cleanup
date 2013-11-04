@@ -67,7 +67,10 @@ done
 
 # Pruning first will remove any remote tracking branches that don't exist in
 # the remote anymore anyway.
-for remote in $(git remote); do
+
+#XXX: FIXME: This gave trouble, as it tried to remove branches from Heroku remotes... :(
+#for remote in $(git remote); do
+for remote in origin; do
     git remote prune "$remote" >/dev/null 2>/dev/null
 
     branches_to_remove=""
