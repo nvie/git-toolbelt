@@ -2,7 +2,7 @@
 set -e
     
 usage () {
-    echo "usage: git recent-branches [-h] [<date-range>]" >&2
+    echo "usage: git recent-branches [-h]" >&2
     echo >&2
     echo "Shows a list of branches that have been modified since the specified date range. Defaults to '1.week.ago'." >&2
     echo >&2
@@ -15,20 +15,5 @@ while getopts h flag; do
         h) usage; exit 2;;
     esac
 done
-shift $(($OPTIND - 1))
 
-fail_if_empty () {
-    empty=1
-    while read line; do
-        echo "$line"
-        empty=0
-    done
-    test $empty -eq 0
-}
-
-daterange=${1-1.week.ago}
-for branch in $(git local-branches); do
-    if git log -1 "--pretty=%H" "--since=$daterange" "$branch" | fail_if_empty >/dev/null; then
-        echo "$branch"
-    fi
-done
+git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format='%(refname:short)'

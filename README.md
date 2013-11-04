@@ -138,19 +138,13 @@ Tests if the given local branch, remote branch, or tag exists.
 
 ### git recent-branches
 
-Returns a list of local branches that saw changes since the specified date
-range.  Example:
+Returns a list of local branches, ordered by recency:
 
-    $ git local-branches
-    master
+    $ git recent-branches
     foo
+    master
     bar
     qux
-    $ git recent-branches 1.month.ago
-    master
-    foo
-    $ git recent-branches 1.day.ago
-    foo
 
 
 ### git local-commits / git has-local-commits
