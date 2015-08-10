@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+DRYRUN=0
+
 #
 # This will clean up any branch (both locally and remotely) that has been
 # merged into any of the known "trunks".  Trunks are any of:
@@ -8,6 +10,14 @@ set -e
 #   - master (local) + origin/master
 #   - develop (local) + origin/develop
 #
+
+safegit () {
+    if [ "$DRYRUN" -eq 1 ]; then
+        echo git "$@"
+    else
+        git "$@"
+    fi
+}
 
 #
 # The Algorithm[tm]:
@@ -56,7 +66,7 @@ for branch in $(git local-branches); do
         if git contains "$base" "$branch"; then
             if ! git contains "$branch" "$base"; then
                 # Actually delete
-                if ! git branch -D "$branch"; then
+                if ! safegit branch -D "$branch"; then
                     echo "Errors deleting local branch $branch" >&2
                 fi
                 break
@@ -71,7 +81,7 @@ done
 #XXX: FIXME: This gave trouble, as it tried to remove branches from Heroku remotes... :(
 #for remote in $(git remote); do
 for remote in origin; do
-    git remote prune "$remote" >/dev/null 2>/dev/null
+    safegit remote prune "$remote" >/dev/null 2>/dev/null
 
     branches_to_remove=""
     for branch in $(git remote-branches "$remote"); do
@@ -87,7 +97,7 @@ for remote in origin; do
     done
 
     if [ -n "$branches_to_remove" ]; then
-        if ! git push "$remote" --delete $branches_to_remove; then
+        if ! safegit push "$remote" --delete $branches_to_remove; then
             echo "Errors deleting branches $branches_to_remove from remote '$remote'" >&2
         fi
     fi
@@ -112,5 +122,5 @@ for branch in $(git remote-branches); do
 done
 
 if [ -n "$branches_to_remove" ]; then
-    git branch -dr $branches_to_remove
+    safegit branch -dr $branches_to_remove
 fi
