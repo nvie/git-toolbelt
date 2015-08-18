@@ -61,7 +61,7 @@ find_bases () {
 
 bases=$(find_bases)
 
-for branch in $(git local-branches); do
+for branch in $(git local-branches | grep -vxF 'master' | grep -vxF 'develop'); do
     for base in $bases; do
         if git contains "$base" "$branch"; then
             if ! git contains "$branch" "$base"; then
@@ -84,7 +84,7 @@ for remote in origin; do
     safegit remote prune "$remote" >/dev/null 2>/dev/null
 
     branches_to_remove=""
-    for branch in $(git remote-branches "$remote"); do
+    for branch in $(git remote-branches "$remote" | grep -vEe '/(master|develop)$'); do
         for base in $bases; do
             if git contains "$base" "$branch"; then
                 if ! git contains "$branch" "$base"; then
