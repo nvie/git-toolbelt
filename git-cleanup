@@ -1,7 +1,26 @@
 #!/bin/sh
 set -e
 
-DRYRUN=0
+usage () {
+    echo "usage: git cleanup [-nh]" >&2
+    echo >&2
+    echo "Deletes all branches that have already been merged into master or develop." >&2
+    echo "Removes those branches both locally and in the origin remote.  Will be " >&2
+    echo "most conservative with deletions." >&2
+    echo >&2
+    echo "Options:" >&2
+    echo "-n    Dry-run" >&2
+    echo "-h    Show this help" >&2
+}
+
+dryrun=0
+while getopts nh flag; do
+    case "$flag" in
+        n) dryrun=1;;
+        h) usage; exit 2;;
+    esac
+done
+shift $(($OPTIND - 1))
 
 #
 # This will clean up any branch (both locally and remotely) that has been
@@ -12,7 +31,7 @@ DRYRUN=0
 #
 
 safegit () {
-    if [ "$DRYRUN" -eq 1 ]; then
+    if [ "$dryrun" -eq 1 ]; then
         echo git "$@"
     else
         git "$@"
