@@ -7,7 +7,7 @@ usage () {
     echo "Pushes the current branch to the given remote.  Assumes 'origin' by default." >&2
     echo >&2
     echo "Options:" >&2
-    echo "-f    Force push (use with care!)" >&2
+    echo "-f    Force push (will use a lease)" >&2
     echo "-h    Show this help" >&2
 }
 
@@ -25,7 +25,7 @@ remote=${1-origin}
 
 opts=""
 if [ $force -eq 1 ]; then
-    opts="-f"
+    opts="--force-with-lease"
 fi
 
 git push $opts -u "$remote" "$curr"
