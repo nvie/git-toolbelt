@@ -1,0 +1,25 @@
+#!/bin/sh
+set -e
+
+usage () {
+    echo "usage: git trash" >&2
+    echo >&2
+    echo "Options:" >&2
+    echo "-h    Show this help" >&2
+}
+
+while getopts sqh flag; do
+    case "$flag" in
+        h) usage; exit 2;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+if git-is-clean; then
+    echo "Nothing to trash."
+    exit 0
+fi
+
+git add --all
+git commit -m 'Trash'
+git reset --hard HEAD^
