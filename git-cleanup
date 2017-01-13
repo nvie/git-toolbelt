@@ -31,6 +31,9 @@ shift $(($OPTIND - 1))
 #
 #   - master (local) + origin/master
 #   - develop (local) + origin/develop
+#   - production (local) + origin/production
+#   - staging (local) + origin/staging
+#   - beta (local) + origin/beta
 #
 
 safegit () {
@@ -79,11 +82,19 @@ find_branch_base () {
 find_bases () {
     find_branch_base master
     find_branch_base develop
+    find_branch_base production
+    find_branch_base staging
+    find_branch_base beta
 }
 
 bases=$(find_bases)
 
-for branch in $(git local-branches | grep -vxF 'master' | grep -vxF 'develop'); do
+for branch in $(git local-branches          \
+                | grep -vxF 'master'        \
+                | grep -vxF 'develop'       \
+                | grep -vxF 'production'    \
+                | grep -vxF 'staging'       \
+                | grep -vxF 'beta'); do
     for base in $bases; do
         if git contains "$base" "$branch"; then
             if ! git contains "$branch" "$base"; then
@@ -107,7 +118,7 @@ for remote in origin; do
 
     if [ $remotes -eq 1 ]; then
         branches_to_remove=""
-        for branch in $(git remote-branches "$remote" | grep -vEe '/(master|develop)$'); do
+        for branch in $(git remote-branches "$remote" | grep -vEe '/(master|develop|production|staging|beta)$'); do
             for base in $bases; do
                 if git contains "$base" "$branch"; then
                     if ! git contains "$branch" "$base"; then
