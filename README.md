@@ -14,6 +14,7 @@ Everyday helpful commands:
 * git-remote-branches
 * git-repo
 * git-root
+* git-initial-commit
 * git-sha
 * git-stage-all
 * git-unstage-all
@@ -297,6 +298,14 @@ in a repo.
     fatal: Not a git repository (or any of the parent directories): .git
 
 
+### git initial-commit
+
+`git initial-commit` prints the initial commit for the repo.
+
+    $ git initial-commit
+    48c94a6a29e9e52ab63ce0fab578101ddc56a04f
+
+
 ### git has-local-changes / git is-clean / git is-dirty
 
 Helper function that determines whether there are local changes in the working
@@ -348,7 +357,6 @@ overview (not for machine processing).
 
 Shows contribution stats for the given committer, like "most productive day",
 "most productive hour", "average commit size", etc.
-
 
 
 ### TODO: git force-checkout

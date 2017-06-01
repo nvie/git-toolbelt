@@ -1,0 +1,4 @@
+#!/bin/sh
+set -e
+
+git rev-list --max-parents=0 --first-parent master
