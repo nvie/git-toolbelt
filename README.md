@@ -1,12 +1,13 @@
 # git-tools
 
-Helper tools to make everyday life with Git much easier.
+Helper tools to make everyday life with Git much easier.  Commands marked with
+⭐️ are my personal favorites and are commands I use almost every day.
 
 Everyday helpful commands:
 
-* git-cleanup
+* ⭐️ git-cleanup
 * git-current-branch
-* git-fixup
+* ⭐️ git-fixup
 * git-local-branches
 * git-local-commits
 * git-merged / git-unmerged / git-merge-status
@@ -15,12 +16,12 @@ Everyday helpful commands:
 * git-repo
 * git-root
 * git-initial-commit
-* git-sha
+* ⭐️ git-sha
 * git-stage-all
 * git-unstage-all
 * git-update-all
 * git-workon
-* git-modified
+* ⭐️ git-modified
 
 Statistics:
 
@@ -30,7 +31,7 @@ Commands to help novices out:
 
 * git-drop-local-changes
 * git-stash-everything
-* git-push-current
+* ⭐️ git-push-current
 * git-undo-commit
 * git-undo-merge
 
@@ -51,7 +52,7 @@ Advanced usage:
 * git-assume / git-unassume / git-show-assumed
 * git-commit-to
 * git-cherry-pick-to
-* git-delouse
+* ⭐️ git-delouse
 
 
 
