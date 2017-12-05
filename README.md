@@ -5,54 +5,54 @@ Helper tools to make everyday life with Git much easier.  Commands marked with
 
 Everyday helpful commands:
 
-* ⭐️ git-cleanup
-* git-current-branch
-* ⭐️ git-fixup
-* git-local-branches
-* git-local-commits
-* git-merged / git-unmerged / git-merge-status
-* git-recent-branches
-* git-remote-branches
-* git-repo
-* git-root
-* git-initial-commit
-* ⭐️ git-sha
-* git-stage-all
-* git-unstage-all
-* git-update-all
-* git-workon
-* ⭐️ git-modified
+* ⭐️ [git-cleanup](#git-cleanup)
+* [git-current-branch](#git-current-branch)
+* ⭐️ [git-fixup](#git-fixup)
+* [git-local-branches](#git-local-branches)
+* [git-local-commits](#git-local-commits)
+* [git-merged / git-unmerged / git-merge-status](#git-merged--git-unmerged--git-merge-status)
+* [git-recent-branches](#git-recent-branches)
+* [git-remote-branches](#git-remote-branches)
+* [git-repo](#git-repo)
+* [git-root](#git-root)
+* [git-initial-commit](#git-initial-commit)
+* ⭐️ [git-sha](#git-sha)
+* [git-stage-all](#git-stage-all)
+* [git-unstage-all](#git-unstage-all)
+* [git-update-all](#git-update-all)
+* [git-workon](#git-workon)
+* ⭐️ [git-modified](#git-modified)
 
 Statistics:
 
-* git-committer-info
+* [git-committer-info](#git-committer-info)
 
 Commands to help novices out:
 
-* git-drop-local-changes
-* git-stash-everything
-* ⭐️ git-push-current
-* git-undo-commit
-* git-undo-merge
+* [git-drop-local-changes](#git-drop-local-changes)
+* [git-stash-everything](#git-stash-everything)
+* ⭐️ [git-push-current](#git-push-current)
+* [git-undo-commit](#git-undo-commit)
+* [git-undo-merge](#git-undo-merge)
 
 Commands that simplify scripting. These commands typically only return exit
 codes and have no output.
 
-* git-is-repo
-* git-is-headless
-* git-has-local-changes / git-is-clean / git-is-dirty
-* git-has-local-commits
-* git-contains / git is-ancestor
-* git-local-branch-exists
-* git-remote-branch-exists
-* git-tag-exists
+* [git-is-repo](#git-is-repo)
+* [git-is-headless](#git-is-headless)
+* [git-has-local-changes / git-is-clean / git-is-dirty](#git-has-local-changes--git-is-clean--git-is-dirty)
+* [git-has-local-commits](#git-has-local-commits)
+* [git-contains / git is-ancestor](#git-contains--git-is-ancestor)
+* [git-local-branch-exists](#git-local-branch-exists)
+* [git-remote-branch-exists](#git-remote-branch-exists)
+* [git-tag-exists](#git-tag-exists)
 
 Advanced usage:
 
-* git-assume / git-unassume / git-show-assumed
-* git-commit-to
-* git-cherry-pick-to
-* ⭐️ git-delouse
+* [git-assume / git-unassume / git-show-assumed](#git-assume--git-unassume--git-show-assumed)
+* [git-commit-to](#git-commit-to)
+* [git-cherry-pick-to](#git-cherry-pick-to)
+* ⭐️ [git-delouse](#git-delouse)
 
 
 
