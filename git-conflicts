@@ -2,19 +2,22 @@
 set -e
 
 usage () {
-    echo "usage: git conflicts [-qh]" >&2
+    echo "usage: git conflicts [-rqh]" >&2
     echo >&2
     echo "Compares merge outcomes against all local branches and display " >&2
     echo "whether a merge would cause merge conflicts." >&2
     echo >&2
     echo "Options:" >&2
+    echo "-r    Remote branches (default is only local branches)" >&2
     echo "-q    Be quiet (only report about conflicts)" >&2
     echo "-h    Show this help" >&2
 }
 
 quiet=0
-while getopts qh flag; do
+remotes=0
+while getopts rqh flag; do
     case "$flag" in
+        r) remotes=1;;
         q) quiet=1;;
         h) usage; exit 2;;
     esac
@@ -26,7 +29,12 @@ if git is-dirty; then
     exit 2
 fi
 
-for branch in $(git local-branches); do
+if [ "$remotes" -eq 1 ]; then
+    branches="$(git remote-branches)"
+else
+    branches="$(git local-branches)"
+fi
+for branch in $branches; do
     if git merges-cleanly "$branch"; then
         if [ $quiet -eq 0 ]; then
             echo "$branch... merges cleanly"
