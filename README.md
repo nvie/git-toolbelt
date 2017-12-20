@@ -1,3 +1,7 @@
+# Installation instructions
+
+    $ brew install nvie/tap/git-toolbelt
+
 # git-tools
 
 Helper tools to make everyday life with Git much easier.  Commands marked with
