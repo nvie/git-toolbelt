@@ -134,7 +134,7 @@ commands for this, returns them machine-processable.  In the case of remote
 branches, can be asked to return only the branches in a specific remote.
 
 A branch is deemed "active" if its head points to a commit authored in the last
-2 weeks.
+3 weeks.
 
 
 ### git local-branch-exists / git remote-branch-exists / git tag-exists

@@ -4,5 +4,5 @@ set -e
 # TODO: Make the max age configurable
 
 ( git local-branches; git remote-branches ) | while read branch; do
-    git log -1 --since=2.weeks.ago -s $branch | ifne echo "$branch"
+    git log -1 --since=3.weeks.ago -s $branch | ifne echo "$branch"
 done
