@@ -8,6 +8,7 @@ Everyday helpful commands:
 * ⭐️ [git-cleanup](#git-cleanup)
 * [git-current-branch](#git-current-branch)
 * ⭐️ [git-fixup](#git-fixup)
+* ⭐️ [git-active-branches](#git-active-branches)
 * [git-local-branches](#git-local-branches)
 * [git-local-commits](#git-local-commits)
 * [git-merged / git-unmerged / git-merge-status](#git-merged--git-unmerged--git-merge-status)
@@ -126,11 +127,14 @@ to force-push.
 Tests if `HEAD` is pointing to a branch head, or is detached.
 
 
-### git local-branches / git remote-branches
+### git local-branches / git remote-branches / git active-branches
 
 Returns a list of local or remote branches, but contrary to Git's default
 commands for this, returns them machine-processable.  In the case of remote
 branches, can be asked to return only the branches in a specific remote.
+
+A branch is deemed "active" if its head points to a commit authored in the last
+2 weeks.
 
 
 ### git local-branch-exists / git remote-branch-exists / git tag-exists
