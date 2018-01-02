@@ -42,6 +42,12 @@ else
   if [ $showlist -eq 1 ]; then
     git diff --name-only --diff-filter=U
   fi
+
   git merge --abort >/dev/null 2>/dev/null
-  exit 1
+
+  if [ $showlist -eq 1 ]; then
+    exit 0
+  else
+    exit 1
+  fi
 fi
