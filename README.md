@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="./img/git-toolbelt.png" width="376" height="409" alt="git-toolbelt logo" /><br>
+</div>
+
 # Installation instructions
 
     $ brew install nvie/tap/git-toolbelt
