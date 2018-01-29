@@ -8,6 +8,7 @@ usage () {
     echo "-w    Check if worktree is {clean,dirty}" >&2
     echo "-i    Check if index is {clean,dirty}" >&2
     echo "-a    Check if any files are marked (un)assumed unchanged" >&2
+    echo "-v    Be verbose, print errors to stderr" >&2
     echo "-h    Show this help" >&2
 }
 
@@ -39,11 +40,13 @@ is_assumed_unchanged () {
 check_index=0
 check_worktree=0
 check_assume=0
-while getopts iwah flag; do
+verbose=0
+while getopts iwavh flag; do
     case "$flag" in
         i) check_index=1;;
         w) check_worktree=1;;
         a) check_assume=1;;
+        v) verbose=1;;
         h) usage; exit 2;;
     esac
 done
@@ -58,19 +61,22 @@ fi
 
 if [ $check_index -eq 1 ]; then
     if ! is_index_clean; then
-        exit 1
+        [ $verbose -eq 1 ] && echo "git index not clean" >&2
+        exit 2
     fi
 fi
 
 if [ $check_worktree -eq 1 ]; then
     if ! is_worktree_clean; then
-        exit 1
+        [ $verbose -eq 1 ] && echo "git work tree not clean" >&2
+        exit 3
     fi
 fi
 
 if [ $check_assume -eq 1 ]; then
     if ! is_assumed_unchanged; then
-        exit 1
+        [ $verbose -eq 1 ] && echo "there are assumed-unchanged files" >&2
+        exit 4
     fi
 fi
 
