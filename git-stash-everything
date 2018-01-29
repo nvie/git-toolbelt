@@ -1,4 +1,4 @@
 #!/bin/sh
 set -e
 
-git stash save --no-keep-index --include-untracked "$@"
+git stash push --no-keep-index --include-untracked "$@"
