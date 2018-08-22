@@ -105,9 +105,10 @@ if [ -z "$commit" ]; then
         modified_locally | fail_if_empty
     fi
 else
+    root="$(git root)"
     git log -1 --name-status --pretty=format:"" "$commit" | cut -f2- | while read f; do
-        if [ -f "$f" ]; then
-            echo "$f"
+        if [ -f "$root/$f" ]; then
+            echo "$(realpath --relative-to="$(pwd)" "$root/$f")"
         fi
     done | fail_if_empty
 fi
