@@ -248,7 +248,7 @@ amend"'ing or "git fixup"'ing, instead of making new commits.
 
 ### git commit-to
 
-Every been on a branch and really wanted to quickly commit a change to
+Ever been on a branch and really wanted to quickly commit a change to
 a different branch?  Given that this is possible without merge conflicts, git
 commit-to will allow you to do so, without checking out the branch necessarily.
 
