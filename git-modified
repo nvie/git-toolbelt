@@ -112,7 +112,8 @@ if [ -z "$commit" ]; then
         modified_locally | fail_if_empty
     fi
 else
-    git log -1 --name-status --pretty=format:"" "$commit" | cut -f2- | make_relative | while read f; do
+    TAB="	" # literal tab char
+    git log -1 --name-status --pretty=format:"" "$commit" | cut -f2- | rev | cut -d"$TAB" -f1 | rev | make_relative | while read f; do
         if [ -f "$f" ]; then
             echo "$f"
         fi
