@@ -81,7 +81,7 @@ make_relative () {
 }
 
 modified_in_index () {
-    status | colrm 1 3 | fix_rename_notation | make_relative
+    status | cut -c 4- | fix_rename_notation | make_relative
 }
 
 modified_unmerged () {
