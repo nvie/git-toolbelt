@@ -22,7 +22,7 @@ done
 shift $(($OPTIND - 1))
 
 locally_modified_files () {
-    git status --porcelain --untracked-files=no | colrm 1 1 | grep -Ee '^[MD]' | colrm 1 2
+    git status --porcelain --untracked-files=no | cut -c 2- | grep -Ee '^[MD]' | cut -c 3-
 }
 
 if [ $all -eq 1 ]; then
