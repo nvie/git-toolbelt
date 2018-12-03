@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+# Make sure we don't accidentally commit staged files
+git is-clean -i
+
+git commit \
+    --allow-empty \
+    --no-verify \
+    -m '------------------------------------------------------------------------'

@@ -32,6 +32,7 @@ Everyday helpful commands:
 * [git-update-all](#git-update-all)
 * [git-workon](#git-workon)
 * ⭐️ [git-modified](#git-modified)
+* ⭐️ [git-separator](#git-separator)
 
 Statistics:
 
@@ -115,6 +116,14 @@ If you want to locally modified files that are already staged, too, use:
 ```console
 $ vim (git modified -i)
 ```
+
+
+### git separator
+
+Adds a commit with a message of only ---'s, so that it visually separates
+commits in the history.  This is incredibly useful when doing more complex
+rebase operations.  (They should be used as a temporary measure, and ideally
+taken out of the history again when done rebasing.)
 
 
 ### git push-current
