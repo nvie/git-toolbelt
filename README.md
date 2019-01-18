@@ -4,6 +4,7 @@
 
 # Installation instructions
 
+    $ brew install moreutils
     $ brew install nvie/tap/git-toolbelt
 
 # git-tools
