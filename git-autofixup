@@ -1,0 +1,24 @@
+#!/bin/sh
+set -e
+
+make_relative () {
+    root="$(git root)"
+    while read f; do
+        echo "$(realpath --relative-to=. "$root/$f")"
+    done
+}
+
+FILES="$(git diff --no-prefix --cached -U0 | awk '/^--- / { print $2 }' | grep -vF /dev/null | make_relative)"
+if [ -z "$FILES" ]; then
+  echo "No staged files found that have previously been committed." >&2
+  exit 2
+fi
+
+SHA="$(git last-commit-to-file $FILES)"
+
+if [ -n "$SHA" ]; then
+  git commit --fixup "$SHA" --no-verify
+else
+  echo "Could not determine which commit last touched the staged files." >&2
+  exit 3
+fi
