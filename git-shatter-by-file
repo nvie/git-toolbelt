@@ -14,4 +14,13 @@ git diff --name-only --relative | while read f; do
   git commit --amend --no-verify -m "$LAST_COMMIT_MSG @ $f"
 done
 
-echo "Success! Original commit was: $ORIG_SHA"
+# Sanity check
+if ! git diff --exit-code "$ORIG_SHA" "$(git sha HEAD)"; then
+  echo "Warning! There were differences found between the current state and the" >&2
+  echo "original commit.  You may want to revert back to the original commit:" >&2
+  echo "" >&2
+  echo "    git reset --hard $ORIG_SHA" >&2
+  echo "" >&2
+else
+  echo "Success! Original commit was: $ORIG_SHA"
+fi
