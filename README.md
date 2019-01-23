@@ -64,6 +64,7 @@ Advanced usage:
 * [git-commit-to](#git-commit-to)
 * [git-cherry-pick-to](#git-cherry-pick-to)
 * ⭐️ [git-delouse](#git-delouse)
+* ⭐️ [git-shatter-by-file](#git-shatter-by-file)
 
 
 
@@ -254,6 +255,19 @@ changes back into the working tree.
 
 Since the commit remains in history, you can now rebuild the commit by "git
 amend"'ing or "git fixup"'ing, instead of making new commits.
+
+
+### git shatter-by-file
+
+Splits the last commit into N+1 commits, where N is the number of files in the
+last commit.  The first commit is an empty commit with the original commit
+message and author details, and the following commits add (or delete) one file
+each, keeping the subject line of the original commit message.
+
+After running `git shatter-by-file`, you'll typically want to run `git rebase
+--interactive` to start fixing up changes to files, etc.  For that purpose, the
+original commit message is kept in there (in the empty first commit), so make
+sure to use it.
 
 
 ### git commit-to
