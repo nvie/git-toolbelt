@@ -1,6 +1,13 @@
 #!/bin/sh
 set -e
 
+locally_changes_files () {
+  # New files
+  git status --porcelain | grep -Ee '^\?' | cut -c4-
+  # Changes/deleted files
+  git diff --name-only --relative
+}
+
 # Ensure we have a clean working tree
 git is-clean -v
 
@@ -9,8 +16,10 @@ echo "Original commit is: $ORIG_SHA"
 
 LAST_COMMIT_MSG="$(git log --pretty='%s' -1)"
 git delouse
-git diff --name-only --relative | while read f; do
-  git commit --no-verify -C "$ORIG_SHA" -- "$f"
+
+locally_changes_files | while read f; do
+  git add "$f"
+  git commit --no-verify -C "$ORIG_SHA"
   git commit --amend --no-verify -m "$LAST_COMMIT_MSG @ $f"
 done
 
