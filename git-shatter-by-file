@@ -8,28 +8,32 @@ locally_changes_files () {
   git diff --name-only --relative
 }
 
-# Ensure we have a clean working tree
-git is-clean -v
+main () {
+  # Ensure we have a clean working tree
+  git is-clean -v
 
-ORIG_SHA="$(git sha HEAD)"
-echo "Original commit is: $ORIG_SHA"
+  ORIG_SHA="$(git sha HEAD)"
+  echo "Original commit is: $ORIG_SHA"
 
-LAST_COMMIT_MSG="$(git log --pretty='%s' -1)"
-git delouse
+  LAST_COMMIT_MSG="$(git log --pretty='%s' -1)"
+  git delouse
 
-locally_changes_files | while read f; do
-  git add "$f"
-  git commit --no-verify -C "$ORIG_SHA"
-  git commit --amend --no-verify -m "$LAST_COMMIT_MSG @ $f"
-done
+  locally_changes_files | while read f; do
+    git add "$f"
+    git commit --no-verify -C "$ORIG_SHA"
+    git commit --amend --no-verify -m "$LAST_COMMIT_MSG @ $f"
+  done
 
-# Sanity check
-if ! git diff --exit-code "$ORIG_SHA" "$(git sha HEAD)"; then
-  echo "Warning! There were differences found between the current state and the" >&2
-  echo "original commit.  You may want to revert back to the original commit:" >&2
-  echo "" >&2
-  echo "    git reset --hard $ORIG_SHA" >&2
-  echo "" >&2
-else
-  echo "Success! Original commit was: $ORIG_SHA"
-fi
+  # Sanity check
+  if ! git diff --exit-code "$ORIG_SHA" "$(git sha HEAD)"; then
+    echo "Warning! There were differences found between the current state and the" >&2
+    echo "original commit.  You may want to revert back to the original commit:" >&2
+    echo "" >&2
+    echo "    git reset --hard $ORIG_SHA" >&2
+    echo "" >&2
+  else
+    echo "Success! Original commit was: $ORIG_SHA"
+  fi
+}
+
+( cd "$(git root)" && main "$@" )
