@@ -9,9 +9,9 @@ usage () {
     echo >&2
     echo "Interactively lets you pick a commit from a list to fixup." >&2
     echo "" >&2
-    echo "Interactively shows a list of commits (between <base> to HEAD).  Base" >&2
-    echo "defaults to \"master\" if you're on a different branch, and defaults" >&2
-    echo "to \"origin/master\" when you're on master currently." >&2
+    echo "The list of commits shown display commits between <base> to HEAD)." >&2
+    echo "<base> defaults to \"master\" if you're on a different branch, and" >&2
+    echo "defaults to \"origin/master\" when you're on master currently." >&2
     echo "" >&2
 }
 
