@@ -242,8 +242,9 @@ when you don't want to re-edit the commit message.
 
 ### git fixup-with
 
-Interactively lets you pick a commit to fixup with.  Uses `fzf` to
-interactively pick your commit (use `brew install fzf` to install separately).
+Interactively lets you pick a commit to fixup with.  (Uses `fzf` for the
+interactive picking.  Use `brew install fzf` to install this tool separately.)
+Use `-r` to trigger an interactive rebase right afterwards.
 
 
 ### git workon
