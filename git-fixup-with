@@ -1,10 +1,52 @@
 #!/bin/sh
 set -e
 
+usage () {
+    echo "usage: git fixup-with [-r] [<base>]" >&2
+    echo >&2
+    echo "Options:" >&2
+    echo "-r    When done, trigger an interactive rebase right after." >&2
+    echo >&2
+    echo "Interactively lets you pick a commit from a list to fixup." >&2
+    echo "" >&2
+    echo "Interactively shows a list of commits (between <base> to HEAD).  Base" >&2
+    echo "defaults to \"master\" if you're on a different branch, and defaults" >&2
+    echo "to \"origin/master\" when you're on master currently." >&2
+    echo "" >&2
+}
+
+rebase=0
+while getopts rh flag; do
+    case "$flag" in
+        r) rebase=1;;
+        h) usage; exit 2;;
+    esac
+done
+shift $(($OPTIND - 1))
+
 # Make sure the index is dirty, otherwise there isn\'t anything to fixup
 git is-dirty -i
 
-git log master.. --pretty='%h %s' | \
-    fzf | \
-    cut -d' ' -f1 | \
-    xargs git commit --fixup
+if [ $# -eq 1 ]; then
+    base="$1"
+elif [ $# -eq 0 ]; then
+    if [ "$(git current-branch)" = "master" ]; then
+        base="origin/master"
+    else
+        base="master"
+    fi
+else
+    usage
+    exit 2
+fi
+
+sha="$(git log "${base}.." --pretty='%h %s' | fzf | cut -d' ' -f1)"
+if [ -z "$sha" ]; then
+    echo 'No commit picked' >&2
+    exit 3
+fi
+
+git commit --fixup "$sha"
+if [ $rebase -eq 1 ]; then
+    git rebase --interactive --autosquash --keep-empty "$sha"~
+fi
