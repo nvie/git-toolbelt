@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+# Make sure the index is dirty, otherwise there isn\'t anything to fixup
+git is-dirty -i
+
+git log master.. --pretty='%h %s' | \
+    fzf | \
+    cut -d' ' -f1 | \
+    xargs git commit --fixup
