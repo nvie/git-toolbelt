@@ -17,6 +17,7 @@ Everyday helpful commands:
 * ⭐️ [git-cleanup](#git-cleanup)
 * [git-current-branch](#git-current-branch)
 * ⭐️ [git-fixup](#git-fixup)
+* ⭐️ [git-fixup-with](#git-fixup-with)
 * ⭐️ [git-active-branches](#git-active-branches)
 * [git-local-branches](#git-local-branches)
 * [git-local-commits](#git-local-commits)
@@ -237,6 +238,12 @@ when you don't want to re-edit the commit message.
     $ vim somefile.txt  # fix typo
     $ git add somefile.txt
     $ git fixup  # merge this little change back into the last commit
+
+
+### git fixup-with
+
+Interactively lets you pick a commit to fixup with.  Uses `fzf` to
+interactively pick your commit (use `brew install fzf` to install separately).
 
 
 ### git workon
