@@ -46,7 +46,7 @@ if [ -z "$sha" ]; then
     exit 3
 fi
 
-git commit --fixup "$sha"
+git commit --fixup "$sha" --no-verify
 if [ $rebase -eq 1 ]; then
     git rebase --interactive --autosquash --keep-empty "$sha"~
 fi
