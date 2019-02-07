@@ -249,10 +249,9 @@ Use `-r` to trigger an interactive rebase right afterwards.
 
 ### git workon
 
-Convenience command for quickly switching to a branch <name>. If such local
-branch does not exist, but there is a remote branch named origin/<name>, then
-a local branch is created and the remote is tracked. If the local branch
-already exists, it's git pull --rebase'ed to update to the latest remote state.
+Convenience command for quickly switching to a branch `<name>`. If such local
+branch does not exist, but there is a remote branch named `origin/<name>`, then
+a local branch is created and the remote is tracked.
 
 
 ### git delouse
