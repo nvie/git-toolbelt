@@ -48,5 +48,5 @@ fi
 
 git commit --fixup "$sha" --no-verify
 if [ $rebase -eq 1 ]; then
-    git rebase --interactive --autosquash --keep-empty "$sha"~
+    git rebase --interactive --autosquash --autostash --keep-empty "$sha"~
 fi
