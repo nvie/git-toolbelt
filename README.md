@@ -34,6 +34,7 @@ Everyday helpful commands:
 * [git-update-all](#git-update-all)
 * [git-workon](#git-workon)
 * ⭐️ [git-modified](#git-modified)
+* ⭐️ [git-modified-since](#git-modified-since)
 * ⭐️ [git-separator](#git-separator)
 
 Statistics:
@@ -118,6 +119,20 @@ If you want to locally modified files that are already staged, too, use:
 
 ```console
 $ vim (git modified -i)
+```
+
+
+### git modified-since
+
+Like git-modified, but for printing a list of files that have been modified
+since master (or whatever commit specified).  In contrast to git status, it
+does not include any detailed file status, and never includes non-existing
+files.
+
+Opens all files modified on your branch (since you branched off `master`).
+
+```console
+$ vim (git modified-since)
 ```
 
 

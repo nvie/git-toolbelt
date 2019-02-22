@@ -1,0 +1,54 @@
+#!/bin/sh
+set -e
+
+usage () {
+    echo "usage: git modified-since [-iuqh] [<commit>]" >&2
+    echo >&2
+    echo "Prints list of files that have been modified since the given branch." >&2
+    echo "Defaults to master." >&2
+    echo "" >&2
+    echo "This script is ideal for passing all locally modified files into your editor, like:" >&2
+    echo '    $ vim `git modified-since`' >&2
+    echo >&2
+    echo "Options:" >&2
+    echo "-q    Be quiet, only return with 0 exit code when files are modified" >&2
+    echo "-h    Show this help" >&2
+}
+
+quiet=0
+while getopts qh flag; do
+    case "$flag" in
+        q) quiet=1;;
+        h) usage; exit 2;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+commit="master"
+if [ $# -ge 1 ]; then
+    commit="$1"
+fi
+
+make_relative () {
+    root="$(git root)"
+    while read f; do
+        echo "$(realpath --relative-to=. "$root/$f")"
+    done
+}
+
+get_changed_files () {
+    git diff --stat --name-only "$commit"... -- | make_relative
+}
+
+fail_if_empty () {
+    empty=1
+    while read line; do
+        if [ $quiet -eq 0 ]; then
+            echo "$line"
+        fi
+        empty=0
+    done
+    test $empty -eq 0
+}
+
+get_changed_files | fail_if_empty
