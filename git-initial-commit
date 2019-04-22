@@ -1,4 +1,9 @@
 #!/bin/sh
-set -e
 
-git rev-list --max-parents=0 --first-parent master
+git rev-list --max-parents=0 --first-parent master 2> /dev/null
+RET=$?
+if [ ${RET} -ne 0 ]
+then
+    echo 'No commits yet'
+    exit ${RET}
+fi
