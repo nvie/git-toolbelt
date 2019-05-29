@@ -23,6 +23,7 @@ Everyday helpful commands:
 * [git-local-branches](#git-local-branches)
 * [git-local-commits](#git-local-commits)
 * [git-merged / git-unmerged / git-merge-status](#git-merged--git-unmerged--git-merge-status)
+* [git-branches-containing / git-brc](#git-branches-containing--git-brc)
 * [git-recent-branches](#git-recent-branches)
 * [git-remote-branches](#git-remote-branches)
 * [git-repo](#git-repo)
@@ -411,6 +412,17 @@ merged into the target branch (defaults to master).
 
 git-merge-status is a useful command that presents both lists in a single
 overview (not for machine processing).
+
+
+### git-branches-containing / git-brc
+
+This command, "git branches-containing [<object>]" and its shortcut form
+"git brc [<object>]" returns a list of branches which contain the specified
+'<object>' (defaults to 'HEAD').
+
+git-branches-containing is useful to see if a branch has been merged, and,
+if so, which releases contain the feature/fix (if you use release
+branches).
 
 
 ### git-committer-info
