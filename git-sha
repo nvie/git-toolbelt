@@ -2,12 +2,14 @@
 set -e
 
 usage () {
-    echo "usage: git sha [-sq] <object>" >&2
+    echo "usage: git sha [-sq] [<object>]" >&2
     echo >&2
     echo "Options:" >&2
     echo "-s    Output short SHAs" >&2
     echo "-q    Be quiet (only return exit code 0 when object exists)" >&2
     echo "-h    Show this help" >&2
+    echo >&2
+    echo "<object> defaults to HEAD"
 }
 
 short=0
@@ -24,8 +26,7 @@ shift $(($OPTIND - 1))
 if [ $# -eq 1 ]; then
     object=$1
 else
-    usage
-    exit 2
+    object="HEAD"
 fi
 
 opts=""
