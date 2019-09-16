@@ -4,7 +4,7 @@ set -e
 usage () {
     echo "usage: git recent-branches [-h]" >&2
     echo >&2
-    echo "Shows a list of branches that have been modified since the specified date range. Defaults to '1.week.ago'." >&2
+    echo "Shows a list of local branches, ordered by their date (most recent one first)." >&2
     echo >&2
     echo "Options:" >&2
     echo "-h    Show this help" >&2
