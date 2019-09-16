@@ -16,4 +16,4 @@ while getopts h flag; do
     esac
 done
 
-git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format='%(refname:short)'
+git for-each-ref --sort=-committerdate refs/heads/ --format='%(refname:short)'
