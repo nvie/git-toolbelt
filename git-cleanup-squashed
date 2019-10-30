@@ -8,16 +8,13 @@ usage () {
     echo >&2
     echo "Options:" >&2
     echo "-n    Dry-run" >&2
-    echo "-l    Local branches only, don't touch the remotes" >&2
     echo "-h    Show this help" >&2
 }
 
 dryrun=0
-remotes=1
 while getopts nlh flag; do
       case "$flag" in
           n) dryrun=1;;
-          l) remotes=0;;
           h) usage; exit 2;;
       esac
 done
@@ -47,7 +44,7 @@ safegit() {
 
 git for-each-ref refs/heads/ "--format=%(refname:short)" | while read branch; do
     # Skip if master branch
-    if [ $branch == "master" ]; then
+    if [ $branch = "master" ]; then
         continue
     fi
 
@@ -64,7 +61,7 @@ git for-each-ref refs/heads/ "--format=%(refname:short)" | while read branch; do
     # Show a summary of what has yet to be applied
     cherry_commit="$(git cherry master $dangling_squashed_commit)"
 
-    if [ "$cherry_commit" == "- $dangling_squashed_commit" ]; then
+    if [ "$cherry_commit" = "- $dangling_squashed_commit" ]; then
         # If "- <commit-sha>", (ex. - "- 851cb44727") this means the
         # commit is in master and can be dropped if you rebased
         # against master
