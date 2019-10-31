@@ -47,28 +47,28 @@ safegit() {
 
 git for-each-ref refs/heads/ "--format=%(refname:short)" | while read branch; do
     # Skip if master branch
-    if [ $branch = "master" ]; then
+    if [ "$branch" = "master" ]; then
         continue
     fi
 
     # Find the merge base for this branch
-    merge_base=$(git merge-base master $branch)
+    merge_base=$(git merge-base master "$branch")
 
     # Get the tree object of the branch
-    branch_tree="$(git rev-parse $branch^{tree})"
+    branch_tree="$(git rev-parse "$branch^{tree}")"
 
     # Create a squashed commit object of the branch tree with parent
     # of $merge_base with a commit message of "_"
-    dangling_squashed_commit="$(git commit-tree $branch_tree -p $merge_base -m _)"
+    dangling_squashed_commit="$(git commit-tree "$branch_tree" -p "$merge_base" -m _)"
 
     # Show a summary of what has yet to be applied
-    cherry_commit="$(git cherry master $dangling_squashed_commit)"
+    cherry_commit="$(git cherry master "$dangling_squashed_commit")"
 
     if [ "$cherry_commit" = "- $dangling_squashed_commit" ]; then
         # If "- <commit-sha>", (ex. - "- 851cb44727") this means the
         # commit is in master and can be dropped if you rebased
         # against master
-        safegit branch -D $branch
+        safegit branch -D "$branch"
     elif [ $verbose -eq 1 ]; then
         # If "+ <commit-sha>", (ex. - "+ 851cb44727") this means the
         # commit still needs to be kept so that it will be applied to
