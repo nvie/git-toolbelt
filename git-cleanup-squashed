@@ -2,19 +2,22 @@
 set -e
 
 usage () {
-    echo "usage: git cleanup-squashed [-nl]" >&2
+    echo "usage: git cleanup-squashed [-nv]" >&2
     echo >&2
     echo "Deletes all branches that have already been squash-merged into master." >&2
     echo >&2
     echo "Options:" >&2
     echo "-n    Dry-run" >&2
+    echo "-v    Be verbose (show what's skipped)" >&2
     echo "-h    Show this help" >&2
 }
 
 dryrun=0
+verbose=0
 while getopts nlh flag; do
       case "$flag" in
           n) dryrun=1;;
+          v) verbose=1;;
           h) usage; exit 2;;
       esac
 done
@@ -66,10 +69,10 @@ git for-each-ref refs/heads/ "--format=%(refname:short)" | while read branch; do
         # commit is in master and can be dropped if you rebased
         # against master
         safegit branch -D $branch
-    else
+    elif [ $verbose -eq 1 ]; then
         # If "+ <commit-sha>", (ex. - "+ 851cb44727") this means the
         # commit still needs to be kept so that it will be applied to
         # master
-        echo "Branch $branch is not fully merged, Skipping..."
+        echo "Skipped $branch (no similar squash found)"
     fi
 done
