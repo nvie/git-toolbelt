@@ -2,7 +2,7 @@
 set -e
 
 usage () {
-    echo "usage: git cleanup-squashed [-nv]" >&2
+    echo "usage: git cleanup-squashed [-nvh]" >&2
     echo >&2
     echo "Deletes all branches that have already been squash-merged into master." >&2
     echo >&2
@@ -14,7 +14,7 @@ usage () {
 
 dryrun=0
 verbose=0
-while getopts nlh flag; do
+while getopts nvh flag; do
       case "$flag" in
           n) dryrun=1;;
           v) verbose=1;;
