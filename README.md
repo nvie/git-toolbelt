@@ -16,7 +16,7 @@ Helper tools to make everyday life with Git much easier.  Commands marked with
 Everyday helpful commands:
 
 * ⭐️ [git-cleanup](#git-cleanup)
-* ⭐️ [git-cleanup-squashes](#git-cleanup-squashes)
+* ⭐️ [git-cleanup-squashed](#git-cleanup-squashed)
 * [git-current-branch](#git-current-branch)
 * ⭐️ [git-fixup](#git-fixup)
 * ⭐️ [git-fixup-with](#git-fixup-with)
@@ -205,7 +205,7 @@ Tests if X is merged into Y:
     $ git contains X Y  # does X contain Y?
     $ git is-ancestor X Y  # is X an ancestor of Y?
 
-**CAVEAT:**  
+**CAVEAT:**
 Even though they might look like opposites, `X contains Y` does not mean `not
 (X is-ancestor Y)`, since (1) X and Y can point to the same commit, or the
 branches may have no common history and thus be unrelated completely.
@@ -247,7 +247,7 @@ Keeps other branches lying around.  Removes branches both locally and in the
 origin remote.  Will be most conservative with deletions.
 
 
-### git cleanup-squashes
+### git cleanup-squashed
 
 Deletes all branches that have already been merged into master by means of
 squash-merging them.  Squashing them generally is a destructive operation.
@@ -310,7 +310,7 @@ Ever been on a branch and really wanted to quickly commit a change to
 a different branch?  Given that this is possible without merge conflicts, git
 commit-to will allow you to do so, without checking out the branch necessarily.
 
-    $ git branch 
+    $ git branch
       master
     * mybranch
     $ git status
