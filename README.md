@@ -27,6 +27,7 @@ Everyday helpful commands:
 * [git-branches-containing](#git-branches-containing)
 * [git-recent-branches](#git-recent-branches)
 * [git-remote-branches](#git-remote-branches)
+* [git-remote-tracking-branch](#git-remote-tracking-branch)
 * [git-repo](#git-repo)
 * [git-root](#git-root)
 * [git-initial-commit](#git-initial-commit)
@@ -38,6 +39,7 @@ Everyday helpful commands:
 * ⭐️ [git-modified](#git-modified)
 * ⭐️ [git-modified-since](#git-modified-since)
 * ⭐️ [git-separator](#git-separator)
+* ⭐️ [git-spinoff](#git-spinoff)
 
 Statistics:
 
@@ -146,6 +148,19 @@ rebase operations.  (They should be used as a temporary measure, and ideally
 taken out of the history again when done rebasing.)
 
 
+### git spinoff
+
+Inspired by Magit's `spinoff` command.  Creates and checks out
+a new branch starting at and tracking the current branch.  That
+branch in turn is reset to the last commit it shares with its
+upstream.  If the current branch has no upstream or no unpushed
+commits, then the new branch is created anyway and the previously
+current branch is not touched.
+
+This is useful to create a feature branch after work has already
+began on the old branch (likely but not necessarily "master").
+
+
 ### git push-current
 
 Pushed the current branch out to `origin`, and makes sure to setup tracking of
@@ -189,6 +204,12 @@ Returns a list of local branches, ordered by recency:
     master
     bar
     qux
+
+
+### git remote-tracking-branch
+
+Print the name of the remote tracking branch of the current or
+given local branch name, if one exists.  Errors otherwise.
 
 
 ### git local-commits / git has-local-commits

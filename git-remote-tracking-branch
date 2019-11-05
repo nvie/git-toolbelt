@@ -1,0 +1,31 @@
+#!/bin/sh
+set -eu
+
+usage () {
+    echo "usage: git remote-tracking-branch [-h] [<branch>]" >&2
+    echo >&2
+    echo "Prints the fully qualified name of the remote tracking" >&2
+    echo "branch for the given local branch name." >&2
+    echo >&2
+    echo "Options:" >&2
+    echo "-h    Show this help" >&2
+}
+
+while getopts h flag; do
+    case "$flag" in
+        h) usage; exit 2;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+if [ $# -gt 1 ]; then
+  usage
+  exit 2
+fi
+
+branch="${1:-}"
+
+# This result is constructed so that it only prints the output of
+# git-rev-parse if the command succeeded, and is silent otherwise
+result="$(git rev-parse --symbolic-full-name --abbrev-ref "${branch}@{u}" 2>/dev/null)"
+echo "$result"

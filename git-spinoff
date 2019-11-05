@@ -1,0 +1,65 @@
+#!/bin/sh
+set -eu
+
+#
+# Inspired by Magit's super useful `magit-branch-spinoff` command.
+# See also https://magit.vc/manual/magit/Branch-Commands.html
+#
+
+usage () {
+    echo "usage: git spinoff [-h] <new-name> [<base>]" >&2
+    echo >&2
+    echo "Creates and checks out a new branch starting at and tracking the" >&2
+    echo "current branch.  That branch in turn is reset to the last commit it" >&2
+    echo "shares with its upstream.  If the current branch has no upstream or no" >&2
+    echo "unpushed commits, then the new branch is created anyway and the" >&2
+    echo "previously current branch is not touched." >&2
+    echo >&2
+    echo "This is useful to create a feature branch after work has already" >&2
+    echo "began on the old branch (likely but not necessarily \"master\")." >&2
+    echo >&2
+    echo "Options:" >&2
+    echo "-h    Show this help" >&2
+}
+
+while getopts h flag; do
+    case "$flag" in
+        h) usage; exit 2;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+if [ $# -lt 1 -o $# -gt 2 ]; then
+  usage
+  exit 2
+fi
+
+new_name="$1"
+rawbase="${2:-}"
+if [ -z "$rawbase" ]; then
+    base="$(git current-branch)"
+else
+    base="$rawbase"
+fi
+
+base_sha="$(git sha -s "$base")"
+
+#
+# NOTE:
+# The flag -B is the transactional equivalent of
+#     $ git branch -f <branch> [<start point>]
+#     $ git checkout <branch>
+#
+git checkout -q --track -B "$new_name" "$base"
+
+rtb="$(git remote-tracking-branch "$base")"
+if [ -n "$rtb" ]; then
+    merge_base="$(git merge-base "$base" "$rtb")"
+    git branch -vf "$base" "$merge_base"
+fi
+
+if [ "$(git sha -s "$base")" != "$base_sha" ]; then
+    echo "$base reset to $(git sha -s "$base") (was $base_sha)"
+else
+    echo "$base not touched"
+fi
