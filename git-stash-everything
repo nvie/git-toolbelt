@@ -1,4 +1,4 @@
 #!/bin/sh
-set -e
+set -eu
 
 git stash push --no-keep-index --include-untracked "$@"

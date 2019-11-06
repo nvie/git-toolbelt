@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -eu
 
 usage () {
     echo "usage: git commit-to <branch> ..." >&2

@@ -1,6 +1,5 @@
 #!/bin/sh
-#!/bin/sh
-set -e
+set -eu
     
 usage () {
     echo "usage: git merge-status [-h] [<branch>]" >&2
