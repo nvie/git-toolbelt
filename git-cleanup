@@ -10,16 +10,22 @@ usage () {
     echo >&2
     echo "Options:" >&2
     echo "-n    Dry-run" >&2
-    echo "-l    Local branches only, don't touch the remotes"
+    echo "-s    Squashed" >&2
+    echo "-l    Local branches only, don't touch the remotes" >&2
+    echo "-v    Be verbose (show what's skipped)" >&2
     echo "-h    Show this help" >&2
 }
 
 dryrun=0
 remotes=1
-while getopts nlh flag; do
+squashed=0
+verbose=0
+while getopts nlsvh flag; do
     case "$flag" in
         n) dryrun=1;;
         l) remotes=0;;
+        s) squashed=1;;
+        v) verbose=1;;
         h) usage; exit 2;;
     esac
 done
@@ -81,6 +87,42 @@ find_bases () {
 
 bases=$(find_bases)
 
+#
+# The Clean Squashed Algorithm[tm]
+# - Create a temporary dangling squashed commit with git commit-tree
+# - Then use git cherry to check if the squashed commit has already been applied to master
+# - If it has, then delete the branch
+#
+
+clean_squashed () {
+    branch="$1"
+
+    # Find the merge base for this branch
+    merge_base=$(git merge-base master "$branch")
+
+    # Get the tree object of the branch
+    branch_tree="$(git rev-parse "$branch^{tree}")"
+
+    # Create a squashed commit object of the branch tree with parent
+    # of $base with a commit message of "_"
+    dangling_squashed_commit="$(git commit-tree "$branch_tree" -p "$merge_base" -m _)"
+
+    # Show a summary of what has yet to be applied
+    cherry_commit="$(git cherry master "$dangling_squashed_commit")"
+
+    if [ "$cherry_commit" = "- $dangling_squashed_commit" ]; then
+        # If "- <commit-sha>", (ex. - "- 851cb44727") this means the
+        # commit is in master and can be dropped if you rebased
+        # against master
+        safegit branch -D "$branch"
+    elif [ $verbose -eq 1 ]; then
+        # If "+ <commit-sha>", (ex. - "+ 851cb44727") this means the
+        # commit still needs to be kept so that it will be applied to
+        # master
+        echo "Skipped $branch (no similar squash found)"
+    fi
+}
+
 for branch in $(git local-branches          \
                 | grep -vxF 'master'); do
     for base in $bases; do
@@ -91,6 +133,14 @@ for branch in $(git local-branches          \
                     echo "Errors deleting local branch $branch" >&2
                 fi
                 break
+            fi
+        else
+            # This is the case where the branches are in fact legit
+            # local WIP branches or they are squashed merges, and we
+            # need to check if they have been squashed-merged into
+            # master. NOTE - this assumes master is up-to-date locally
+            if [ "$squashed" -eq 1 ]; then
+                clean_squashed "$branch"
             fi
         fi
     done
