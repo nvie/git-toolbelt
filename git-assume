@@ -1,37 +1,5 @@
 #!/bin/sh
-set -e
+set -eu
 
-usage () {
-    echo "usage: git assume [-ah] <file> [<file> ...]" >&2
-    echo >&2
-    echo "Assume files to be unchanged, so they won't show up in status " >&2
-    echo "reports, and won't be included when staging files." >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-a    Assume all locally modified files" >&2
-    echo "-h    Show this help" >&2
-}
-
-all=0
-while getopts ah flag; do
-    case "$flag" in
-        a) all=1;;
-        h) usage; exit 2;;
-    esac
-done
-shift $(($OPTIND - 1))
-
-locally_modified_files () {
-    git status --porcelain --untracked-files=no | cut -c 2- | grep -Ee '^[MD]' | cut -c 3-
-}
-
-if [ $all -eq 1 ]; then
-    git update-index --assume-unchanged $(locally_modified_files)
-else
-    if [ $# -gt 0 ]; then
-        git update-index --assume-unchanged "$@"
-    else
-        usage
-        exit 2
-    fi
-fi
+echo "Deprecated. Please use git-skip now instead." >&2
+exit 4

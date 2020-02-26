@@ -1,32 +1,5 @@
 #!/bin/sh
-set -e
+set -eu
 
-usage () {
-    echo "usage: git unassume [-ah] <file> [<file> ...]" >&2
-    echo >&2
-    echo "Revert the assumption the file isn't modified for the given files." >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-a    Unassume all files" >&2
-    echo "-h    Show this help" >&2
-}
-
-all=0
-while getopts ah flag; do
-    case "$flag" in
-        a) all=1;;
-        h) usage; exit 2;;
-    esac
-done
-shift $(($OPTIND - 1))
-
-if [ $all -eq 1 ]; then
-    git update-index --no-assume-unchanged $(git show-assumed)
-else
-    if [ $# -gt 0 ]; then
-        git update-index --no-assume-unchanged "$@"
-    else
-        usage
-        exit 2
-    fi
-fi
+echo "Deprecated. Please use git-unskip now instead." >&2
+exit 4

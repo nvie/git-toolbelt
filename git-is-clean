@@ -7,7 +7,7 @@ usage () {
     echo "Options:" >&2
     echo "-w    Check if worktree is {clean,dirty}" >&2
     echo "-i    Check if index is {clean,dirty}" >&2
-    echo "-a    Check if any files are marked (un)assumed unchanged" >&2
+    echo "-a    Check if any files are marked (un)skipped" >&2
     echo "-v    Be verbose, print errors to stderr" >&2
     echo "-h    Show this help" >&2
 }
@@ -33,19 +33,19 @@ is_worktree_clean () {
     ! has_unstaged_changes && ! has_untracked_files
 }
 
-is_assumed_unchanged () {
-    git show-assumed -q
+is_skipped () {
+    git show-skipped -q
 }
 
 check_index=0
 check_worktree=0
-check_assume=0
+check_skipped=0
 verbose=0
 while getopts iwavh flag; do
     case "$flag" in
         i) check_index=1;;
         w) check_worktree=1;;
-        a) check_assume=1;;
+        a) check_skipped=1;;
         v) verbose=1;;
         h) usage; exit 2;;
     esac
@@ -53,10 +53,10 @@ done
 shift $(($OPTIND - 1))
 
 # If nothing is explicitly specified, check everything
-if [ $check_index -eq 0 -a $check_worktree -eq 0 -a $check_assume -eq 0 ]; then
+if [ $check_index -eq 0 -a $check_worktree -eq 0 -a $check_skipped -eq 0 ]; then
     check_index=1
     check_worktree=1
-    check_assume=1
+    check_skipped=1
 fi
 
 if [ $check_index -eq 1 ]; then
@@ -73,9 +73,9 @@ if [ $check_worktree -eq 1 ]; then
     fi
 fi
 
-if [ $check_assume -eq 1 ]; then
-    if ! is_assumed_unchanged; then
-        [ $verbose -eq 1 ] && echo "there are assumed-unchanged files" >&2
+if [ $check_skipped -eq 1 ]; then
+    if ! is_skipped; then
+        [ $verbose -eq 1 ] && echo "there are skipped files" >&2
         exit 4
     fi
 fi

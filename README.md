@@ -67,7 +67,7 @@ codes and have no output.
 
 Advanced usage:
 
-* [git-assume / git-unassume / git-show-assumed](#git-assume--git-unassume--git-show-assumed)
+* [git-skip / git-unskip / git-show-skipped](#git-skip--git-unskip--git-show-skipped)
 * [git-commit-to](#git-commit-to)
 * [git-cherry-pick-to](#git-cherry-pick-to)
 * ⭐️ [git-delouse](#git-delouse)
@@ -499,9 +499,9 @@ lead to merge conflicts later on.
     other-branch... CONFLICTS AHEAD
 
 
-### git-assume / git-unassume / git-show-assumed
+### git-skip / git-unskip / git-show-skipped
 
-Git supports marking files "assumed unchanged", meaning any change in the file
+Git supports marking files "skip worktree", meaning any change in the file
 locally will not be shown in status reports, or be added when you stage all
 files.  This feature can be useful to toggle some switches locally, or
 experiment with different settings, without running the risk of accidentally
@@ -518,21 +518,21 @@ Basic usage:
      M foo.txt
      M bar.txt
      M qux.txt
-    $ git assume foo.txt
+    $ git skip foo.txt
     $ git status
      M bar.txt
      M qux.txt
-    $ git show-assumed
+    $ git show-skipped
     foo.txt
     $ git commit -am 'Commit everything.'
     $ git status
     nothing to commit, working directory clean
     $ git is-clean && echo "clean" || echo "not clean"
     not clean
-    $ git unassume -a
+    $ git unskip -a
     $ git status
      M foo.txt
 
-As you can see, `git-is-clean` is aware of any lurking "assumed unchanged"
-files, and won't report a clean working tree, as these assumed unchanged files
-often block the ability to check out different branches.
+As you can see, `git-is-clean` is aware of any lurking "skipped" files, and
+won't report a clean working tree, as these assumed unchanged files often block
+the ability to check out different branches.

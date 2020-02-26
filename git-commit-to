@@ -14,7 +14,7 @@ branch="$1"
 shift 1
 
 if git is-dirty -a; then
-    echo 'Cannot use this command safely when you have local files marked "assumed unchanged".' >&2
+    echo 'Cannot use this command safely when you have local files marked "skipped".' >&2
     exit 2
 fi
 

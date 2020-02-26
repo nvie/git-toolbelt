@@ -1,32 +1,5 @@
 #!/bin/sh
-set -e
+set -eu
 
-usage () {
-    echo "usage: git show-assumed [-qh] <file> [<file> ...]" >&2
-    echo >&2
-    echo "Lists all files that are marked to be assumed unchanged." >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-q    Be quiet (just return a non-zero exit code when files are assumed)" >&2
-    echo "-h    Show this help" >&2
-}
-
-quiet=0
-while getopts qh flag; do
-    case "$flag" in
-        q) quiet=1;;
-        h) usage; exit 2;;
-    esac
-done
-shift $(($OPTIND - 1))
-
-list_assumed_unchanged () {
-    git ls-files -v | grep "^h" | cut -c3-
-}
-
-if [ $quiet -eq 0 ]; then
-    list_assumed_unchanged
-else 
-    num_changed=$(list_assumed_unchanged | wc -l)
-    test $num_changed -eq 0
-fi
+echo "Deprecated. Please use git-show-skipped now instead." >&2
+exit 4
