@@ -1,0 +1,40 @@
+#!/bin/sh
+set -e
+
+usage () {
+    echo "usage: git skip [-ah] <file> [<file> ...]" >&2
+    echo >&2
+    echo "Skip (ignore) local changes to git-aware files to prevent them from" >&2
+    echo "showing up in status reports or diffs, as if they haven't been changed" >&2
+    echo "locally at all." >&2
+    echo >&2
+    echo "To reset, use git-unskip." >&2
+    echo >&2
+    echo "Options:" >&2
+    echo "-a    Skip all locally modified files" >&2
+    echo "-h    Show this help" >&2
+}
+
+all=0
+while getopts ah flag; do
+    case "$flag" in
+        a) all=1;;
+        h) usage; exit 2;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+locally_modified_files () {
+    git status --porcelain --untracked-files=no | cut -c 2- | grep -Ee '^[MD]' | cut -c 3-
+}
+
+if [ $all -eq 1 ]; then
+    git update-index --skip-worktree $(locally_modified_files)
+else
+    if [ $# -gt 0 ]; then
+        git update-index --skip-worktree "$@"
+    else
+        usage
+        exit 2
+    fi
+fi

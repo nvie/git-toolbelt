@@ -1,0 +1,33 @@
+#!/bin/sh
+set -e
+
+usage () {
+    echo "usage: git unskip [-ah] <file> [<file> ...]" >&2
+    echo >&2
+    echo "Stop skipping local changes to files known to git." >&2
+    echo "This resets the result of git-skip to normal again." >&2
+    echo >&2
+    echo "Options:" >&2
+    echo "-a    Unskip all files" >&2
+    echo "-h    Show this help" >&2
+}
+
+all=0
+while getopts ah flag; do
+    case "$flag" in
+        a) all=1;;
+        h) usage; exit 2;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+if [ $all -eq 1 ]; then
+    git update-index --no-skip-worktree $(git show-skipped)
+else
+    if [ $# -gt 0 ]; then
+        git update-index --no-skip-worktree "$@"
+    else
+        usage
+        exit 2
+    fi
+fi
