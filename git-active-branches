@@ -4,5 +4,6 @@ set -eu
 # TODO: Make the max age configurable
 
 ( git local-branches; git remote-branches ) | while read branch; do
-    git log -1 --since=3.weeks.ago -s $branch | ifne echo "$branch"
+    maybebranch=$(git log -1 --since=3.weeks.ago -s $branch)
+    [ -n "$maybebranch" ] && echo "$branch"
 done
