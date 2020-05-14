@@ -4,7 +4,7 @@
 
 # Installation instructions
 
-    $ brew install moreutils fzf
+    $ brew install fzf
     $ brew tap nvie/tap
     $ brew install nvie/tap/git-toolbelt
 
