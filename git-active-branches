@@ -1,9 +1,40 @@
 #!/bin/sh
 set -eu
 
-# TODO: Make the max age configurable
+since='3.weeks.ago'
+
+usage() {
+    echo "usage: git active-branches [--since|--after <date>]" >&2
+    echo >&2
+    echo "Unless specified, <date> defaults to \"$since\". For examples see:" >&2
+    echo "https://git-scm.com/book/en/v2/Git-Basics-Viewing-the-Commit-History" >&2
+    exit 2
+}
+
+if [ $# -gt 0 ]; then
+    case $1 in
+        # 'git log' accepts either '--since' or '--after' as synonyms
+        --since|--after)
+            [ $# -eq 2 ] || usage
+            since=$2
+            ;;
+        --since=*)
+            since=$(echo "$1" | sed 's/--since=\(.*\)/\1/')
+            ;;
+        --after=*)
+            since=$(echo "$1" | sed 's/--after=\(.*\)/\1/')
+            ;;
+        *)
+            usage
+            ;;
+    esac
+fi
 
 ( git local-branches; git remote-branches ) | while read branch; do
-    maybebranch=$(git log -1 --since=3.weeks.ago -s $branch)
+    maybebranch=$(
+        # set TRACE=1 in environment to show 'git log' commands as they're run
+        [ "${TRACE:-}" = 1 ] && set -x
+        git log -1 --since="$since" -s "$branch"
+    )
     [ -n "$maybebranch" ] && echo "$branch"
 done
