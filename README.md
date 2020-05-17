@@ -8,6 +8,9 @@
     $ brew tap nvie/tap
     $ brew install nvie/tap/git-toolbelt
 
+If not using Homebrew, you will need to have [GNU coreutils][coreutils]
+installed, for the `realpath` utility. Git for Windows users see #29.
+
 # git-tools
 
 Helper tools to make everyday life with Git much easier.  Commands marked with
@@ -536,3 +539,5 @@ Basic usage:
 As you can see, `git-is-clean` is aware of any lurking "skipped" files, and
 won't report a clean working tree, as these assumed unchanged files often block
 the ability to check out different branches.
+
+[coreutils]: https://www.gnu.org/software/coreutils/

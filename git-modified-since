@@ -30,9 +30,14 @@ if [ $# -ge 1 ]; then
 fi
 
 make_relative () {
+    realpath='realpath'
+    if ! type realpath >/dev/null 2>&1; then
+        # Mac/BSD ports system installs GNU coreutils with 'g' prefixes
+        realpath='grealpath'
+    fi
     root="$(git root)"
     while read f; do
-        echo "$(realpath --relative-to=. "$root/$f")"
+        echo "$($realpath --relative-to=. "$root/$f")"
     done
 }
 
