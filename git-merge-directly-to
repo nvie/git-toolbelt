@@ -1,0 +1,36 @@
+#!/bin/sh
+set -eu
+
+usage () {
+    echo "usage: git merge-directly-to [<branch>]" >&2
+    echo >&2
+    echo "Merges current branch into the specified." >&2
+}
+
+prefix=refs/heads/
+
+# Current branch, that we want to merge from
+src=$(git symbolic-ref --short HEAD)  # e.g. dev/TRT-1234
+src_full=${prefix}$src  # e.g. refs/heads/dev/TRT-1234
+src_sha=$(git rev-parse HEAD)  # e.g. f9cdd6d31d269995c2855546049b3ea1467212f0
+
+# Destination branch, that we want to merge into
+dst_in=$1  # e.g. refs/heads/team/tpe/visibility or team/tpe/visibility
+dst=${dst_in/#$prefix/}  # e.g. team/tpe/visibility
+dst_full=${prefix}$dst  # e.g. refs/heads/team/tpe/visibility
+
+# Merge into src
+git merge $dst_full
+
+# Swap parents
+msg="Merge branch '$src' into $dst"
+head_sha=$(git commit-tree -p HEAD^2 -p HEAD^1 -m "$msg" "HEAD^{tree}")
+
+# Set dst to the new commit with swapped parents
+git update-ref $dst_full $head_sha
+
+# Switch to dst
+git switch $dst
+
+# Return src to where it was at the beginning
+git update-ref $src_full $src_sha

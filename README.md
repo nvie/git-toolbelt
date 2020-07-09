@@ -24,6 +24,7 @@ Everyday helpful commands:
 * [git-local-branches](#git-local-branches--git-remote-branches--git-active-branches)
 * [git-local-commits](#git-local-commits)
 * [git-merged / git-unmerged / git-merge-status](#git-merged--git-unmerged--git-merge-status)
+* [git-merge-directly-to](#git-merge-directly-to)
 * [git-branches-containing](#git-branches-containing)
 * [git-recent-branches](#git-recent-branches)
 * [git-remote-branches](#git-local-branches--git-remote-branches--git-active-branches)
@@ -443,6 +444,22 @@ merged into the target branch (defaults to master).
 
 git-merge-status is a useful command that presents both lists in a single
 overview (not for machine processing).
+
+
+### git-merge-directly-to
+
+Works just like `merge` command, but instead of merging the specified branch into the current, it merges the current branch into the specified.
+
+When on branch `src`, the result of this:
+
+    git merge-directly-to dst
+
+Is the same as the result of this:
+
+    git checkout dst
+    git merge src
+
+But you don't actually checkout `dst` before the merge. Instead, `merge-directly-to` merges `dst` into `src` and then swaps parents of the merge commit. This is more efficient, and it won't touch the timestamps of the files you modified in `src`. This might be crucial for incremental builds.
 
 
 ### git-branches-containing
