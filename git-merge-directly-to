@@ -18,13 +18,22 @@ src_sha=$(git rev-parse HEAD)  # e.g. f9cdd6d31d269995c2855546049b3ea1467212f0
 dst_in=$1  # e.g. refs/heads/team/tpe/visibility or team/tpe/visibility
 dst=${dst_in/#$prefix/}  # e.g. team/tpe/visibility
 dst_full=${prefix}$dst  # e.g. refs/heads/team/tpe/visibility
+dst_sha=$(git rev-parse $dst_full)  # e.g. ab0bd12e9f95fe81bf997d68389726e931762d84
 
-# Merge into src
-git merge $dst_full
-
-# Swap parents
 msg="Merge branch '$src' into $dst"
-head_sha=$(git commit-tree -p HEAD^2 -p HEAD^1 -m "$msg" "HEAD^{tree}")
+
+# Check if dst is an ancestor of src
+if [ "$(git merge-base HEAD $dst)" != "$dst_sha" ]
+then
+  # dst is not an ancestor or src, doing regular merge into src
+  git merge $dst_full
+  # Swap parents
+  head_sha=$(git commit-tree -p HEAD^2 -p HEAD^1 -m "$msg" "HEAD^{tree}")
+else
+  # dst is an ancestor or src, a regular merge would say "Already up to date" and do nothing
+  # Constructing a merge commit manually
+  head_sha=$(git commit-tree -p $dst_sha -p HEAD -m "$msg" "HEAD^{tree}")
+fi
 
 # Set dst to the new commit with swapped parents
 git update-ref $dst_full $head_sha
