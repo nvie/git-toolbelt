@@ -4,7 +4,8 @@ set -eu
 usage () {
     echo "usage: git merge-status [-h] [<branch>]" >&2
     echo >&2
-    echo "Shows merge status of all local branches against branch (defaults to master)." >&2
+    echo "Shows merge status of all local branches against branch (defaults to" >&2
+    echo "the main branch)." >&2
     echo >&2
     echo "Options:" >&2
     echo "-h    Show this help" >&2
@@ -30,7 +31,11 @@ fail_if_empty () {
     test $empty -eq 0
 }
 
-base="${1-master}"
+if [ $# -gt 0 ]; then
+    base="$1"
+else
+    base="$(git main-branch)"
+fi
 
 echo "Merged into $base:"
 if ! git merged "$base" | bulletize | fail_if_empty; then

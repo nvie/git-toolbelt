@@ -5,7 +5,7 @@ usage () {
     echo "usage: git modified-since [-iuqh] [<commit>]" >&2
     echo >&2
     echo "Prints list of files that have been modified since the given branch." >&2
-    echo "Defaults to master." >&2
+    echo "Defaults to the repo's default branch." >&2
     echo "" >&2
     echo "This script is ideal for passing all locally modified files into your editor, like:" >&2
     echo '    $ vim `git modified-since`' >&2
@@ -24,7 +24,7 @@ while getopts qh flag; do
 done
 shift $(($OPTIND - 1))
 
-commit="master"
+commit="$(git main-branch)"
 if [ $# -ge 1 ]; then
     commit="$1"
 fi

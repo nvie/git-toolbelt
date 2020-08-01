@@ -10,8 +10,8 @@ usage () {
     echo "Interactively lets you pick a commit from a list to fixup." >&2
     echo "" >&2
     echo "The list of commits shown display commits between <base> to HEAD)." >&2
-    echo "<base> defaults to \"master\" if you're on a different branch, and" >&2
-    echo "defaults to \"origin/master\" when you're on master currently." >&2
+    echo "<base> defaults to main branch if you're on a different branch, and" >&2
+    echo "defaults to \"origin/main\" when you're on main branch currently." >&2
     echo "" >&2
 }
 
@@ -30,10 +30,11 @@ git is-dirty -i
 if [ $# -eq 1 ]; then
     base="$1"
 elif [ $# -eq 0 ]; then
-    if [ "$(git current-branch)" = "master" ]; then
-        base="origin/master"
+    main="$(git main-branch)"
+    if [ "$(git current-branch)" = "$main" ]; then
+        base="origin/$main"
     else
-        base="master"
+        base="$main"
     fi
 else
     usage

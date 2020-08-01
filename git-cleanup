@@ -4,7 +4,7 @@ set -e
 usage () {
     echo "usage: git cleanup [-nh]" >&2
     echo >&2
-    echo "Deletes all branches that have already been merged into master." >&2
+    echo "Deletes all branches that have already been merged into the main branch." >&2
     echo "Removes those branches both locally and in the origin remote.  Will be " >&2
     echo "most conservative with deletions." >&2
     echo >&2
@@ -35,6 +35,7 @@ shift $(($OPTIND - 1))
 # This will clean up any branch (both locally and remotely) that has been
 # merged into any of the known "trunks".  Trunks are any of:
 #
+#   - main (local) + origin/main
 #   - master (local) + origin/master
 #
 
@@ -80,9 +81,10 @@ find_branch_base () {
     fi
 }
 
+main="$(git main-branch)"
 
 find_bases () {
-    find_branch_base master
+    find_branch_base "$main"
 }
 
 bases=$(find_bases)
@@ -90,7 +92,8 @@ bases=$(find_bases)
 #
 # The Clean Squashed Algorithm[tm]
 # - Create a temporary dangling squashed commit with git commit-tree
-# - Then use git cherry to check if the squashed commit has already been applied to master
+# - Then use git cherry to check if the squashed commit has already been
+#   applied to the main branch
 # - If it has, then delete the branch
 #
 
@@ -98,7 +101,7 @@ clean_squashed () {
     branch="$1"
 
     # Find the merge base for this branch
-    merge_base=$(git merge-base master "$branch")
+    merge_base=$(git merge-base "$main" "$branch")
 
     # Get the tree object of the branch
     branch_tree="$(git rev-parse "$branch^{tree}")"
@@ -108,23 +111,23 @@ clean_squashed () {
     dangling_squashed_commit="$(git commit-tree "$branch_tree" -p "$merge_base" -m _)"
 
     # Show a summary of what has yet to be applied
-    cherry_commit="$(git cherry master "$dangling_squashed_commit")"
+    cherry_commit="$(git cherry "$main" "$dangling_squashed_commit")"
 
     if [ "$cherry_commit" = "- $dangling_squashed_commit" ]; then
         # If "- <commit-sha>", (ex. - "- 851cb44727") this means the
-        # commit is in master and can be dropped if you rebased
-        # against master
+        # commit is in main and can be dropped if you rebased
+        # against main
         safegit branch -D "$branch"
     elif [ $verbose -eq 1 ]; then
         # If "+ <commit-sha>", (ex. - "+ 851cb44727") this means the
         # commit still needs to be kept so that it will be applied to
-        # master
+        # main
         echo "Skipped $branch (no similar squash found)"
     fi
 }
 
-for branch in $(git local-branches          \
-                | grep -vxF 'master'); do
+for branch in $(git local-branches \
+                | grep -vxF "$main"); do
     for base in $bases; do
         if git contains "$base" "$branch"; then
             if ! git contains "$branch" "$base"; then
@@ -138,7 +141,7 @@ for branch in $(git local-branches          \
             # This is the case where the branches are in fact legit
             # local WIP branches or they are squashed merges, and we
             # need to check if they have been squashed-merged into
-            # master. NOTE - this assumes master is up-to-date locally
+            # main. NOTE - this assumes main is up-to-date locally
             if [ "$squashed" -eq 1 ]; then
                 clean_squashed "$branch"
             fi
@@ -156,7 +159,7 @@ for remote in origin; do
 
     if [ $remotes -eq 1 ]; then
         branches_to_remove=""
-        for branch in $(git remote-branches "$remote" | grep -vEe '/(master)$'); do
+        for branch in $(git remote-branches "$remote" | grep -vEe "/($main)\$"); do
             for base in $bases; do
                 if git contains "$base" "$branch"; then
                     if ! git contains "$branch" "$base"; then
