@@ -18,6 +18,7 @@ Everyday helpful commands:
 * ⭐️ [git-cleanup](#git-cleanup)
 * ⭐️ [git-cleanup-squashed](#git-cleanup-squashed)
 * [git-current-branch](#git-current-branch)
+* [git-main-branch](#git-main-branch)
 * ⭐️ [git-fixup](#git-fixup)
 * ⭐️ [git-fixup-with](#git-fixup-with)
 * ⭐️ [git-active-branches](#git-local-branches--git-remote-branches--git-active-branches)
@@ -85,6 +86,20 @@ master
 ```
 
 Alias to `git rev-parse --abbrev-ref HEAD`.
+
+
+### git main-branch
+
+Returns the name of the default main branch for this repository.  Historically
+`master`, but could also be `main` if you've changed the default branch name.
+Since there's no way of reliably telling what the default branch name is for
+a repo, this script will probe for the existence of local branches named either
+`main` or `master`.  The first one found is used.
+
+```console
+$ git main-branch
+master
+```
 
 
 ### git sha
