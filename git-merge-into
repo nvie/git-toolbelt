@@ -1,0 +1,62 @@
+#!/bin/sh
+set -eu
+
+usage () {
+    echo "usage: git merge-into -h <target_branch>" >&2
+    echo >&2
+    echo "Merges the current branch into the target branch." >&2
+}
+
+while getopts h flag; do
+    case "$flag" in
+        h) usage; exit 2;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+if [ $# -eq 1 ]; then
+    dst="$1"
+else
+    usage
+    exit 2
+fi
+
+# Current branch, that we want to merge from
+src="$(git current-branch)"  # e.g. dev/TRT-1234
+src_sha="$(git sha)"         # e.g. f9cdd6d31d269995c2855546049b3ea1467212f0
+
+# Destination branch, that we want to merge into
+dst="$1"                     # e.g. team/tpe/visibility
+if ! git local-branch-exists "$dst"; then
+  echo "No such local branch: $dst" >&2
+  exit 2
+fi
+
+msg="Merge branch '$src' into '$dst'"
+
+# Check if dst is an ancestor of src
+if git is-ancestor "$dst" "$src"; then
+  git update-ref "refs/heads/$dst" "$src_sha"
+else
+  if ! git merges-cleanly "$dst"; then
+    echo "Merging into '$dst' will cause merge conflicts, aborting."
+    echo "Please merge manually."
+    exit 3
+  fi
+
+  # dst is not an ancestor or src, doing regular merge into src
+  git merge --no-ff -m "$msg" "$dst"
+  merge_sha="$(git sha)"
+
+  # Restore src to where it was at the beginning
+  git update-ref "refs/heads/$src" "$src_sha"
+
+  # Swap parents
+  swapped_merge_sha="$(git commit-tree -p "${merge_sha}^2" -p "${merge_sha}^1" -m "$msg" "${merge_sha}^{tree}")"
+
+  # Set dst to the new commit with swapped parents
+  git update-ref "refs/heads/$dst" "$swapped_merge_sha"
+fi
+
+# Switch to dst
+git switch "$dst"
