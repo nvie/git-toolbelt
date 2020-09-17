@@ -16,7 +16,7 @@ usage() {
     echo "https://git-scm.com/book/en/v2/Git-Basics-Viewing-the-Commit-History" >&2
 }
 
-while [[ $# -gt 0 ]]; do
+while [ $# -gt 0 ]; do
     if ! getopts a:s:h flag; then usage; exit 2; fi
     case "$flag" in
         a|s) since=$OPTARG; shift ;;
