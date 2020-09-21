@@ -1,0 +1,42 @@
+#!/bin/bash
+
+VER=${1:-unknown}
+DIR=${2:-mans}
+TEXT=""
+
+write_man() {
+	for tool in "$@"; do
+		echo "+${tool}"
+		echo "% ${tool^^}(1) git-toolbelt ${VER}
+% Vincent Driessen
+% `date --iso-8601`
+
+# NAME
+${tool}
+
+# DESCRIPTION
+${TEXT}
+
+# GIT TOOLBELT
+Part of the **git-toolbelt**(1) suite." | pandoc -s -t man -f markdown -o "${DIR}/${tool}.1"
+	done
+}
+
+mkdir -p "${DIR}" && rm -rf "${DIR}/*.1"
+
+while IFS='' read -r line || [ -n "${line}" ]; do
+	case "${line}" in
+	"# git"*)
+		TEXT=""
+		cmds=( git-toolbelt )
+		;;
+	"### git"*)
+		write_man "${cmds[@]}"
+		TEXT=""
+		IFS=' / ' cmds=(${line#"### "})
+		;;
+	*)
+		TEXT+="${line}"$'\n'
+		;;
+	esac
+done < README.md
