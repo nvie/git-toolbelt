@@ -1,3 +1,9 @@
+# Next release
+
+- Report "No commits yet" for an empty repo (#46, thanks @Shea690901 and
+  @ernstki!)
+
+
 # v1.5.1
 
 - Fixes an issue where `git-local-branches` could report "HEAD detached at ..."
