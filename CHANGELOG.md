@@ -1,7 +1,7 @@
 # Next release
 
-- Report "No commits yet" for an empty repo (#46, thanks @Shea690901 and
-  @ernstki!)
+- `git-initial-commit` will now report the more user-friendly error "No commits
+  yet" for an empty repo (#46, thanks @Shea690901 and @ernstki!)
 
 
 # v1.5.1
