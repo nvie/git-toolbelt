@@ -3,6 +3,10 @@
 - `git-initial-commit` will now report the more user-friendly error "No commits
   yet" for an empty repo (#46, thanks @Shea690901 and @ernstki!)
 
+- `git active-branches` now supports a `-s <date>` option (for `--since`),
+  where you can specify the threshold for what is considered "active" (#36,
+  thanks @ernstki!)
+
 
 # v1.5.1
 
