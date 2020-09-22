@@ -201,8 +201,11 @@ Returns a list of local or remote branches, but contrary to Git's default
 commands for this, returns them machine-processable.  In the case of remote
 branches, can be asked to return only the branches in a specific remote.
 
-A branch is deemed "active" if its head points to a commit authored in the last
-3 weeks.
+For `git active-branches`, a branch is deemed "active" if its head points to
+a commit authored in the last 3 weeks, by default. An arbitrary date can be
+specified using either `git active-branches -s <date>` or `-a <date>`
+(mnemonic: "since" or "after"), using any date format
+[supported by `git log`][gitlog].
 
 
 ### git local-branch-exists / git remote-branch-exists / git tag-exists
@@ -551,3 +554,5 @@ Basic usage:
 As you can see, `git-is-clean` is aware of any lurking "skipped" files, and
 won't report a clean working tree, as these assumed unchanged files often block
 the ability to check out different branches.
+
+[gitlog]: https://git-scm.com/book/en/v2/Git-Basics-Viewing-the-Commit-History#_limiting_log_output
