@@ -12,6 +12,7 @@ usage () {
     echo "-n    Dry-run" >&2
     echo "-s    Squashed" >&2
     echo "-l    Local branches only, don't touch the remotes" >&2
+    echo "-m    Specify main branch" >&2
     echo "-v    Be verbose (show what's skipped)" >&2
     echo "-h    Show this help" >&2
 }
@@ -19,12 +20,16 @@ usage () {
 dryrun=0
 remotes=1
 squashed=0
+main=
 verbose=0
-while getopts nlsvh flag; do
+while getopts nlsm:vh flag; do
     case "$flag" in
         n) dryrun=1;;
         l) remotes=0;;
         s) squashed=1;;
+        m) main=$OPTARG
+        shift # Remove parameter from the argument list
+        ;;
         v) verbose=1;;
         h) usage; exit 2;;
     esac
@@ -81,7 +86,10 @@ find_branch_base () {
     fi
 }
 
-main="$(git main-branch)"
+if [ -z "$main" ]
+then
+    main="$(git main-branch)"
+fi
 
 find_bases () {
     find_branch_base "$main"
