@@ -16,7 +16,6 @@ Helper tools to make everyday life with Git much easier.  Commands marked with
 Everyday helpful commands:
 
 * ⭐️ [git-cleanup](#git-cleanup)
-* ⭐️ [git-cleanup-squashed](#git-cleanup-squashed)
 * [git-current-branch](#git-current-branch)
 * [git-main-branch](#git-main-branch)
 * ⭐️ [git-fixup](#git-fixup)
@@ -284,15 +283,6 @@ gone.
 Deletes all branches that have already been merged into master or develop.
 Keeps other branches lying around.  Removes branches both locally and in the
 origin remote.  Will be most conservative with deletions.
-
-
-### git cleanup-squashed
-
-Deletes all branches that have already been merged into master by means of
-squash-merging them.  Squashing them generally is a destructive operation.
-This script only deletes the branches if the net diff has been fully merged
-into master.  If even the slightest difference is detected, the branch won't be
-deleted.
 
 
 ### git fixup
