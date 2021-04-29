@@ -280,9 +280,9 @@ gone.
 
 ### git cleanup
 
-Deletes all branches that have already been merged into master or develop.
-Keeps other branches lying around.  Removes branches both locally and in the
-origin remote.  Will be most conservative with deletions.
+Deletes all branches that have already been merged into the main branch. Keeps
+other branches lying around.  Removes branches both locally and in the origin
+remote.  Will be most conservative with deletions.
 
 
 ### git fixup
