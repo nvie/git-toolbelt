@@ -1,4 +1,4 @@
-# Next release
+# v1.6.0
 
 - New command: `git-wip`. This will create quick save point
   commits for Work In Progress (WIP). This creates quick commits
