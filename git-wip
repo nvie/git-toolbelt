@@ -1,0 +1,20 @@
+#!/bin/sh
+set -e
+
+create_wip_commit () {
+    if git is-dirty -i; then
+        git commit -m WIP
+    fi
+}
+
+create_wip_commit
+
+if git is-dirty -w; then
+    git add -u
+    create_wip_commit
+fi
+
+if git is-dirty -w; then
+    git add -A
+    create_wip_commit
+fi

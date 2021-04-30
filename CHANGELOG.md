@@ -1,5 +1,9 @@
 # Next release
 
+- New command: `git-wip`. This will create quick save point
+  commits for Work In Progress (WIP). This creates quick commits
+  without writing a commit message.
+
 - `git-initial-commit` will now report the more user-friendly error "No commits
   yet" for an empty repo (#46, thanks @Shea690901 and @ernstki!)
 

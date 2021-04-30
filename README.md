@@ -40,6 +40,7 @@ Everyday helpful commands:
 * ⭐️ [git-modified-since](#git-modified-since)
 * ⭐️ [git-separator](#git-separator)
 * ⭐️ [git-spinoff](#git-spinoff)
+* ⭐️ [git-wip](#git-wip)
 
 Statistics:
 
@@ -544,5 +545,15 @@ Basic usage:
 As you can see, `git-is-clean` is aware of any lurking "skipped" files, and
 won't report a clean working tree, as these assumed unchanged files often block
 the ability to check out different branches.
+
+
+### git wip
+
+Commits all local changes under a commit message of "WIP". Great for quickly
+creating "savepoint" commits.  If there is a mix of staged changes, and
+unstaged changes, and new files, will commit each of these as a separate
+commit, all titled "WIP". Effectively, running `git-wip` once will potentially
+lead to anywhere between 0 and 3 "WIP" commits being created.
+
 
 [gitlog]: https://git-scm.com/book/en/v2/Git-Basics-Viewing-the-Commit-History#_limiting_log_output
