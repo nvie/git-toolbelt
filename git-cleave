@@ -1,0 +1,75 @@
+#!/bin/sh
+set -e
+
+usage () {
+    echo "usage: git cleave [-h] <path1> [<path2> ...]" >&2
+    echo >&2
+    echo "Splits the last commit into two or more commits. Takes one or more regex values" >&2
+    echo "that are matched against the paths of the files from the commit." >&2
+    echo "" >&2
+    echo "Options:" >&2
+    echo "-h    Show this help" >&2
+}
+
+locally_changed_files () {
+  # New files
+  git status --porcelain | grep -Ee '^\?' | cut -c4-
+  # Changes/deleted files
+  git diff --name-only --relative
+}
+
+while getopts h flag; do
+    case "$flag" in
+        h) usage; exit 2;;
+        *) usage; exit 2;;
+    esac
+done
+
+main () {
+  if [ "$#" -lt 1 ]; then
+    usage
+    exit 2
+  fi
+
+  # Ensure we have a clean working tree
+  git is-clean -v
+
+  ORIG_SHA="$(git sha HEAD)"
+  echo "Original commit is: $ORIG_SHA"
+
+  LAST_COMMIT_MSG="$(git log --pretty='%s' -1)"
+  git reset HEAD~1
+
+  for expr in "$@"; do
+    locally_changed_files | grep -Ee "$expr" | while read f; do
+      git add "$f"
+    done
+
+    if git is-dirty -i; then
+      git commit --no-verify -C "$ORIG_SHA"
+      git commit --amend --no-verify -m "$LAST_COMMIT_MSG [$expr]"
+    fi
+  done
+
+  locally_changed_files | while read f; do
+    git add "$f"
+  done
+
+  if git is-dirty -i; then
+    git commit --no-verify -C "$ORIG_SHA"
+    git commit --amend --no-verify -m "$LAST_COMMIT_MSG"
+  fi
+
+  # Sanity check. No files may get lost during this process!
+  if ! git diff --exit-code "$ORIG_SHA" "$(git sha HEAD)"; then
+    echo "Warning! There were differences found between the current state and the" >&2
+    echo "original commit.  You may want to revert back to the original commit:" >&2
+    echo "" >&2
+    echo "    git reset --hard $ORIG_SHA" >&2
+    echo "" >&2
+  else
+    echo "Success! Original commit was: $ORIG_SHA"
+  fi
+}
+
+( cd "$(git root)" && main "$@" )

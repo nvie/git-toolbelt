@@ -1,3 +1,7 @@
+# v1.7.0
+
+- New command: `git-cleave` to split a commit by file paths.
+
 # v1.6.0
 
 - New command: `git-wip`. This will create quick save point

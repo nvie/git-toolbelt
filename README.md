@@ -334,6 +334,28 @@ original commit message is kept in there (in the empty first commit), so make
 sure to use it.
 
 
+### git cleave
+
+Splits the last commit into 2 or more commits. Takes one or more regex values
+(which are fed to `grep -Ee`), and will split the last commit by file paths
+matching each of the regexes.
+
+For example:
+
+    $ git cleave client/ server/
+
+Will split the last commit into 2 (or 3) commits. The first one will contain
+all the files containing `client/`, the second will contain all the files
+matching `server/`. If there are files that don't match either of those, then
+a 3rd commit will be made with the "remainder".
+
+Another example:
+
+    $ git cleave '.*\.js$'
+
+This will split off all Javascript files from a commit.
+
+
 ### git commit-to
 
 Ever been on a branch and really wanted to quickly commit a change to
