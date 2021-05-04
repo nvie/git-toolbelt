@@ -73,6 +73,7 @@ Advanced usage:
 * [git-cherry-pick-to](#git-cherry-pick-to)
 * ⭐️ [git-delouse](#git-delouse)
 * ⭐️ [git-shatter-by-file](#git-shatter-by-file)
+* ⭐️ [git-cleave](#git-cleave)
 
 
 
