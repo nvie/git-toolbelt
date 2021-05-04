@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-locally_changes_files () {
+locally_changed_files () {
   # New files
   git status --porcelain | grep -Ee '^\?' | cut -c4-
   # Changes/deleted files
@@ -18,7 +18,7 @@ main () {
   LAST_COMMIT_MSG="$(git log --pretty='%s' -1)"
   git delouse
 
-  locally_changes_files | while read f; do
+  locally_changed_files | while read f; do
     git add "$f"
     git commit --no-verify -C "$ORIG_SHA"
     git commit --amend --no-verify -m "$LAST_COMMIT_MSG @ $f"
