@@ -4,9 +4,17 @@
 
 # Installation instructions
 
+## With Homebrew
+
     $ brew install fzf
     $ brew tap nvie/tap
     $ brew install nvie/tap/git-toolbelt
+
+## From source
+
+```console
+sudo make install
+```
 
 # git-tools
 
