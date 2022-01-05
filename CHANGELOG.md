@@ -1,3 +1,8 @@
+# v1.7.1
+
+- Add `-m` option to `git-modified` to only show locally modified files
+- Fix: make `git-merges-cleanly` work when there are skipped files
+
 # v1.7.0
 
 - New command: `git-cleave` to split a commit by file paths.
