@@ -21,6 +21,7 @@ Everyday helpful commands:
 * ⭐️ [git-fixup](#git-fixup)
 * ⭐️ [git-fixup-with](#git-fixup-with)
 * ⭐️ [git-active-branches](#git-local-branches--git-remote-branches--git-active-branches)
+- ⭐️ [git-diff-since](#git-diff-since)
 * [git-local-branches](#git-local-branches--git-remote-branches--git-active-branches)
 * [git-local-commits](#git-local-commits)
 * [git-merged / git-unmerged / git-merge-status](#git-merged--git-unmerged--git-merge-status)
@@ -195,6 +196,10 @@ to force-push.
 
 Tests if `HEAD` is pointing to a branch head, or is detached.
 
+### git diff-since
+
+Shows the differences made on the current branch, compared to the main branch
+(or the given branch).
 
 ### git local-branches / git remote-branches / git active-branches
 
