@@ -1,5 +1,6 @@
 Personal notes for publishing a new version:
 
+1. Update/check CHANGELOG.md
 1. Tag the version with Git (e.g. `git tag v1.2.3`)
 1. Push the tag out (`git push --tags`)
 1. Go to https://github.com/nvie/git-toolbelt/tags
