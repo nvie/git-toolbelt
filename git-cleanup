@@ -2,34 +2,42 @@
 set -e
 
 usage () {
-    echo "usage: git cleanup [-nh]" >&2
+    echo "usage: git cleanup [-lr] [-nsvh]" >&2
     echo >&2
     echo "Deletes all branches that have already been merged into the main branch." >&2
     echo "Removes those branches both locally and in the origin remote.  Will be " >&2
     echo "most conservative with deletions." >&2
     echo >&2
     echo "Options:" >&2
+    echo "-l    Remove local branches" >&2
+    echo "-r    Remove remote branches (in \`origin\`)" >&2
     echo "-n    Dry-run" >&2
-    echo "-s    Squashed" >&2
-    echo "-l    Local branches only, don't touch the remotes" >&2
+    echo "-s    Also consider squash merges (implies -l)" >&2
     echo "-v    Be verbose (show what's skipped)" >&2
     echo "-h    Show this help" >&2
 }
 
 dryrun=0
-remotes=1
+locals=0
+remotes=0
 squashed=0
 verbose=0
-while getopts nlsvh flag; do
+while getopts nlrsvh flag; do
     case "$flag" in
         n) dryrun=1;;
-        l) remotes=0;;
-        s) squashed=1;;
+        l) locals=1;;
+        r) remotes=1;;
+        s) squashed=1; locals=1;;
         v) verbose=1;;
         h) usage; exit 2;;
     esac
 done
 shift $(($OPTIND - 1))
+
+if [ $remotes -eq 0 -a $locals -eq 0 ]; then
+    usage
+    exit 1
+fi
 
 #
 # This will clean up any branch (both locally and remotely) that has been
@@ -126,35 +134,35 @@ clean_squashed () {
     fi
 }
 
-for branch in $(git local-branches \
-                | grep -vxF "$main"); do
-    for base in $bases; do
-        if git contains "$base" "$branch"; then
-            if ! git contains "$branch" "$base"; then
-                # Actually delete
-                if ! safegit branch -D "$branch"; then
-                    echo "Errors deleting local branch $branch" >&2
+if [ $locals -eq 1 ]; then
+    for branch in $(git local-branches \
+                    | grep -vxF "$main"); do
+        for base in $bases; do
+            if git contains "$base" "$branch"; then
+                if ! git contains "$branch" "$base"; then
+                    # Actually delete
+                    if ! safegit branch -D "$branch"; then
+                        echo "Errors deleting local branch $branch" >&2
+                    fi
+                    break
                 fi
-                break
+            else
+                # This is the case where the branches are in fact legit
+                # local WIP branches or they are squashed merges, and we
+                # need to check if they have been squashed-merged into
+                # main. NOTE - this assumes main is up-to-date locally
+                if [ "$squashed" -eq 1 ]; then
+                    clean_squashed "$branch"
+                fi
             fi
-        else
-            # This is the case where the branches are in fact legit
-            # local WIP branches or they are squashed merges, and we
-            # need to check if they have been squashed-merged into
-            # main. NOTE - this assumes main is up-to-date locally
-            if [ "$squashed" -eq 1 ]; then
-                clean_squashed "$branch"
-            fi
-        fi
+        done
     done
-done
+fi
 
 # Pruning first will remove any remote tracking branches that don't exist in
 # the remote anymore anyway.
-
-#XXX: FIXME: This gave trouble, as it tried to remove branches from Heroku remotes... :(
-#for remote in $(git remote); do
-for remote in origin; do
+if [ $remotes -eq 1 ]; then
+    remote=origin
     safegit remote prune "$remote" >/dev/null 2>/dev/null
 
     if [ $remotes -eq 1 ]; then
@@ -177,26 +185,23 @@ for remote in origin; do
             fi
         fi
     fi
-done
+fi
 
-# Delete any remaining local remote-tracking branches of remotes that are gone
-# This is an atypical situation that has occurred to me personally after having
-# used the command:
-#
-#     $ hub merge <some-github-url>
-#
-branches_to_remove=""
-for branch in $(git remote-branches); do
-    for base in $bases; do
-        if git contains "$base" "$branch"; then
-            if ! git contains "$branch" "$base"; then
-                branches_to_remove="$branches_to_remove $branch"
-                break
+# Delete any remaining local remote-tracking branches of remotes that are gone.
+if [ $locals -eq 1 ]; then
+    branches_to_remove=""
+    for branch in $(git remote-branches); do
+        for base in $bases; do
+            if git contains "$base" "$branch"; then
+                if ! git contains "$branch" "$base"; then
+                    branches_to_remove="$branches_to_remove $branch"
+                    break
+                fi
             fi
-        fi
+        done
     done
-done
 
-if [ -n "$branches_to_remove" ]; then
-    safegit branch -dr $branches_to_remove
+    if [ -n "$branches_to_remove" ]; then
+        safegit branch -dr $branches_to_remove
+    fi
 fi
