@@ -1,7 +1,8 @@
-# vNEXT
+# v1.8.0
 
-- Add `git-diff-since`
-- Add `git-sync-commit-date` ??????????????????
+- New command: `git-diff-since`
+- New command: `git-sync-commit-date`
+- `git-cleanup` will now only remove branches after explicit `-l` (local) or `-r` (remote) flag
 
 # v1.7.1
 
