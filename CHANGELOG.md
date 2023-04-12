@@ -1,3 +1,7 @@
+# v1.8.1
+
+- Fix to be compatible with `coreutils` 9.2+, which renamed `realpath` → `grealpath`
+
 # v1.8.0
 
 - New command: `git-diff-since`
