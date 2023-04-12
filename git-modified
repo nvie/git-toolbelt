@@ -79,7 +79,7 @@ fix_rename_notation () {
 make_relative () {
     root="$(git root)"
     while read f; do
-        echo "$(realpath --relative-to=. "$root/$f")"
+        echo "$(grealpath --relative-to=. "$root/$f")"
     done
 }
 
