@@ -1,0 +1,22 @@
+#!/bin/sh
+set -e
+
+root="$(git root)"
+realpath_bin="$(which grealpath realpath | head -n1)"
+
+if [ ! -x "$realpath_bin" ]; then
+    echo "'realpath' or 'grealpath' utility not found. Please install GNU coreutils." >&2
+    exit 1
+fi
+
+if ! "$realpath_bin" --version 2>/dev/null | grep -q GNU; then
+    echo "I expected the 'realpath' utility to be the GNU version." >&2
+    echo "$realpath_bin: not the GNU version" >&2
+    echo "Please install GNU coreutils and try again." >&2
+    exit 2
+fi
+
+while [ $# -gt 0 ]; do
+    "$realpath_bin" --relative-to=. "$root/$1"
+    shift
+done

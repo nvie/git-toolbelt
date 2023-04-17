@@ -8,6 +8,9 @@
     $ brew tap nvie/tap
     $ brew install nvie/tap/git-toolbelt
 
+If not using Homebrew, you will need to have [GNU coreutils][coreutils]
+installed, for the `realpath` utility. Git for Windows users see #29.
+
 # git-tools
 
 Helper tools to make everyday life with Git much easier.  Commands marked with
@@ -584,4 +587,5 @@ commit, all titled "WIP". Effectively, running `git-wip` once will potentially
 lead to anywhere between 0 and 3 "WIP" commits being created.
 
 
+[coreutils]: https://www.gnu.org/software/coreutils/
 [gitlog]: https://git-scm.com/book/en/v2/Git-Basics-Viewing-the-Commit-History#_limiting_log_output

@@ -30,9 +30,8 @@ if [ $# -ge 1 ]; then
 fi
 
 make_relative () {
-    root="$(git root)"
     while read f; do
-        echo "$(grealpath --relative-to=. "$root/$f")"
+        git relative-path "$f"
     done
 }
 

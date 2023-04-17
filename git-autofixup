@@ -2,9 +2,8 @@
 set -e
 
 make_relative () {
-    root="$(git root)"
     while read f; do
-        echo "$(grealpath --relative-to=. "$root/$f")"
+        git relative-path "$f"
     done
 }
 
