@@ -1,3 +1,7 @@
+# v1.8.3
+
+- Hide possible warnings displayed by `which` on some platforms
+
 # v1.8.2
 
 - Fix the fix from 1.8.1, which broke some Linux distros.
