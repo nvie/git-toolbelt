@@ -1,3 +1,7 @@
+# v1.8.4
+
+- Fix issue where the probe for "(g)realpath" can fail
+
 # v1.8.3
 
 - Hide possible warnings displayed by `which` on some platforms
