@@ -16,15 +16,7 @@ if ! "$realpath_bin" --version 2>/dev/null | grep -q GNU; then
     exit 2
 fi
 
-# read filenames as arguments if stdin is a terminal (not a pipe)
-if [ -t 0 ]; then
-    while [ $# -gt 0 ]; do
-        "$realpath_bin" --relative-to=. "$root/$1"
-        shift
-    done
-else
-    # otherwise read linewise from stdin (preserving any \'s and whitespace)
-    while IFS= read -r f; do
-        "$realpath_bin" --relative-to=. "$root/$f"
-    done
-fi
+while [ $# -gt 0 ]; do
+    "$realpath_bin" --relative-to=. "$root/$1"
+    shift
+done
