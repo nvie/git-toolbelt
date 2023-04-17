@@ -1,3 +1,7 @@
+# v1.8.2
+
+- Fix the fix from 1.8.1, which broke some Linux distros.
+
 # v1.8.1
 
 - Fix to be compatible with `coreutils` 9.2+, which renamed `realpath` → `grealpath`
