@@ -30,7 +30,7 @@ branch=$1
 
 git sha -q "$1"
 
-if git is-dirty; then
+if git is-dirty -iw; then
   echo "Can't check when you have local changes." >&2
   exit 2
 fi

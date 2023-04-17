@@ -2,28 +2,29 @@
 set -e
 
 root="$(git root)"
-realpath='realpath'
+realpath_bin="$(which grealpath realpath | head -n1)"
 
-# use 'grealpath' from GNU coreutils if it exists on macOS/BSD
-if type grealpath >/dev/null 2>&1; then
-    realpath='grealpath'
+if [ ! -x "$realpath_bin" ]; then
+    echo "'realpath' or 'grealpath' utility not found. Please install GNU coreutils." >&2
+    exit 1
 fi
 
-# if 'realpath' isn't available, or isn't the GNU version...
-if ! $realpath --version 2>/dev/null | grep -q GNU; then
-    echo "GNU coreutils 'realpath' is required" >&2
+if ! "$realpath_bin" --version 2>/dev/null | grep -q GNU; then
+    echo "I expected the 'realpath' utility to be the GNU version." >&2
+    echo "$realpath_bin: not the GNU version" >&2
+    echo "Please install GNU coreutils and try again." >&2
     exit 2
 fi
 
 # read filenames as arguments if stdin is a terminal (not a pipe)
 if [ -t 0 ]; then
     while [ $# -gt 0 ]; do
-        $realpath --relative-to=. "$root/$1"
+        "$realpath_bin" --relative-to=. "$root/$1"
         shift
     done
 else
     # otherwise read linewise from stdin (preserving any \'s and whitespace)
     while IFS= read -r f; do
-        $realpath --relative-to=. "$root/$f"
+        "$realpath_bin" --relative-to=. "$root/$f"
     done
 fi

@@ -1,5 +1,0 @@
-#!/bin/sh
-set -eu
-
-echo "Deprecated. Please use \`git-cleanup -s\` now instead." >&2
-exit 4

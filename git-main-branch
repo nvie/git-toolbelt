@@ -1,0 +1,12 @@
+#!/bin/sh
+set -eu
+
+for probe in main master; do
+    if git local-branch-exists "$probe"; then
+        echo "$probe"
+        exit 0
+    fi
+done
+
+echo "No main branch found" >&2
+exit 2

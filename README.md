@@ -4,7 +4,7 @@
 
 # Installation instructions
 
-    $ brew install fzf
+    $ brew install coreutils fzf
     $ brew tap nvie/tap
     $ brew install nvie/tap/git-toolbelt
 
@@ -19,11 +19,12 @@ Helper tools to make everyday life with Git much easier.  Commands marked with
 Everyday helpful commands:
 
 * ⭐️ [git-cleanup](#git-cleanup)
-* ⭐️ [git-cleanup-squashed](#git-cleanup-squashed)
 * [git-current-branch](#git-current-branch)
+* [git-main-branch](#git-main-branch)
 * ⭐️ [git-fixup](#git-fixup)
 * ⭐️ [git-fixup-with](#git-fixup-with)
 * ⭐️ [git-active-branches](#git-local-branches--git-remote-branches--git-active-branches)
+- ⭐️ [git-diff-since](#git-diff-since)
 * [git-local-branches](#git-local-branches--git-remote-branches--git-active-branches)
 * [git-local-commits](#git-local-commits)
 * [git-merged / git-unmerged / git-merge-status](#git-merged--git-unmerged--git-merge-status)
@@ -43,6 +44,7 @@ Everyday helpful commands:
 * ⭐️ [git-modified-since](#git-modified-since)
 * ⭐️ [git-separator](#git-separator)
 * ⭐️ [git-spinoff](#git-spinoff)
+* ⭐️ [git-wip](#git-wip)
 
 Statistics:
 
@@ -75,6 +77,7 @@ Advanced usage:
 * [git-cherry-pick-to](#git-cherry-pick-to)
 * ⭐️ [git-delouse](#git-delouse)
 * ⭐️ [git-shatter-by-file](#git-shatter-by-file)
+* ⭐️ [git-cleave](#git-cleave)
 
 
 
@@ -88,6 +91,20 @@ master
 ```
 
 Alias to `git rev-parse --abbrev-ref HEAD`.
+
+
+### git main-branch
+
+Returns the name of the default main branch for this repository.  Historically
+`master`, but could also be `main` if you've changed the default branch name.
+Since there's no way of reliably telling what the default branch name is for
+a repo, this script will probe for the existence of local branches named either
+`main` or `master`.  The first one found is used.
+
+```console
+$ git main-branch
+master
+```
 
 
 ### git sha
@@ -182,6 +199,10 @@ to force-push.
 
 Tests if `HEAD` is pointing to a branch head, or is detached.
 
+### git diff-since
+
+Shows the differences made on the current branch, compared to the main branch
+(or the given branch).
 
 ### git local-branches / git remote-branches / git active-branches
 
@@ -189,8 +210,11 @@ Returns a list of local or remote branches, but contrary to Git's default
 commands for this, returns them machine-processable.  In the case of remote
 branches, can be asked to return only the branches in a specific remote.
 
-A branch is deemed "active" if its head points to a commit authored in the last
-3 weeks.
+For `git active-branches`, a branch is deemed "active" if its head points to
+a commit authored in the last 3 weeks, by default. An arbitrary date can be
+specified using either `git active-branches -s <date>` or `-a <date>`
+(mnemonic: "since" or "after"), using any date format
+[supported by `git log`][gitlog].
 
 
 ### git local-branch-exists / git remote-branch-exists / git tag-exists
@@ -266,18 +290,9 @@ gone.
 
 ### git cleanup
 
-Deletes all branches that have already been merged into master or develop.
-Keeps other branches lying around.  Removes branches both locally and in the
-origin remote.  Will be most conservative with deletions.
-
-
-### git cleanup-squashed
-
-Deletes all branches that have already been merged into master by means of
-squash-merging them.  Squashing them generally is a destructive operation.
-This script only deletes the branches if the net diff has been fully merged
-into master.  If even the slightest difference is detected, the branch won't be
-deleted.
+Deletes all branches that have already been merged into the main branch. Keeps
+other branches lying around.  Removes branches both locally and in the origin
+remote.  Will be most conservative with deletions.
 
 
 ### git fixup
@@ -326,6 +341,28 @@ After running `git shatter-by-file`, you'll typically want to run `git rebase
 --interactive` to start fixing up changes to files, etc.  For that purpose, the
 original commit message is kept in there (in the empty first commit), so make
 sure to use it.
+
+
+### git cleave
+
+Splits the last commit into 2 or more commits. Takes one or more regex values
+(which are fed to `grep -Ee`), and will split the last commit by file paths
+matching each of the regexes.
+
+For example:
+
+    $ git cleave client/ server/
+
+Will split the last commit into 2 (or 3) commits. The first one will contain
+all the files containing `client/`, the second will contain all the files
+matching `server/`. If there are files that don't match either of those, then
+a 3rd commit will be made with the "remainder".
+
+Another example:
+
+    $ git cleave '.*\.js$'
+
+This will split off all Javascript files from a commit.
 
 
 ### git commit-to
@@ -540,4 +577,15 @@ As you can see, `git-is-clean` is aware of any lurking "skipped" files, and
 won't report a clean working tree, as these assumed unchanged files often block
 the ability to check out different branches.
 
+
+### git wip
+
+Commits all local changes under a commit message of "WIP". Great for quickly
+creating "savepoint" commits.  If there is a mix of staged changes, and
+unstaged changes, and new files, will commit each of these as a separate
+commit, all titled "WIP". Effectively, running `git-wip` once will potentially
+lead to anywhere between 0 and 3 "WIP" commits being created.
+
+
 [coreutils]: https://www.gnu.org/software/coreutils/
+[gitlog]: https://git-scm.com/book/en/v2/Git-Basics-Viewing-the-Commit-History#_limiting_log_output
