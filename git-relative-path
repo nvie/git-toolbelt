@@ -2,7 +2,7 @@
 set -e
 
 root="$(git root)"
-realpath_bin="$(which grealpath realpath 2>/dev/null | head -n1)"
+realpath_bin="$(which grealpath realpath 2>/dev/null | head -n1 || true)"
 
 if [ ! -x "$realpath_bin" ]; then
     echo "'realpath' or 'grealpath' utility not found. Please install GNU coreutils." >&2
