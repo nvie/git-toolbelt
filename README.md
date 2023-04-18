@@ -6,7 +6,6 @@
 
     $ brew tap nvie/tap
     $ brew install nvie/tap/git-toolbelt
-    $ brew install fzf  # optional, needed for git-fixup-with only
 
 If not using Homebrew, you will need to have [GNU coreutils][coreutils]
 installed, for the `realpath` utility. Git for Windows users see [#29](https://github.com/nvie/git-toolbelt/issues/29).
