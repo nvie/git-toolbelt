@@ -5,12 +5,14 @@ usage () {
     echo "usage: git cleanup [-lr] [-nsvh]" >&2
     echo >&2
     echo "Deletes all branches that have already been merged into the main branch." >&2
-    echo "Removes those branches both locally and in the origin remote.  Will be " >&2
-    echo "most conservative with deletions." >&2
+    echo "Removes those branches both locally or in the origin remote (or both)." >&2
+    echo "Will be most conservative with deletions." >&2
     echo >&2
-    echo "Options:" >&2
+    echo "Minimally requires either (or both) of these flags to be set:" >&2
     echo "-l    Remove local branches" >&2
     echo "-r    Remove remote branches (in \`origin\`)" >&2
+    echo >&2
+    echo "Options:" >&2
     echo "-n    Dry-run" >&2
     echo "-s    Also consider squash merges (implies -l)" >&2
     echo "-v    Be verbose (show what's skipped)" >&2
