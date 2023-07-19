@@ -42,6 +42,7 @@ main () {
 
   LAST_COMMIT_MSG="$(git log --pretty='%s' -1)"
   git reset HEAD~1
+  BASE_SHA="$(git sha HEAD)"
 
   for expr in "$@"; do
     locally_changed_files | grep -Ee "$expr" | while read f; do
@@ -72,9 +73,11 @@ main () {
     git add "$f"
   done
 
-  if git is-dirty -i; then
-    git commit --no-verify -C "$ORIG_SHA"
-    git commit --amend --no-verify -m "$LAST_COMMIT_MSG"
+  # If there are leftover changes (or cleave didn't commit anything yet, in the
+  # case of an empty original commit), commit it now
+  if git is-dirty -i || [ "$BASE_SHA" = "$(git sha HEAD)" ]; then
+    git commit --allow-empty --no-verify -C "$ORIG_SHA"
+    git commit --allow-empty --amend --no-verify -m "$LAST_COMMIT_MSG"
   fi
 
   # Sanity check. No files may get lost during this process!
