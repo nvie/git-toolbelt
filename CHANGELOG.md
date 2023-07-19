@@ -1,3 +1,11 @@
+# v1.9.0
+
+- git-cleave will now prefix commit messages (instead of suffix them) wth the
+  path matches it cleaves off
+- git-cleave now takes a `-t <prefix>` flag, which will be used instead of the
+  path matches
+- git-cleave will now prevent empty commits from being destroyed
+
 # v1.8.4
 
 - Fix issue where the probe for "(g)realpath" can fail
@@ -42,7 +50,6 @@
   where you can specify the threshold for what is considered "active" (#36,
   thanks @ernstki!)
 
-
 # v1.5.1
 
 - Fixes an issue where `git-local-branches` could report "HEAD detached at ..."
@@ -53,10 +60,10 @@
 - Add support for repos with a default branch named main (not master)
 - Adds a new script git main-branch
 - Drop deprecated scripts:
-  * `git-assume`
-  * `git-unassume`
-  * `git-show-assumed`
-  * `git-cleanup-squashed`
+  - `git-assume`
+  - `git-unassume`
+  - `git-show-assumed`
+  - `git-cleanup-squashed`
 
 # v1.4.2
 
@@ -69,24 +76,25 @@
 # v1.4.0
 
 - New commands:
-  * `git-skip`
-  * `git-unskip`
-  * `git-show-skipped`
+
+  - `git-skip`
+  - `git-unskip`
+  - `git-show-skipped`
 
 - Deprecated commands:
-  * `git-assume` (use `git-skip` now)
-  * `git-unassume` (use `git-unskip` now)
-  * `git-show-assumed` (use `git-show-skipped` now)
-  * `git-cleanup-squashed` (use `git cleanup -s` now)
+  - `git-assume` (use `git-skip` now)
+  - `git-unassume` (use `git-unskip` now)
+  - `git-show-assumed` (use `git-show-skipped` now)
+  - `git-cleanup-squashed` (use `git cleanup -s` now)
 
 # v1.3.0
 
 - New commands:
-  * `git spinoff <new-branch> [<base>]` (inspired by Magit's spinoff command),
+  - `git spinoff <new-branch> [<base>]` (inspired by Magit's spinoff command),
     will create a new branch from the current branch and will reset the current
     branch back to its upstream. Most useful when you have already committed
     work on master, but really wanted that to be a new local branch instead.
-  * `git remote-tracking-branch [<branch>]` will print the name of the remote
+  - `git remote-tracking-branch [<branch>]` will print the name of the remote
     tracking branch of the current or given branch (if any)
 
 # v1.2.4
@@ -98,16 +106,17 @@
 # v1.2.3
 
 - New script:
-  * Add `git-branches-containing`, returning a list of branches containing the
+
+  - Add `git-branches-containing`, returning a list of branches containing the
     specified commit (thanks @RMGiroux!)
 
 - Improvement:
-  * Make `git-sha` work without further arguments (thanks @RMGiroux!)
+  - Make `git-sha` work without further arguments (thanks @RMGiroux!)
 
 # v1.2.2
 
 - Bugfixes:
-  * Make `git-fixup` not use `--no-verify` by default and instead respect
+  - Make `git-fixup` not use `--no-verify` by default and instead respect
     existing pre-commit hooks
 
 # v1.2.1
