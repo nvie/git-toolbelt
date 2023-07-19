@@ -2,13 +2,14 @@
 set -e
 
 usage () {
-    echo "usage: git cleave [-h] <path1> [<path2> ...]" >&2
+    echo "usage: git cleave [-h] [-t <prefix>] <path1> [<path2> ...]" >&2
     echo >&2
     echo "Splits the last commit into two or more commits. Takes one or more regex values" >&2
     echo "that are matched against the paths of the files from the commit." >&2
     echo "" >&2
     echo "Options:" >&2
-    echo "-h    Show this help" >&2
+    echo "-t <prefix>  Use this tag to prefix to commit messages" >&2
+    echo "-h           Show this help" >&2
 }
 
 locally_changed_files () {
@@ -18,8 +19,10 @@ locally_changed_files () {
   git diff --name-only --relative
 }
 
-while getopts h flag; do
+prefix=
+while getopts t:h flag; do
     case "$flag" in
+        t) prefix=$OPTARG; shift ;;
         h) usage; exit 2;;
         *) usage; exit 2;;
     esac
@@ -45,11 +48,25 @@ main () {
       git add "$f"
     done
 
-    if git is-dirty -i; then
-      git commit --no-verify -C "$ORIG_SHA"
-      git commit --amend --no-verify -m "$LAST_COMMIT_MSG [$expr]"
+    # If not using a fixed prefix, use the path match as the prefix
+    if [ -z "$prefix" ]; then
+      if git is-dirty -i; then
+        # This weird construct is to keep the original commit date intact
+        git commit --no-verify -C "$ORIG_SHA"
+        git commit --amend --no-verify -m "[$expr] $LAST_COMMIT_MSG"
+      fi
     fi
   done
+
+  # Else, if using the prefix strategy, add a single commit combining all of
+  # the path's matched
+  if [ -n "$prefix" ]; then
+    if git is-dirty -i; then
+      # This weird construct is to keep the original commit date intact
+      git commit --no-verify -C "$ORIG_SHA"
+      git commit --amend --no-verify -m "[$prefix] $LAST_COMMIT_MSG"
+    fi
+  fi
 
   locally_changed_files | while read f; do
     git add "$f"
