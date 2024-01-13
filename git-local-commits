@@ -7,4 +7,4 @@ if ! git remote-branch-exists origin "$curr"; then
     exit 1
 fi
 
-git log $(git merge-base origin/"$curr" "$curr")..."$curr" "$@"
+git log "$(git merge-base origin/"$curr" "$curr")"..."$curr" "$@"

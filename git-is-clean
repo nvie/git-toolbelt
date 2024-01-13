@@ -53,7 +53,7 @@ done
 shift $(($OPTIND - 1))
 
 # If nothing is explicitly specified, check everything
-if [ $check_index -eq 0 -a $check_worktree -eq 0 -a $check_skipped -eq 0 ]; then
+if [ $check_index -eq 0 ] && [ $check_worktree -eq 0 ] && [ $check_skipped -eq 0 ]; then
     check_index=1
     check_worktree=1
     check_skipped=1

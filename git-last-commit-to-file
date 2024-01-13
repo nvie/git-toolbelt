@@ -24,6 +24,4 @@ if [ $# -lt 1 ]; then
     exit 2
 fi
 
-files="$@"
-
-git log -1 --format='%H' -- $files 2>/dev/null
+git log -1 --format='%H' -- "$@" 2>/dev/null
