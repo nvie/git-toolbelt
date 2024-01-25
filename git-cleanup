@@ -36,7 +36,7 @@ while getopts nlrsvh flag; do
 done
 shift $(($OPTIND - 1))
 
-if [ $remotes -eq 0 -a $locals -eq 0 ]; then
+if [ $remotes -eq 0 ] && [ $locals -eq 0 ]; then
     usage
     exit 1
 fi
