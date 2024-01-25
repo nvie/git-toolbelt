@@ -10,7 +10,7 @@ locally_changed_files () {
 
 main () {
   # Ensure we have a clean working tree
-  git is-clean -v
+  git is-clean -wiv
 
   ORIG_SHA="$(git sha HEAD)"
   echo "Original commit is: $ORIG_SHA"
