@@ -1,3 +1,8 @@
+# Unreleases
+
+- git-shatter-by-file will still work when there are "skipped" files
+- Various internal shell script improvements
+
 # v1.9.0
 
 - git-cleave will now prefix commit messages (instead of suffix them) wth the
