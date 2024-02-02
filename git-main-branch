@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-for probe in main master; do
+for probe in main mainline master; do
     if git local-branch-exists "$probe"; then
         echo "$probe"
         exit 0
