@@ -1,6 +1,10 @@
-# Unreleases
+# Unreleased
 
-- git-shatter-by-file will still work when there are "skipped" files
+# v1.9.1
+
+- `git-main-branch` will now also recognize `mainline` as a main branch name,
+  for users migrating from Perforce.
+- `git-shatter-by-file` will still work when there are "skipped" files
 - Various internal shell script improvements
 
 # v1.9.0
