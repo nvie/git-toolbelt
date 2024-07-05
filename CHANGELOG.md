@@ -1,5 +1,14 @@
 # Unreleased
 
+# v1.9.3
+
+- Fix: use main branch in `git-merged` (instead of hardcoding `master`)
+
+# v1.9.2
+
+- `git-shatter-by-file` will still work when there are "skipped" files
+- Various internal shell script improvements
+
 # v1.9.1
 
 - `git-main-branch` will now also recognize `mainline` as a main branch name,

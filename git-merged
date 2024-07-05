@@ -4,7 +4,7 @@ set -eu
 usage () {
     echo "usage: git merged [-uh] [<branch>]" >&2
     echo >&2
-    echo "Shows what local branches have been merged into branch (defaults to master)." >&2
+    echo "Shows what local branches have been merged into branch (defaults to main branch)." >&2
     echo >&2
     echo "Options:" >&2
     echo "-u    Show unmerged branches instead of merged branches" >&2
@@ -26,5 +26,11 @@ else
     opts="--merged"
 fi
 
-base="${1-master}"
+if [ $# -gt 0 ]; then
+    base="$1"
+    shift 1
+else
+    base="$(git main-branch)"
+fi
+
 git branch $opts "$base" | cut -c3- | grep -vxF "$base"

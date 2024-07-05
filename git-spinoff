@@ -16,7 +16,7 @@ usage () {
     echo "previously current branch is not touched." >&2
     echo >&2
     echo "This is useful to create a feature branch after work has already" >&2
-    echo "began on the old branch (likely but not necessarily \"master\")." >&2
+    echo "began on the old branch (likely but not necessarily \"main\")." >&2
     echo >&2
     echo "Options:" >&2
     echo "-h    Show this help" >&2
