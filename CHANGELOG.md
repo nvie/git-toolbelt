@@ -1,5 +1,14 @@
 # Unreleased
 
+# v1.9.4
+
+- Refactor scripts to improve safety and reliability:
+  - Add proper quoting around variables and command substitutions
+  - Use `read -r` for safer input handling in while loops
+  - Replace `-n` tests with explicit empty string comparisons
+  - Fix command formatting in documentation
+  - Improve URL formatting in documentation
+
 # v1.9.3
 
 - Fix: use main branch in `git-merged` (instead of hardcoding `master`)
