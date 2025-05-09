@@ -2,20 +2,20 @@
 set -e
 
 make_relative () {
-    while read f; do
+    while read -r f; do
         git relative-path "$f"
     done
 }
 
 FILES="$(git diff --no-prefix --cached -U0 | awk '/^--- / { print $2 }' | grep -vF /dev/null | make_relative)"
-if [ -z "$FILES" ]; then
+if [ "$FILES" = "" ]; then
   echo "No staged files found that have previously been committed." >&2
   exit 2
 fi
 
-SHA="$(git last-commit-to-file $FILES)"
+SHA="$(git last-commit-to-file "$FILES")"
 
-if [ -n "$SHA" ]; then
+if [ "$SHA" != "" ]; then
   git commit --fixup "$SHA" --no-verify
 else
   echo "Could not determine which commit last touched the staged files." >&2

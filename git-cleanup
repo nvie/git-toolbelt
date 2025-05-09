@@ -32,11 +32,12 @@ while getopts nlrsvh flag; do
         s) squashed=1; locals=1;;
         v) verbose=1;;
         h) usage; exit 2;;
+        *) usage; exit 2;;
     esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 
-if [ $remotes -eq 0 ] && [ $locals -eq 0 ]; then
+if [ "$remotes" -eq 0 ] && [ "$locals" -eq 0 ]; then
     usage
     exit 1
 fi
@@ -79,14 +80,14 @@ find_branch_base () {
     base_point=""
 
     if git local-branch-exists "$branch"; then
-        base_point=$(find_common_base "$branch" $base_point)
+        base_point=$(find_common_base "$branch" "$base_point")
     fi
 
     if git remote-branch-exists origin "$branch"; then
-        base_point=$(find_common_base "origin/$branch" $base_point)
+        base_point=$(find_common_base "origin/$branch" "$base_point")
     fi
 
-    if [ -n "$base_point" ]; then
+    if [ "$base_point" != "" ]; then
         echo "$base_point"
     fi
 }
@@ -128,7 +129,7 @@ clean_squashed () {
         # commit is in main and can be dropped if you rebased
         # against main
         safegit branch -D "$branch"
-    elif [ $verbose -eq 1 ]; then
+    elif [ "$verbose" -eq 1 ]; then
         # If "+ <commit-sha>", (ex. - "+ 851cb44727") this means the
         # commit still needs to be kept so that it will be applied to
         # main
@@ -136,10 +137,10 @@ clean_squashed () {
     fi
 }
 
-if [ $locals -eq 1 ]; then
-    for branch in $(git local-branches \
-                    | grep -vxF "$main"); do
-        for base in $bases; do
+if [ "$locals" -eq 1 ]; then
+    for branch in "$(git local-branches \
+                    | grep -vxF "$main")"; do
+        for base in "${bases[@]}"; do
             if git contains "$base" "$branch"; then
                 if ! git contains "$branch" "$base"; then
                     # Actually delete
@@ -163,14 +164,14 @@ fi
 
 # Pruning first will remove any remote tracking branches that don't exist in
 # the remote anymore anyway.
-if [ $remotes -eq 1 ]; then
+if [ "$remotes" -eq 1 ]; then
     remote=origin
     safegit remote prune "$remote" >/dev/null 2>/dev/null
 
-    if [ $remotes -eq 1 ]; then
+    if [ "$remotes" -eq 1 ]; then
         branches_to_remove=""
-        for branch in $(git remote-branches "$remote" | grep -vEe "/($main)\$"); do
-            for base in $bases; do
+        for branch in "$(git remote-branches "$remote" | grep -vEe "/($main)\$")"; do
+            for base in "${bases[@]}"; do
                 if git contains "$base" "$branch"; then
                     if ! git contains "$branch" "$base"; then
                         branchname=$(echo "$branch" | cut -d/ -f2-)
@@ -181,8 +182,8 @@ if [ $remotes -eq 1 ]; then
             done
         done
 
-        if [ -n "$branches_to_remove" ]; then
-            if ! safegit push "$remote" --delete $branches_to_remove; then
+        if [ "$branches_to_remove" != "" ]; then
+            if ! safegit push "$remote" --delete "$branches_to_remove"; then
                 echo "Errors deleting branches $branches_to_remove from remote '$remote'" >&2
             fi
         fi
@@ -190,10 +191,10 @@ if [ $remotes -eq 1 ]; then
 fi
 
 # Delete any remaining local remote-tracking branches of remotes that are gone.
-if [ $locals -eq 1 ]; then
+if [ "$locals" -eq 1 ]; then
     branches_to_remove=""
-    for branch in $(git remote-branches); do
-        for base in $bases; do
+    for branch in "$(git remote-branches)"; do
+        for base in "${bases[@]}"; do
             if git contains "$base" "$branch"; then
                 if ! git contains "$branch" "$base"; then
                     branches_to_remove="$branches_to_remove $branch"
@@ -203,7 +204,7 @@ if [ $locals -eq 1 ]; then
         done
     done
 
-    if [ -n "$branches_to_remove" ]; then
-        safegit branch -dr $branches_to_remove
+    if [ "$branches_to_remove" != "" ]; then
+        safegit branch -dr "$branches_to_remove"
     fi
 fi

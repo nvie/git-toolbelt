@@ -18,7 +18,7 @@ main () {
   LAST_COMMIT_MSG="$(git log --pretty='%s' -1)"
   git delouse
 
-  locally_changed_files | while read f; do
+  locally_changed_files | while read -r f; do
     git add "$f"
     git commit --no-verify -C "$ORIG_SHA"
     git commit --amend --no-verify -m "$LAST_COMMIT_MSG @ $f"

@@ -11,7 +11,7 @@ usage () {
     echo "changed in that commit." >&2
     echo >&2
     echo "This script is ideal for passing all locally modified files into your editor, like:" >&2
-    echo '    $ vim `git modified`' >&2
+    echo "    \$ vim \`git modified\`" >&2
     echo >&2
     echo "Options:" >&2
     echo "-m    Modified files only (excludes untracked files)" >&2
@@ -32,9 +32,10 @@ while getopts miuqh flag; do
         u) unmerged=1;;
         q) quiet=1;;
         h) usage; exit 2;;
+        *) usage; exit 2;;
     esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 
 commit=""
 if [ $# -ge 1 ]; then
@@ -77,7 +78,7 @@ fix_rename_notation () {
 }
 
 make_relative () {
-    while read f; do
+    while read -r f; do
         git relative-path "$f"
     done
 }
@@ -100,28 +101,28 @@ modified_locally () {
 
 fail_if_empty () {
     empty=1
-    while read line; do
-        if [ $quiet -eq 0 ]; then
+    while read -r line; do
+        if [ "$quiet" -eq 0 ]; then
             echo "$line"
         fi
         empty=0
     done
-    test $empty -eq 0
+    test "$empty" -eq 0
 }
 
-if [ -z "$commit" ]; then
-    if [ $unmerged -eq 1 ]; then
+if [ "$commit" = "" ]; then
+    if [ "$unmerged" -eq 1 ]; then
         modified_unmerged | fail_if_empty
-    elif [ $index -eq 1 ]; then
+    elif [ "$index" -eq 1 ]; then
         modified_in_index | fail_if_empty
-    elif [ $modified -eq 1 ]; then
+    elif [ "$modified" -eq 1 ]; then
         modified_only_locally | fail_if_empty
     else
         modified_locally | fail_if_empty
     fi
 else
     TAB="	" # literal tab char
-    git log -1 --name-status --pretty=format:"" "$commit" | cut -f2- | rev | cut -d"$TAB" -f1 | rev | make_relative | while read f; do
+    git log -1 --name-status --pretty=format:"" "$commit" | cut -f2- | rev | cut -d"$TAB" -f1 | rev | make_relative | while read -r f; do
         if [ -f "$f" ]; then
             echo "$f"
         fi

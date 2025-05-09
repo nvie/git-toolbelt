@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-    
+
 usage () {
     echo "usage: git merge-status [-h] [<branch>]" >&2
     echo >&2
@@ -14,9 +14,10 @@ usage () {
 while getopts h flag; do
     case "$flag" in
         h) usage; exit 2;;
+        *) usage; exit 2;;
     esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 
 bulletize () {
     sed -Ee 's/^/  - &/'
@@ -24,11 +25,11 @@ bulletize () {
 
 fail_if_empty () {
     empty=1
-    while read line; do
+    while read -r line; do
         echo "$line"
         empty=0
     done
-    test $empty -eq 0
+    test "$empty" -eq 0
 }
 
 if [ $# -gt 0 ]; then

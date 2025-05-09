@@ -25,9 +25,10 @@ usage () {
 while getopts h flag; do
     case "$flag" in
         h) usage; exit 2;;
+        *) usage; exit 2;;
     esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 
 if [ $# -lt 1 ] || [ $# -gt 2 ]; then
   usage
@@ -36,7 +37,7 @@ fi
 
 new_name="$1"
 rawbase="${2:-}"
-if [ -z "$rawbase" ]; then
+if [ "$rawbase" = "" ]; then
     base="$(git current-branch)"
 else
     base="$rawbase"
@@ -53,7 +54,7 @@ base_sha="$(git sha -s "$base")"
 git checkout -q --track -B "$new_name" "$base"
 
 rtb="$(git remote-tracking-branch "$base")"
-if [ -n "$rtb" ]; then
+if [ "$rtb" != "" ]; then
     merge_base="$(git merge-base "$base" "$rtb")"
     git branch -vf "$base" "$merge_base"
 fi

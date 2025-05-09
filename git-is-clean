@@ -26,7 +26,7 @@ has_unstaged_changes () {
 
 has_untracked_files () {
     num_untracked_files=$(git ls-files --other --exclude-standard | wc -l)
-    [ $num_untracked_files -gt 0 ]
+    [ "$num_untracked_files" -gt 0 ]
 }
 
 is_worktree_clean () {
@@ -48,34 +48,35 @@ while getopts iwavh flag; do
         a) check_skipped=1;;
         v) verbose=1;;
         h) usage; exit 2;;
+        *) usage; exit 2;;
     esac
 done
 shift $(($OPTIND - 1))
 
 # If nothing is explicitly specified, check everything
-if [ $check_index -eq 0 ] && [ $check_worktree -eq 0 ] && [ $check_skipped -eq 0 ]; then
+if [ "$check_index" -eq 0 ] && [ "$check_worktree" -eq 0 ] && [ "$check_skipped" -eq 0 ]; then
     check_index=1
     check_worktree=1
     check_skipped=1
 fi
 
-if [ $check_index -eq 1 ]; then
+if [ "$check_index" -eq 1 ]; then
     if ! is_index_clean; then
-        [ $verbose -eq 1 ] && echo "git index not clean" >&2
+        [ "$verbose" -eq 1 ] && echo "git index not clean" >&2
         exit 2
     fi
 fi
 
-if [ $check_worktree -eq 1 ]; then
+if [ "$check_worktree" -eq 1 ]; then
     if ! is_worktree_clean; then
-        [ $verbose -eq 1 ] && echo "git work tree not clean" >&2
+        [ "$verbose" -eq 1 ] && echo "git work tree not clean" >&2
         exit 3
     fi
 fi
 
-if [ $check_skipped -eq 1 ]; then
+if [ "$check_skipped" -eq 1 ]; then
     if ! is_skipped; then
-        [ $verbose -eq 1 ] && echo "there are skipped files" >&2
+        [ "$verbose" -eq 1 ] && echo "there are skipped files" >&2
         exit 4
     fi
 fi

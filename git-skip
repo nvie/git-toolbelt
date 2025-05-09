@@ -20,16 +20,17 @@ while getopts ah flag; do
     case "$flag" in
         a) all=1;;
         h) usage; exit 2;;
+        *) usage; exit 2;;
     esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 
 locally_modified_files () {
     git status --porcelain --untracked-files=no | cut -c 2- | grep -Ee '^[MD]' | cut -c 3-
 }
 
-if [ $all -eq 1 ]; then
-    git update-index --skip-worktree $(locally_modified_files)
+if [ "$all" -eq 1 ]; then
+    git update-index --skip-worktree "$(locally_modified_files)"
 else
     if [ $# -gt 0 ]; then
         git update-index --skip-worktree "$@"

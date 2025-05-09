@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-    
+
 usage () {
     echo "usage: git merged [-uh] [<branch>]" >&2
     echo >&2
@@ -16,11 +16,12 @@ while getopts uh flag; do
     case "$flag" in
         u) unmerged=1;;
         h) usage; exit 2;;
+        *) usage; exit 2;;
     esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 
-if [ $unmerged -eq 1 ]; then
+if [ "$unmerged" -eq 1 ]; then
     opts="--no-merged"
 else
     opts="--merged"
@@ -33,4 +34,4 @@ else
     base="$(git main-branch)"
 fi
 
-git branch $opts "$base" | cut -c3- | grep -vxF "$base"
+git branch "$opts" "$base" | cut -c3- | grep -vxF "$base"

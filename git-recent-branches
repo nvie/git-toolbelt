@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-    
+
 usage () {
     echo "usage: git recent-branches [-h]" >&2
     echo >&2
@@ -13,6 +13,7 @@ usage () {
 while getopts h flag; do
     case "$flag" in
         h) usage; exit 2;;
+        *) usage; exit 2;;
     esac
 done
 

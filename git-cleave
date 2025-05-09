@@ -45,12 +45,12 @@ main () {
   BASE_SHA="$(git sha HEAD)"
 
   for expr in "$@"; do
-    locally_changed_files | grep -Ee "$expr" | while read f; do
+    locally_changed_files | grep -Ee "$expr" | while read -r f; do
       git add "$f"
     done
 
     # If not using a fixed prefix, use the path match as the prefix
-    if [ -z "$prefix" ]; then
+    if [ "$prefix" = "" ]; then
       if git is-dirty -i; then
         # This weird construct is to keep the original commit date intact
         git commit --no-verify -C "$ORIG_SHA"
@@ -61,7 +61,7 @@ main () {
 
   # Else, if using the prefix strategy, add a single commit combining all of
   # the path's matched
-  if [ -n "$prefix" ]; then
+  if [ "$prefix" != "" ]; then
     if git is-dirty -i; then
       # This weird construct is to keep the original commit date intact
       git commit --no-verify -C "$ORIG_SHA"
@@ -69,7 +69,7 @@ main () {
     fi
   fi
 
-  locally_changed_files | while read f; do
+  locally_changed_files | while read -r f; do
     git add "$f"
   done
 

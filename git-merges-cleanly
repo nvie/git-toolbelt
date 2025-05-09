@@ -17,9 +17,10 @@ while getopts lh flag; do
     case "$flag" in
         h) usage; exit 2;;
         l) showlist=1;;
+        *) showlist=1;;
     esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 
 if [ $# -ne 1 ]; then
     usage
@@ -39,13 +40,13 @@ if git merge --quiet "$branch" >/dev/null 2>/dev/null; then
   git undo-merge >/dev/null 2>/dev/null
   exit 0
 else
-  if [ $showlist -eq 1 ]; then
+  if [ "$showlist" -eq 1 ]; then
     git diff --name-only --diff-filter=U
   fi
 
   git merge --abort >/dev/null 2>/dev/null
 
-  if [ $showlist -eq 1 ]; then
+  if [ "$showlist" -eq 1 ]; then
     exit 0
   else
     exit 1

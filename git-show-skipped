@@ -16,17 +16,18 @@ while getopts qh flag; do
     case "$flag" in
         q) quiet=1;;
         h) usage; exit 2;;
+        *) usage; exit 2;;
     esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 
 list_skipped () {
     git ls-files -v | grep "^S" | cut -c3-
 }
 
-if [ $quiet -eq 0 ]; then
+if [ "$quiet" -eq 0 ]; then
     list_skipped
-else 
+else
     num_changed=$(list_skipped | wc -l)
-    test $num_changed -eq 0
+    test "$num_changed" -eq 0
 fi

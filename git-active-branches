@@ -26,22 +26,22 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-git local-branches | while read branch; do
+git local-branches | while read -r branch; do
     # '--no-patch' = suppress diff output (long form of '-s')
     maybebranch=$(
         git log -1 --since="$since" --no-patch "refs/heads/$branch" --
     )
-    if [ -n "$maybebranch" ]; then
+    if [ "$maybebranch" != "" ]; then
         echo "$branch"
     fi
 done
 
-git remote-branches | while read branch; do
+git remote-branches | while read -r branch; do
     # '--no-patch' = suppress diff output (long form of '-s')
     maybebranch=$(
         git log -1 --since="$since" --no-patch "$branch" --
     )
-    if [ -n "$maybebranch" ]; then
+    if [ "$maybebranch" != "" ]; then
         echo "$branch"
     fi
 done

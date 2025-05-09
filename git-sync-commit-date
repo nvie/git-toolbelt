@@ -21,9 +21,10 @@ while getopts fqh flag; do
         f) force=1;;
         q) verbose=0;;
         h) usage; exit 2;;
+        *) usage; exit 2;;
     esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 
 # Enforce we're in a clean work tree
 git is-clean -iv
@@ -32,15 +33,15 @@ author_date=$(git log --pretty='%aI' -1 HEAD)
 commit_date=$(git log --pretty='%cI' -1 HEAD)
 
 if [ "$author_date" = "$commit_date" ]; then
-    if [ $verbose -eq 1 ]; then
+    if [ "$verbose" -eq 1 ]; then
         echo "Already the same" >&2
     fi
     exit 0
 fi
 
-if [ $force = 0 ]; then
+if [ "$force" = 0 ]; then
     echo "Reset last commit date to $author_date? [yN] " >&2
-    read answer
+    read -r answer
     if [ "$answer" != "y" ]; then
         exit 1
     fi
@@ -49,6 +50,6 @@ fi
 OLD_SHA=$(git sha -s)
 GIT_COMMITTER_DATE="$author_date" git commit --quiet --no-verify --amend --allow-empty -C HEAD
 
-if [ $verbose -eq 1 ]; then
+if [ "$verbose" -eq 1 ]; then
     echo "Created $(git sha -s) (previous was ${OLD_SHA})" >&2
 fi

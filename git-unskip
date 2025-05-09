@@ -17,12 +17,13 @@ while getopts ah flag; do
     case "$flag" in
         a) all=1;;
         h) usage; exit 2;;
+        *) usage; exit 2;;
     esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 
-if [ $all -eq 1 ]; then
-    git update-index --no-skip-worktree $(git show-skipped)
+if [ "$all" -eq 1 ]; then
+    git update-index --no-skip-worktree "$(git show-skipped)"
 else
     if [ $# -gt 0 ]; then
         git update-index --no-skip-worktree "$@"

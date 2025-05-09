@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-    
+
 usage () {
     echo "usage: git push-current [-fh] [<remote>]" >&2
     echo >&2
@@ -16,16 +16,17 @@ while getopts fh flag; do
     case "$flag" in
         f) force=1;;
         h) usage; exit 2;;
+        *) usage; exit 2;;
     esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 
 curr=$(git current-branch)
 remote=${1-origin}
 
 opts=""
-if [ $force -eq 1 ]; then
+if [ "$force" -eq 1 ]; then
     opts="--force-with-lease"
 fi
 
-git push $opts -u "$remote" "$curr"
+git push "$opts" -u "$remote" "$curr"

@@ -19,11 +19,12 @@ while getopts aAh flag; do
         a) all_committers=1;;
         A) all_branches=1;;
         h) usage; exit 2;;
+        *) usage; exit 2;;
     esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 
-if [ $all_committers -eq 1 ]; then
+if [ "$all_committers" -eq 1 ]; then
     committers=$(git shortlog -s | cut -f2-)
 else
     if [ $# -eq 0 ]; then
@@ -52,11 +53,11 @@ count_by_dow () {
     function round(x, ival, aval, fraction)
     {
         ival = int(x)    # integer part, int() truncates
-     
+
         # see if fractional part
         if (ival == x)   # no fraction
            return ival   # ensure no decimals
-     
+
         if (x < 0) {
            aval = -x     # absolute value
            ival = int(aval)
@@ -73,7 +74,7 @@ count_by_dow () {
               return ival
         }
     }
-     
+
     END {
         total = map["Mon"] + map["Tue"] + map["Wed"] + map["Thu"] + map["Fri"] + map["Sat"] + map["Sun"]
         printf("%s %6s %4s%%\n", "Mon", map["Mon"], round(map["Mon"] / total * 100))
@@ -94,17 +95,17 @@ indent () {
 }
 
 opts=""
-if [ $all_branches -eq 1 ]; then
+if [ "$all_branches" -eq 1 ]; then
     opts="--all"
 fi
 
 first=1
-echo "$committers" | while read committer; do
-    if [ $first -ne 1 ]; then
+echo "$committers" | while read -r committer; do
+    if [ "$first" -ne 1 ]; then
         echo ""
     else
         first=0
     fi
     echo "$committer:"
-    git log $opts --author="$committer" --format="%ad" | count_by_dow | indent
+    git log "$opts" --author="$committer" --format="%ad" | count_by_dow | indent
 done

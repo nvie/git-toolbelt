@@ -17,14 +17,15 @@ while getopts fh flag; do
     case "$flag" in
         f) force=1;;
         h) usage; exit 2;;
+        *) usage; exit 2;;
     esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 
-if [ $force -eq 1 ]; then
+if [ "$force" -eq 1 ]; then
     opts="--hard"
 else
     opts="--soft"
 fi
 
-git reset $opts HEAD~1
+git reset "$opts" HEAD~1

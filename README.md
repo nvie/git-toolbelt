@@ -4,8 +4,8 @@
 
 # Installation instructions
 
-    $ brew tap nvie/tap
-    $ brew install nvie/tap/git-toolbelt
+    brew tap nvie/tap
+    brew install nvie/tap/git-toolbelt
 
 If not using Homebrew, you will need to have [GNU coreutils][coreutils]
 installed, for the `realpath` utility. Git for Windows users see [#29](https://github.com/nvie/git-toolbelt/issues/29).
@@ -23,7 +23,9 @@ Everyday helpful commands:
 * ⭐️ [git-fixup](#git-fixup)
 * ⭐️ [git-fixup-with](#git-fixup-with)
 * ⭐️ [git-active-branches](#git-local-branches--git-remote-branches--git-active-branches)
-- ⭐️ [git-diff-since](#git-diff-since)
+
+* ⭐️ [git-diff-since](#git-diff-since)
+
 * [git-local-branches](#git-local-branches--git-remote-branches--git-active-branches)
 * [git-local-commits](#git-local-commits)
 * [git-merged / git-unmerged / git-merge-status](#git-merged--git-unmerged--git-merge-status)
@@ -78,8 +80,6 @@ Advanced usage:
 * ⭐️ [git-shatter-by-file](#git-shatter-by-file)
 * ⭐️ [git-cleave](#git-cleave)
 
-
-
 ### git current-branch
 
 Returns the name of the current branch, if any.  Why doesn't this come with git?
@@ -90,7 +90,6 @@ master
 ```
 
 Alias to `git rev-parse --abbrev-ref HEAD`.
-
 
 ### git main-branch
 
@@ -105,14 +104,13 @@ $ git main-branch
 master
 ```
 
-
 ### git sha
 
 Returns the SHA value for the specified object, or the current branch head, if
 nothing is provided.
 
 ```console
-$ git sha <some-object>
+git sha <some-object>
 ```
 
 Typical example:
@@ -126,7 +124,6 @@ f688d75
 
 Shows the commit SHA for the latest commit.
 
-
 ### git modified
 
 Returns a list of locally modified files.  In contrast to git status, it does
@@ -135,15 +132,14 @@ not include any detailed file status, and never includes non-existing files.
 This makes it ideal for the following use-case:
 
 ```console
-$ vim (git modified)
+vim (git modified)
 ```
 
 If you want to locally modified files that are already staged, too, use:
 
 ```console
-$ vim (git modified -i)
+vim (git modified -i)
 ```
-
 
 ### git modified-since
 
@@ -155,9 +151,8 @@ files.
 Opens all files modified on your branch (since you branched off `master`).
 
 ```console
-$ vim (git modified-since)
+vim (git modified-since)
 ```
-
 
 ### git separator
 
@@ -165,7 +160,6 @@ Adds a commit with a message of only ---'s, so that it visually separates
 commits in the history.  This is incredibly useful when doing more complex
 rebase operations.  (They should be used as a temporary measure, and ideally
 taken out of the history again when done rebasing.)
-
 
 ### git spinoff
 
@@ -179,7 +173,6 @@ current branch is not touched.
 This is useful to create a feature branch after work has already
 began on the old branch (likely but not necessarily "master").
 
-
 ### git push-current
 
 Pushed the current branch out to `origin`, and makes sure to setup tracking of
@@ -188,11 +181,10 @@ the remote branch.  Shorthand for `git push -u origin <current-branch>`.
 Accepts options, too, so you can use
 
 ```console
-$ git push-current -f
+git push-current -f
 ```
 
 to force-push.
-
 
 ### git is-headless
 
@@ -215,11 +207,9 @@ specified using either `git active-branches -s <date>` or `-a <date>`
 (mnemonic: "since" or "after"), using any date format
 [supported by `git log`][gitlog].
 
-
 ### git local-branch-exists / git remote-branch-exists / git tag-exists
 
 Tests if the given local branch, remote branch, or tag exists.
-
 
 ### git recent-branches
 
@@ -231,12 +221,10 @@ Returns a list of local branches, ordered by recency:
     bar
     qux
 
-
 ### git remote-tracking-branch
 
 Print the name of the remote tracking branch of the current or
 given local branch name, if one exists.  Errors otherwise.
-
 
 ### git local-commits / git has-local-commits
 
@@ -244,19 +232,17 @@ Returns a list of commits that are still in your local repo, but haven't been
 pushed to `origin`.  `git has-local-commits` is the scriptable equivalent that
 only returns an exit code if such commits exist.
 
-
 ### git contains / git is-ancestor
 
 Tests if X is merged into Y:
 
-    $ git contains X Y  # does X contain Y?
-    $ git is-ancestor X Y  # is X an ancestor of Y?
+    git contains X Y  # does X contain Y?
+    git is-ancestor X Y  # is X an ancestor of Y?
 
 **CAVEAT:**
 Even though they might look like opposites, `X contains Y` does not mean `not
 (X is-ancestor Y)`, since (1) X and Y can point to the same commit, or the
 branches may have no common history and thus be unrelated completely.
-
 
 ### git stage-all
 
@@ -265,19 +251,16 @@ removes files, etc.
 
 Alias to `git add --all`.
 
-
 ### git unstage-all
 
 Unstages everything.  Leaves the working tree intact.
 
 Alias to `git reset HEAD`.
 
-
 ### git undo-merge
 
 Ever created a merge accidentally, or decided that you didn't want to merge
 after all?  You can undo the last merge using `git undo-merge`.
-
 
 ### git undo-commit
 
@@ -286,24 +269,21 @@ undo your last commit and you won't lose any data.  All the changes in the
 commit will be staged (like right before the commit) and the commit itself is
 gone.
 
-
 ### git cleanup
 
 Deletes all branches that have already been merged into the main branch. Keeps
 other branches lying around.  Removes branches both locally and in the origin
 remote.  Will be most conservative with deletions.
 
-
 ### git fixup
 
 Amend all local staged changes into the last commit. Ideal for fixing typo's,
 when you don't want to re-edit the commit message.
 
-    $ git commit -m "Something cool."
-    $ vim somefile.txt  # fix typo
-    $ git add somefile.txt
-    $ git fixup  # merge this little change back into the last commit
-
+    git commit -m "Something cool."
+    vim somefile.txt  # fix typo
+    git add somefile.txt
+    git fixup  # merge this little change back into the last commit
 
 ### git fixup-with
 
@@ -311,13 +291,11 @@ Interactively lets you pick a commit to fixup with.  (Uses `fzf` for the
 interactive picking.  Use `brew install fzf` to install this tool separately.)
 Use `-r` to trigger an interactive rebase right afterwards.
 
-
 ### git workon
 
 Convenience command for quickly switching to a branch `<name>`. If such local
 branch does not exist, but there is a remote branch named `origin/<name>`, then
 a local branch is created and the remote is tracked.
-
 
 ### git delouse
 
@@ -327,7 +305,6 @@ changes back into the working tree.
 
 Since the commit remains in history, you can now rebuild the commit by "git
 amend"'ing or "git fixup"'ing, instead of making new commits.
-
 
 ### git shatter-by-file
 
@@ -341,7 +318,6 @@ After running `git shatter-by-file`, you'll typically want to run `git rebase
 original commit message is kept in there (in the empty first commit), so make
 sure to use it.
 
-
 ### git cleave
 
 Splits the last commit into 2 or more commits. Takes one or more regex values
@@ -350,7 +326,7 @@ matching each of the regexes.
 
 For example:
 
-    $ git cleave client/ server/
+    git cleave client/ server/
 
 Will split the last commit into 2 (or 3) commits. The first one will contain
 all the files containing `client/`, the second will contain all the files
@@ -359,10 +335,9 @@ a 3rd commit will be made with the "remainder".
 
 Another example:
 
-    $ git cleave '.*\.js$'
+    git cleave '.*\.js$'
 
 This will split off all Javascript files from a commit.
-
 
 ### git commit-to
 
@@ -381,7 +356,6 @@ commit-to will allow you to do so, without checking out the branch necessarily.
     $ git add bar.txt
     $ git commit -m "Add bar to mybranch."
 
-
 ### git cherry-pick-to
 
 Every been on a branch, just made a commit, but really want that commit
@@ -399,12 +373,10 @@ conflict.)
       master
     * mybranch
 
-
 ### git is-repo
 
 Helper function that determines whether the current directory has a Git repo
 associated to it.  Scriptable equivalent of `git repo`.
-
 
 ### git root / git repo
 
@@ -428,7 +400,6 @@ in a repo.
     $ git repo
     fatal: Not a git repository (or any of the parent directories): .git
 
-
 ### git initial-commit
 
 `git initial-commit` prints the initial commit for the repo.
@@ -436,12 +407,10 @@ in a repo.
     $ git initial-commit
     48c94a6a29e9e52ab63ce0fab578101ddc56a04f
 
-
 ### git has-local-changes / git is-clean / git is-dirty
 
 Helper function that determines whether there are local changes in the working
 tree, by returning a 0 (local changes) or 1 (no local changes) exit code.
-
 
 ### git drop-local-changes
 
@@ -455,7 +424,6 @@ committed remains safe.
 
 ??? issue a git pull, too? Typical beginners will want this.
 
-
 ### git stash-everything
 
 The stash behaviour you (probably) always wanted.  This actually stashes
@@ -465,14 +433,12 @@ your untracked files, leaving a totally clean working tree.
 Using "git stash pop" will recover all changes, including index state, locally
 modified files, and untracked files.
 
-
 ### git update-all
 
 Updates all local branch heads to the remote's equivalent.  This is the same as
 checking out all local branches one-by-one and pulling the latest upstream
 changes.  Will only update if a pull succeeds cleanly (i.e. is a fast-forward
 pull).
-
 
 ### git-merged / git-unmerged / git-merge-status
 
@@ -483,7 +449,6 @@ merged into the target branch (defaults to master).
 git-merge-status is a useful command that presents both lists in a single
 overview (not for machine processing).
 
-
 ### git-branches-containing
 
 This command, "git branches-containing [<object>]" returns a list of branches
@@ -493,12 +458,10 @@ git-branches-containing is useful to see if a branch has been merged, and,
 if so, which releases contain the feature/fix (if you use release
 branches).
 
-
 ### git-committer-info
 
 Shows contribution stats for the given committer, like "most productive day",
 "most productive hour", "average commit size", etc.
-
 
 ### TODO: git force-checkout
 
@@ -521,7 +484,6 @@ a branch anyway. **You do agree to lose data when using this command.**
     $ git force-checkout master
     Switched to branch 'master'
 
-
 ### git conflicts
 
 Generates a summary for all local branches that will merge uncleanly—i.e. will
@@ -536,7 +498,6 @@ lead to merge conflicts later on.
     develop... merges cleanly
     master...  merges cleanly
     other-branch... CONFLICTS AHEAD
-
 
 ### git-skip / git-unskip / git-show-skipped
 
@@ -576,7 +537,6 @@ As you can see, `git-is-clean` is aware of any lurking "skipped" files, and
 won't report a clean working tree, as these assumed unchanged files often block
 the ability to check out different branches.
 
-
 ### git wip
 
 Commits all local changes under a commit message of "WIP". Great for quickly
@@ -584,7 +544,6 @@ creating "savepoint" commits.  If there is a mix of staged changes, and
 unstaged changes, and new files, will commit each of these as a separate
 commit, all titled "WIP". Effectively, running `git-wip` once will potentially
 lead to anywhere between 0 and 3 "WIP" commits being created.
-
 
 [coreutils]: https://www.gnu.org/software/coreutils/
 [gitlog]: https://git-scm.com/book/en/v2/Git-Basics-Viewing-the-Commit-History#_limiting_log_output

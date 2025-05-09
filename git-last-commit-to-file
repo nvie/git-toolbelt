@@ -15,9 +15,10 @@ usage () {
 while getopts h flag; do
     case "$flag" in
         h) usage; exit 2;;
+        *) usage; exit 2;;
     esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 
 if [ $# -lt 1 ]; then
     usage

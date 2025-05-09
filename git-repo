@@ -14,11 +14,12 @@ while getopts qh flag; do
     case "$flag" in
         q) quiet=1;;
         h) usage; exit 2;;
+        *) usage; exit 2;;
     esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 
-if [ $quiet -eq 1 ]; then
+if [ "$quiet" -eq 1 ]; then
     git rev-parse --git-dir >/dev/null 2>/dev/null
 else
     git rev-parse --git-dir

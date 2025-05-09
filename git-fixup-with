@@ -20,9 +20,10 @@ while getopts rh flag; do
     case "$flag" in
         r) rebase=1;;
         h) usage; exit 2;;
+        *) usage; exit 2;;
     esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 
 # Make sure the index is dirty, otherwise there isn\'t anything to fixup
 git is-dirty -i
@@ -42,12 +43,12 @@ else
 fi
 
 sha="$(git log "${base}.." --pretty='%h %s' | fzf | cut -d' ' -f1)"
-if [ -z "$sha" ]; then
+if [ "$sha" = "" ]; then
     echo 'No commit picked' >&2
     exit 3
 fi
 
 git commit --fixup "$sha" --no-verify --allow-empty
-if [ $rebase -eq 1 ]; then
+if [ "$rebase" -eq 1 ]; then
     git rebase --interactive --autosquash --autostash --keep-empty "$sha"~
 fi

@@ -20,9 +20,10 @@ while getopts rqh flag; do
         r) remotes=1;;
         q) quiet=1;;
         h) usage; exit 2;;
+        *) usage; exit 2;;
     esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 
 if git is-dirty; then
     echo "Can't check when you have local changes." >&2
@@ -34,9 +35,9 @@ if [ "$remotes" -eq 1 ]; then
 else
     branches="$(git local-branches)"
 fi
-for branch in $branches; do
+for branch in "${branches[@]}"; do
     if git merges-cleanly "$branch"; then
-        if [ $quiet -eq 0 ]; then
+        if [ "$quiet" -eq 0 ]; then
             echo "$branch... merges cleanly"
         fi
     else
