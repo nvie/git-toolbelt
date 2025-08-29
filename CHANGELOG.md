@@ -1,5 +1,9 @@
 # Unreleased
 
+# v1.9.4
+
+- Fix: recognize `production` as a valid main branch
+
 # v1.9.3
 
 - Fix: use main branch in `git-merged` (instead of hardcoding `master`)
