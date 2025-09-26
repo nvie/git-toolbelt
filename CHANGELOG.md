@@ -1,5 +1,7 @@
 # Unreleased
 
+- Fetch before checking out in `git-workon`
+
 # v1.9.4
 
 - Fix: recognize `production` as a valid main branch

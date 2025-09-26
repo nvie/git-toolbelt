@@ -15,6 +15,7 @@ fi
 if git local-branch-exists "$branch"; then
     git checkout "$branch"
 else
+    git fetch origin
     if git remote-branch-exists origin "$branch"; then
         git checkout -b "$branch" "origin/$branch"
     else
