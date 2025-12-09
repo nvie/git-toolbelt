@@ -8,7 +8,8 @@
     $ brew install nvie/tap/git-toolbelt
 
 If not using Homebrew, you will need to have [GNU coreutils][coreutils]
-installed, for the `realpath` utility. Git for Windows users see [#29](https://github.com/nvie/git-toolbelt/issues/29).
+installed, for the `realpath` utility. Git for Windows users see
+[#29](https://github.com/nvie/git-toolbelt/issues/29).
 
 # git-toolbelt
 
@@ -23,9 +24,7 @@ Everyday helpful commands:
 - ⭐️ [git-fixup](#git-fixup)
 - ⭐️ [git-fixup-with](#git-fixup-with)
 - ⭐️ [git-active-branches](#git-local-branches--git-remote-branches--git-active-branches)
-
 * ⭐️ [git-diff-since](#git-diff-since)
-
 - [git-local-branches](#git-local-branches--git-remote-branches--git-active-branches)
 - [git-local-commits](#git-local-commits)
 - [git-merged / git-unmerged / git-merge-status](#git-merged--git-unmerged--git-merge-status)

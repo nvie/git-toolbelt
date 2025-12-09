@@ -10,7 +10,8 @@ usage () {
     echo "If a commit is provided, opens all files that locally exist that have been " >&2
     echo "changed in that commit." >&2
     echo >&2
-    echo "This script is ideal for passing all locally modified files into your editor, like:" >&2
+    echo "This script is ideal for passing locally modified files to your editor, like:" >&2
+    echo >&2
     echo '    $ vim `git modified`' >&2
     echo >&2
     echo "Options:" >&2
@@ -82,20 +83,30 @@ make_relative () {
     done
 }
 
+get_last_column () {
+    # returns the last of a row of tab-separated values (see #58)
+    # literal tab, in case of old seds that don't understand '\t' in patterns
+    local TAB='	'
+    sed "s/.*$TAB\\([^$TAB][^$TAB]*\\)\$/\\1/"
+}
+
 modified_in_index () {
     status | cut -c 4- | fix_rename_notation | make_relative
 }
 
 modified_unmerged () {
-    status | grep -Ee '^(U.|.U)' | cut -c 4- | fix_rename_notation | make_relative
+    status | grep -Ee '^(U.|.U)' | cut -c 4- | fix_rename_notation \
+      | make_relative
 }
 
 modified_only_locally () {
-    status | cut -c 2- | grep -Ee '^M' | cut -c 3- | fix_rename_notation | make_relative
+    status | cut -c 2- | grep -Ee '^M' | cut -c 3- | fix_rename_notation \
+      | make_relative
 }
 
 modified_locally () {
-    status | cut -c 2- | grep -vEe '^[ ]' | cut -c 3- | fix_rename_notation | make_relative
+    status | cut -c 2- | grep -vEe '^[ ]' | cut -c 3- | fix_rename_notation \
+      | make_relative
 }
 
 fail_if_empty () {
@@ -120,8 +131,8 @@ if [ -z "$commit" ]; then
         modified_locally | fail_if_empty
     fi
 else
-    TAB="	" # literal tab char
-    git log -1 --name-status --pretty=format:"" "$commit" | cut -f2- | rev | cut -d"$TAB" -f1 | rev | make_relative | while read f; do
+    git log -1 --name-status --pretty=format:"" "$commit" | get_last_column \
+      | make_relative | while read f; do
         if [ -f "$f" ]; then
             echo "$f"
         fi
