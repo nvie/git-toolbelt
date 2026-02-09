@@ -1,12 +1,26 @@
 #!/bin/sh
 set -eu
 
-for probe in $toolbelt_main main mainline production master; do
+test_symbolic_ref() {
+    local symbolic_ref_main=$(git symbolic-ref refs/remotes/origin/HEAD | cut -d'/' -f4)
+    if [ -n "$symbolic_ref_main" ]; then
+        echo $symbolic_ref_main
+        exit 0
+    fi
+}
+
+test_symbolic_ref
+
+for probe in main mainline production master; do
     if git local-branch-exists "$probe"; then
         echo "$probe"
         exit 0
     fi
 done
+
+# Make an expensive network call to set this
+git remote set-head origin --auto
+test_symbolic_ref
 
 echo "No main branch found" >&2
 exit 2
