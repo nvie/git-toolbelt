@@ -1,3 +1,3 @@
 #!/bin/sh
 set -eu
-git repo -q
+git root 2>/dev/null >/dev/null
