@@ -1,12 +1,33 @@
 #!/bin/sh
 set -eu
 
-for probe in main mainline production master; do
+# Bail early with git's own error message if not in a repo
+git is-repo
+
+probe_branch_name() {
+    local full_ref="$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null)"
+    local branch_name="${full_ref#refs/remotes/origin/}"
+    if [ -n "$branch_name" ]; then
+        echo "$branch_name"
+        exit 0
+    fi
+}
+
+# Step 1: Check what the origin's HEAD points to (fast, local-only)
+probe_branch_name
+
+# Step 2: If no origin exists (e.g. newly initialized repo), try common branch names
+for probe in main mainline master production; do
     if git local-branch-exists "$probe"; then
         echo "$probe"
         exit 0
     fi
 done
+
+# Step 3: Ask the remote for its HEAD (expensive network call, but only needed once)
+if git remote set-head origin --auto 2>/dev/null; then
+    probe_branch_name
+fi
 
 echo "No main branch found" >&2
 exit 2
