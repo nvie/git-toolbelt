@@ -1,5 +1,7 @@
 # Unreleased
 
+# v1.10.0
+
 - Improve `git-main-branch` to auto-detect the main branch name from the remote
   (thanks @theaccountingnerd!)
 - Remove `git-repo` (conflicts with new built-in `git repo` subcommand)
