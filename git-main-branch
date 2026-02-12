@@ -1,6 +1,9 @@
 #!/bin/sh
 set -eu
 
+# Bail early with git's own error message if not in a repo
+git is-repo
+
 probe_branch_name() {
     local full_ref="$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null)"
     local branch_name="${full_ref#refs/remotes/origin/}"
