@@ -10,8 +10,10 @@ probe_branch_name() {
     fi
 }
 
+# Step 1: Check what the origin's HEAD points to (fast, local-only)
 probe_branch_name
 
+# Step 2: If no origin exists (e.g. newly initialized repo), try common branch names
 for probe in main mainline production master; do
     if git local-branch-exists "$probe"; then
         echo "$probe"
@@ -19,7 +21,7 @@ for probe in main mainline production master; do
     fi
 done
 
-# Make an expensive network call to set this
+# Step 3: Ask the remote for its HEAD (expensive network call, but only needed once)
 if git remote set-head origin --auto 2>/dev/null; then
     probe_branch_name
 fi
