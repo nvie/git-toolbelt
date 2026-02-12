@@ -1,5 +1,6 @@
 # Unreleased
 
+- Remove `git-repo` (conflicts with new built-in `git repo` subcommand)
 - Fetch before checking out in `git-workon`
 
 # v1.9.4

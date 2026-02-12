@@ -33,7 +33,6 @@ Everyday helpful commands:
 - [git-recent-branches](#git-recent-branches)
 - [git-remote-branches](#git-local-branches--git-remote-branches--git-active-branches)
 - [git-remote-tracking-branch](#git-remote-tracking-branch)
-- [git-repo](#git-repo)
 - [git-root](#git-root)
 - [git-initial-commit](#git-initial-commit)
 - ⭐️ [git-sha](#git-sha)
@@ -374,9 +373,9 @@ conflict.)
 ### git is-repo
 
 Helper function that determines whether the current directory has a Git repo
-associated to it. Scriptable equivalent of `git repo`.
+associated to it.
 
-### git root / git repo
+### git root
 
 `git root` prints the root location of the working tree.
 
@@ -386,17 +385,6 @@ associated to it. Scriptable equivalent of `git repo`.
     /path/to/worktree/some/project/dir
     $ git root
     /path/to/worktree
-
-`git repo` prints the location of the Git directory, typically `.git`, but
-could differ based on your setup. Will return with a non-zero exit code if not
-in a repo.
-
-    $ cd /path/to/my/worktree
-    $ git repo
-    .git
-    $ cd /tmp
-    $ git repo
-    fatal: Not a git repository (or any of the parent directories): .git
 
 ### git initial-commit
 
