@@ -1,15 +1,16 @@
 #!/bin/sh
 set -eu
 
-probe_symbolic_ref() {
-    local symbolic_ref_main=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | cut -d'/' -f4)
-    if [ -n "$symbolic_ref_main" ]; then
-        echo $symbolic_ref_main
+probe_branch_name() {
+    local full_ref="$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null)"
+    local branch_name="${full_ref#refs/remotes/origin/}"
+    if [ -n "$branch_name" ]; then
+        echo "$branch_name"
         exit 0
     fi
 }
 
-probe_symbolic_ref
+probe_branch_name
 
 for probe in main mainline production master; do
     if git local-branch-exists "$probe"; then
@@ -20,7 +21,7 @@ done
 
 # Make an expensive network call to set this
 if git remote set-head origin --auto 2>/dev/null; then
-    probe_symbolic_ref
+    probe_branch_name
 fi
 
 echo "No main branch found" >&2
