@@ -83,19 +83,27 @@ cleanup () {
 }
 trap cleanup EXIT
 
+# Save original commit hashes (author info will be read from them later)
+author_info="$(mktemp)"
+git log --reverse --format='%H' "$base"..HEAD > "$author_info"
+
 # Pass 1: inject command after each commit
 export GIT_WIRE_THROUGH_COMMAND="$command"
 export GIT_WIRE_THROUGH_CWD="$wire_through_cwd"
 if ! GIT_SEQUENCE_EDITOR="git wire-through--inject" git rebase -i "$base"; then
+    rm -f "$author_info"
     failed=1
     exit 1
 fi
 
 # Pass 2: collapse [fixup-wire-through] commits
+export GIT_WIRE_THROUGH_AUTHOR_INFO="$author_info"
 if ! GIT_SEQUENCE_EDITOR="git wire-through--collapse" git rebase -i "$base"; then
+    rm -f "$author_info"
     failed=1
     exit 1
 fi
+rm -f "$author_info"
 
 # Success: move original branch forward
 result_sha="$(git sha HEAD)"
