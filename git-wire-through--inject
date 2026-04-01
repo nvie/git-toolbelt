@@ -1,0 +1,52 @@
+#!/bin/sh
+set -eu
+
+# GIT_SEQUENCE_EDITOR for pass 1 of git-wire-through.
+# Injects exec lines after each picked commit to run the command,
+# stage changes, create a [fixup-wire-through] commit, and revert it.
+
+command="${GIT_WIRE_THROUGH_COMMAND:?GIT_WIRE_THROUGH_COMMAND not set}"
+cwd="${GIT_WIRE_THROUGH_CWD:-.}"
+todo_file="$1"
+temp_file="$(mktemp)"
+
+root_cmd='cd "$(git rev-parse --show-toplevel)"'
+exec_mid="exec (cd \"$cwd\" && $command) && $root_cmd && git add --all && git commit --no-verify -m '[fixup-wire-through]' --allow-empty && git revert --no-commit HEAD && git commit --no-verify -m '[revert-wire-through]' --allow-empty"
+exec_last="exec (cd \"$cwd\" && $command) && $root_cmd && git add --all && git commit --no-verify -m '[fixup-wire-through]' --allow-empty"
+
+# Count pick lines
+count="$(grep -c '^pick ' "$todo_file" || true)"
+
+if [ "$count" -eq 0 ]; then
+    echo "error: no pick lines found in rebase todo" >&2
+    rm -f "$temp_file"
+    exit 1
+fi
+
+# Write new todo: inject exec after every pick
+# Middle commits: run command + fixup + revert (revert undone by next commit)
+# Last commit: run command + fixup only (no revert needed)
+i=0
+while IFS= read -r line; do
+    case "$line" in
+        "pick "*)
+            i=$((i + 1))
+            echo "$line" >> "$temp_file"
+            if [ "$i" -lt "$count" ]; then
+                echo "$exec_mid" >> "$temp_file"
+            else
+                echo "$exec_last" >> "$temp_file"
+            fi
+            ;;
+        "#"*|"")
+            # skip comments and blank lines
+            ;;
+        *)
+            echo "error: unexpected line in rebase todo: $line" >&2
+            rm -f "$temp_file"
+            exit 1
+            ;;
+    esac
+done < "$todo_file"
+
+mv "$temp_file" "$todo_file"
