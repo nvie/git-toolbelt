@@ -3,13 +3,16 @@ set -eu
 
 # GIT_SEQUENCE_EDITOR for pass 2 of git-wire-through.
 # Collapses [fixup-wire-through] / [revert-wire-through] commits back
-# into the original commits.
+# into the original commits, preserving original author info.
+
+author_info="${GIT_WIRE_THROUGH_AUTHOR_INFO:?GIT_WIRE_THROUGH_AUTHOR_INFO not set}"
 
 todo_file="$1"
 temp_file="$(mktemp)"
 trap 'rm -f "$temp_file"' EXIT
 
 skip_next_as_fixup_c=0
+commit_index=1
 
 while IFS= read -r line; do
     case "$line" in
@@ -22,6 +25,10 @@ while IFS= read -r line; do
             echo "fixup $rest" >> "$temp_file"
             ;;
         pick\ *\[revert-wire-through\]*)
+            # Emit author fix for the preceding commit group
+            original_hash="$(sed -n "${commit_index}p" "$author_info")"
+            echo "exec git wire-through--fix-author-date $original_hash" >> "$temp_file"
+            commit_index=$((commit_index + 1))
             # Keep this line as-is, but the NEXT pick becomes fixup -C
             echo "$line" >> "$temp_file"
             skip_next_as_fixup_c=1
@@ -40,5 +47,9 @@ while IFS= read -r line; do
             ;;
     esac
 done < "$todo_file"
+
+# Emit author fix for the last commit group
+original_hash="$(sed -n "${commit_index}p" "$author_info")"
+echo "exec git wire-through--fix-author-date $original_hash" >> "$temp_file"
 
 mv "$temp_file" "$todo_file"
