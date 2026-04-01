@@ -1,0 +1,112 @@
+#!/bin/sh
+set -eu
+
+usage () {
+    echo "usage: git wire-through [-h] [--base=<base>] <command...>" >&2
+    echo >&2
+    echo "Runs <command> after every commit in <base>..HEAD and folds the" >&2
+    echo "results back into each commit, as if the command had always been" >&2
+    echo "applied." >&2
+    echo >&2
+    echo "The command runs in the current working directory, but any side" >&2
+    echo "effects elsewhere in the repo are also captured." >&2
+    echo >&2
+    echo "Options:" >&2
+    echo "  --base=<ref>  Base commit (default: merge-base with upstream tracking branch)" >&2
+    echo "  -h, --help    Show this help" >&2
+    exit 2
+}
+
+# Parse options
+base=""
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -h|--help) usage ;;
+        --base=*) base="${1#--base=}"; shift ;;
+        --base)
+            if [ $# -lt 2 ]; then
+                echo "error: --base requires a value" >&2
+                exit 1
+            fi
+            base="$2"; shift 2 ;;
+        *) break ;;
+    esac
+done
+
+if [ $# -eq 0 ]; then
+    usage
+fi
+
+command="$*"
+
+# Guards
+git is-clean -v
+
+original_branch="$(git current-branch)"
+original_sha="$(git sha HEAD)"
+
+# Default base: merge-base with upstream tracking branch
+if [ -z "$base" ]; then
+    base="$(git merge-base HEAD "@{upstream}")"
+fi
+
+# Record cwd relative to repo root
+root="$(git rev-parse --show-toplevel)"
+current_dir="$(pwd -P)"
+if [ "$current_dir" = "$root" ]; then
+    wire_through_cwd="."
+else
+    wire_through_cwd="${current_dir#"$root"/}"
+fi
+
+tmp_branch="tmp-wire-through/$original_branch"
+
+# Ensure temp branch doesn't already exist
+if git local-branch-exists "$tmp_branch"; then
+    echo "error: temp branch '$tmp_branch' already exists; delete it first" >&2
+    exit 1
+fi
+
+# Create temp branch
+git checkout -q -b "$tmp_branch"
+
+# Cleanup trap: on failure, restore original branch
+failed=0
+cleanup () {
+    if [ "$failed" -eq 1 ]; then
+        git rebase --abort 2>/dev/null || true
+        git checkout -q "$original_branch" 2>/dev/null || true
+        git branch -D "$tmp_branch" 2>/dev/null || true
+        echo "" >&2
+        echo "wire-through failed. $original_branch is unchanged at $original_sha." >&2
+    fi
+}
+trap cleanup EXIT
+
+# Pass 1: inject command after each commit
+export GIT_WIRE_THROUGH_COMMAND="$command"
+export GIT_WIRE_THROUGH_CWD="$wire_through_cwd"
+if ! GIT_SEQUENCE_EDITOR="git wire-through--inject" git rebase -i "$base"; then
+    failed=1
+    exit 1
+fi
+
+# Pass 2: collapse [fixup-wire-through] commits
+if ! GIT_SEQUENCE_EDITOR="git wire-through--collapse" git rebase -i "$base"; then
+    failed=1
+    exit 1
+fi
+
+# Success: move original branch forward
+result_sha="$(git sha HEAD)"
+git checkout -q "$original_branch"
+git reset --hard "$result_sha"
+git branch -D "$tmp_branch"
+
+echo "Done. All commits in $original_branch now include effects of: $command"
+echo ""
+echo "  before: $original_sha"
+echo "  after:  $result_sha"
+echo ""
+echo "To verify:  git diff $original_sha..$result_sha"
+echo "To revert:  git reset --hard $original_sha"

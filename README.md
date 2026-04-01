@@ -78,6 +78,7 @@ Advanced usage:
 - ⭐️ [git-delouse](#git-delouse)
 - ⭐️ [git-shatter-by-file](#git-shatter-by-file)
 - ⭐️ [git-cleave](#git-cleave)
+- ⭐️ [git-wire-through](#git-wire-through) 🧪
 
 ### git current-branch
 
@@ -522,6 +523,37 @@ Basic usage:
 As you can see, `git-is-clean` is aware of any lurking "skipped" files, and
 won't report a clean working tree, as these assumed unchanged files often block
 the ability to check out different branches.
+
+### git wire-through
+
+> 🧪 **Experimental** — this command is new and its interface may change.
+
+Runs a command after every commit in `<base>..HEAD` and folds the results back
+into each commit, as if the command had always been applied. Useful for
+re-running formatters, linters with `--fix`, or code generators across
+a branch.
+
+```console
+$ git wire-through prettier --write .
+Done. All commits in my-feature now include effects of: prettier --write .
+
+  before: a1b2c3d
+  after:  e4f5g6h
+
+To verify:  git diff a1b2c3d..e4f5g6h
+To revert:  git reset --hard a1b2c3d
+```
+
+By default, the base is the merge-base with the upstream tracking branch. You
+can override it:
+
+```console
+$ git wire-through --base=main eslint --fix .
+```
+
+This command runs atomically. Every invocation of your command must succeed
+(exit 0) on every commit. If it fails, the whole operation gets aborted and
+your branch is left unchanged.
 
 ### git wip
 
