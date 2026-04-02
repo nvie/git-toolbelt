@@ -20,9 +20,9 @@ while IFS= read -r line; do
             echo "$line" >> "$temp_file"
             ;;
         pick\ *\[fixup-wire-through\]*)
-            # Turn into fixup — squash into preceding commit
-            rest="${line#pick }"
-            echo "fixup $rest" >> "$temp_file"
+            # Squash into preceding commit via exec (fixup refuses empty results)
+            echo "$line" >> "$temp_file"
+            echo "exec git reset --soft HEAD~1 && git commit --amend --no-edit --no-verify --allow-empty" >> "$temp_file"
             ;;
         pick\ *\[revert-wire-through\]*)
             # Emit author fix for the preceding commit group
