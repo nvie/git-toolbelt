@@ -35,8 +35,10 @@ while IFS= read -r line; do
             ;;
         pick\ *)
             if [ "$skip_next_as_fixup_c" -eq 1 ]; then
-                rest="${line#pick }"
-                echo "fixup -C $rest" >> "$temp_file"
+                # Squash into preceding commit, keeping this commit's message
+                # (fixup -C refuses empty results, so we do it manually)
+                echo "$line" >> "$temp_file"
+                echo "exec git reset --soft HEAD~1 && git commit --amend --no-verify --allow-empty -C HEAD@{1}" >> "$temp_file"
                 skip_next_as_fixup_c=0
             else
                 echo "$line" >> "$temp_file"
