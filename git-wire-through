@@ -90,7 +90,7 @@ git log --reverse --format='%H' "$base"..HEAD > "$author_info"
 # Pass 1: inject command after each commit
 export GIT_WIRE_THROUGH_COMMAND="$command"
 export GIT_WIRE_THROUGH_CWD="$wire_through_cwd"
-if ! GIT_SEQUENCE_EDITOR="git wire-through--inject" git rebase -i "$base"; then
+if ! GIT_SEQUENCE_EDITOR="git wire-through--inject" git rebase -i --empty=keep "$base"; then
     rm -f "$author_info"
     failed=1
     exit 1
@@ -98,7 +98,7 @@ fi
 
 # Pass 2: collapse [fixup-wire-through] commits
 export GIT_WIRE_THROUGH_AUTHOR_INFO="$author_info"
-if ! GIT_SEQUENCE_EDITOR="git wire-through--collapse" git rebase -i "$base"; then
+if ! GIT_SEQUENCE_EDITOR="git wire-through--collapse" git rebase -i --empty=keep "$base"; then
     rm -f "$author_info"
     failed=1
     exit 1
