@@ -8,4 +8,4 @@ hash="$1"
 export GIT_AUTHOR_NAME="$(git log --format='%an' -1 "$hash")"
 export GIT_AUTHOR_EMAIL="$(git log --format='%ae' -1 "$hash")"
 export GIT_AUTHOR_DATE="$(git log --format='%aI' -1 "$hash")"
-git commit --amend --reset-author --no-edit --no-verify
+git commit --amend --reset-author --no-edit --no-verify --allow-empty
