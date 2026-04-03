@@ -1,0 +1,61 @@
+#!/bin/sh
+set -eu
+
+usage () {
+    echo "usage: git edit-author-dates [-h] [<base>]" >&2
+    echo >&2
+    echo "Opens an interactive rebase with exec lines to edit author dates." >&2
+    echo "Each commit's current author date is pre-populated." >&2
+    echo >&2
+    echo "Options:" >&2
+    echo "  -h, --help    Show this help" >&2
+    exit 2
+}
+
+# Internal: act as GIT_SEQUENCE_EDITOR when called with --inject
+if [ "${1:-}" = "--inject" ]; then
+    todo_file="$2"
+    temp_file="$(mktemp)"
+
+    while IFS= read -r line; do
+        case "$line" in
+            "pick "*)
+                echo "$line" >> "$temp_file"
+                hash="${line#pick }"
+                hash="${hash%% *}"
+                author_date="$(git log --format='%aI' -1 "$hash")"
+                echo "exec git amend-date $author_date" >> "$temp_file"
+                ;;
+            *)
+                echo "$line" >> "$temp_file"
+                ;;
+        esac
+    done < "$todo_file"
+
+    mv "$temp_file" "$todo_file"
+
+    # Open the user's editor so they can adjust the dates
+    editor="${GIT_EDITOR:-${VISUAL:-${EDITOR:-vi}}}"
+    exec $editor "$todo_file"
+fi
+
+# Parse options
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -h|--help) usage ;;
+        -*) echo "error: unknown option: $1" >&2; usage ;;
+        *) break ;;
+    esac
+done
+
+base="${1:-}"
+
+# Guards
+git is-clean -v
+
+# Default base: merge-base with upstream tracking branch
+if [ -z "$base" ]; then
+    base="$(git merge-base HEAD "@{upstream}")"
+fi
+
+GIT_SEQUENCE_EDITOR="git edit-author-dates --inject" git rebase -i --empty=keep "$base"

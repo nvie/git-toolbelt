@@ -78,6 +78,7 @@ Advanced usage:
 - ⭐️ [git-delouse](#git-delouse)
 - ⭐️ [git-shatter-by-file](#git-shatter-by-file)
 - ⭐️ [git-cleave](#git-cleave)
+- [git-edit-author-dates](#git-edit-author-dates)
 
 ### git current-branch
 
@@ -522,6 +523,31 @@ Basic usage:
 As you can see, `git-is-clean` is aware of any lurking "skipped" files, and
 won't report a clean working tree, as these assumed unchanged files often block
 the ability to check out different branches.
+
+### git edit-author-dates
+
+Opens an interactive rebase with lines pre-populated with each commit's current
+author date. Edit the dates, save, and the rebase applies them.
+
+```console
+$ git edit-author-dates
+```
+
+You'll see something like:
+
+```
+pick abc123 Some commit
+exec git amend-date 2026-04-01T08:47:29+02:00
+pick def456 Another commit
+exec git amend-date 2026-04-01T09:17:31+02:00
+```
+
+By default, the base is the merge-base with the upstream tracking branch. You
+can pass an explicit base:
+
+```console
+$ git edit-author-dates HEAD~5
+```
 
 ### git wip
 

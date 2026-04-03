@@ -1,0 +1,21 @@
+#!/bin/sh
+set -eu
+
+# Amends HEAD to set both the author date and committer date.
+# The author name and email are preserved.
+
+if [ $# -ne 1 ]; then
+    echo "usage: git amend-date <date>" >&2
+    exit 2
+fi
+
+date="$1"
+
+# Strict ISO 8601 validation — reject anything ambiguous
+if ! printf '%s' "$date" | grep -qE '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}([+-][0-9]{2}:[0-9]{2}|Z)$'; then
+    echo "error: invalid date format: $date" >&2
+    echo "expected: YYYY-MM-DDTHH:MM:SS+HH:MM (strict ISO 8601)" >&2
+    exit 1
+fi
+
+GIT_COMMITTER_DATE="$date" git commit --no-verify --amend --date="$date" --allow-empty --no-edit --quiet
