@@ -1,4 +1,9 @@
-# Unreleased
+# v1.11.0
+
+- Add `git-edit-author-dates`: interactive rebase to edit author dates,
+  pre-populated with each commit's current date
+- Add `git-amend-date`: set both author and committer date on HEAD (strict
+  ISO 8601)
 
 # v1.10.0
 
