@@ -2,19 +2,22 @@
 set -eu
 
 usage () {
-    echo "usage: git edit-author-dates [-h] [<base>]" >&2
+    echo "usage: git edit-author-dates [-h] [--to <date>] [<base>]" >&2
     echo >&2
     echo "Opens an interactive rebase with exec lines to edit author dates." >&2
     echo "Each commit's current author date is pre-populated." >&2
     echo >&2
     echo "Options:" >&2
-    echo "  -h, --help    Show this help" >&2
+    echo "  -h, --help      Show this help" >&2
+    echo "  --to <date>     Shift all commits so the last one lands at <date>" >&2
+    echo "                  Use 'now' for the current date/time" >&2
     exit 2
 }
 
 # Internal: act as GIT_SEQUENCE_EDITOR when called with --inject
 if [ "${1:-}" = "--inject" ]; then
-    todo_file="$2"
+    shift_seconds="${2:-0}"
+    todo_file="$3"
     temp_file="$(mktemp)"
 
     while IFS= read -r line; do
@@ -23,8 +26,24 @@ if [ "${1:-}" = "--inject" ]; then
                 echo "$line" >> "$temp_file"
                 hash="${line#pick }"
                 hash="${hash%% *}"
-                author_date="$(git log --format='%aI' -1 "$hash")"
-                echo "exec git amend-date $author_date" >> "$temp_file"
+                author_epoch="$(git log --format='%at' -1 "$hash")"
+                tz="$(git log --format='%aI' -1 "$hash" | grep -oE '[+-][0-9]{2}:[0-9]{2}$')"
+                new_epoch=$((author_epoch + shift_seconds))
+
+                # Format the shifted epoch in the commit's original timezone
+                tz_sign="${tz%[0-9][0-9]:[0-9][0-9]}"
+                tz_rest="${tz#[+-]}"
+                tz_hours="${tz_rest%%:*}"
+                tz_mins="${tz_rest#*:}"
+                tz_offset_secs=$(( (${tz_hours#0} * 3600) + (${tz_mins#0} * 60) ))
+                if [ "$tz_sign" = "+" ]; then
+                    display_epoch=$((new_epoch + tz_offset_secs))
+                else
+                    display_epoch=$((new_epoch - tz_offset_secs))
+                fi
+                new_date="$(date -r "$display_epoch" -j -u '+%Y-%m-%dT%H:%M:%S' 2>/dev/null || date -u -d "@$display_epoch" '+%Y-%m-%dT%H:%M:%S')${tz}"
+
+                echo "exec git amend-date $new_date" >> "$temp_file"
                 ;;
             *)
                 echo "$line" >> "$temp_file"
@@ -40,15 +59,22 @@ if [ "${1:-}" = "--inject" ]; then
 fi
 
 # Parse options
+shift_target=""
+base=""
 while [ $# -gt 0 ]; do
     case "$1" in
         -h|--help) usage ;;
+        --to)
+            shift_target="${2:?missing argument for --to}"
+            shift; shift
+            ;;
         -*) echo "error: unknown option: $1" >&2; usage ;;
-        *) break ;;
+        *)
+            base="$1"
+            shift
+            ;;
     esac
 done
-
-base="${1:-}"
 
 # Guards
 git is-clean -v
@@ -58,4 +84,17 @@ if [ -z "$base" ]; then
     base="$(git merge-base HEAD "@{upstream}")"
 fi
 
-GIT_SEQUENCE_EDITOR="git edit-author-dates --inject" git rebase -i --empty=keep "$base"
+# Compute shift in seconds
+shift_seconds=0
+if [ -n "$shift_target" ]; then
+    # Use git's date parser (supports ISO 8601, relative dates like "2.hours.ago", etc.)
+    if ! max_age="$(git rev-parse --since="$shift_target" 2>/dev/null)" || [ -z "$max_age" ]; then
+        echo "error: invalid date: $shift_target" >&2
+        exit 1
+    fi
+    target_epoch="${max_age#--max-age=}"
+    last_epoch="$(git log --format='%at' -1 HEAD)"
+    shift_seconds=$((target_epoch - last_epoch))
+fi
+
+GIT_SEQUENCE_EDITOR="git edit-author-dates --inject $shift_seconds" git rebase -i --empty=keep "$base"
