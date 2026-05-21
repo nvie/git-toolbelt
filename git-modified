@@ -2,13 +2,15 @@
 set -e
 
 usage () {
-    echo "usage: git modified [-iuqh] [<commit>]" >&2
+    echo "usage: git modified [-miuqh] [<commit>] [-- <pathspec>...]" >&2
     echo >&2
     echo "Prints list of files that are locally modified (and exist).  The index is not " >&2
     echo "considered, unless the -i flag is provided." >&2
     echo "" >&2
     echo "If a commit is provided, opens all files that locally exist that have been " >&2
     echo "changed in that commit." >&2
+    echo "" >&2
+    echo "Pathspecs after '--' restrict the output to matching files." >&2
     echo >&2
     echo "This script is ideal for passing all locally modified files into your editor, like:" >&2
     echo '    $ vim `git modified`' >&2
@@ -25,20 +27,62 @@ modified=0
 index=0
 unmerged=0
 quiet=0
-while getopts miuqh flag; do
-    case "$flag" in
-        m) modified=1;;
-        i) index=1;;
-        u) unmerged=1;;
-        q) quiet=1;;
-        h) usage; exit 2;;
+commit=""
+
+# Parse flags, optional commit, and `--` pathspec separator manually.
+# getopts can't be used here because it consumes `--` and advances OPTIND
+# past it, which would prevent us from distinguishing
+# `git modified <commit>` from `git modified -- <pathspec>`.
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --)
+            shift
+            break
+            ;;
+        -h)
+            usage
+            exit 2
+            ;;
+        -*)
+            opts="${1#-}"
+            while [ -n "$opts" ]; do
+                c="${opts%${opts#?}}"
+                opts="${opts#?}"
+                case "$c" in
+                    m) modified=1;;
+                    i) index=1;;
+                    u) unmerged=1;;
+                    q) quiet=1;;
+                    h) usage; exit 2;;
+                    *) echo "Unknown option: -$c" >&2; exit 2;;
+                esac
+            done
+            shift
+            ;;
+        *)
+            if [ -n "$commit" ]; then
+                echo "Unexpected argument: $1 (use '--' to pass pathspecs)" >&2
+                exit 2
+            fi
+            commit="$1"
+            shift
+            ;;
     esac
 done
-shift $(($OPTIND - 1))
+# $@ now holds zero or more pathspecs
 
-commit=""
-if [ $# -ge 1 ]; then
-    commit="$1"
+if [ -n "$commit" ]; then
+    if ! git rev-parse --verify --quiet "$commit^{commit}" >/dev/null 2>&1; then
+        echo "Not a valid commit: $commit" >&2
+        if [ -e "$commit" ]; then
+            echo "Did you mean: git modified -- $commit" >&2
+        fi
+        exit 2
+    fi
+    if [ $modified -eq 1 ] || [ $index -eq 1 ] || [ $unmerged -eq 1 ]; then
+        echo "Flags -m/-i/-u cannot be combined with a commit." >&2
+        exit 2
+    fi
 fi
 
 #
@@ -69,7 +113,11 @@ fi
 # -------------------------------------------------
 
 status () {
-    git status --porcelain | grep -vEe '^.D' | grep -vEe '^D '
+    if [ $# -gt 0 ]; then
+        git status --porcelain -- "$@" | grep -vEe '^.D' | grep -vEe '^D '
+    else
+        git status --porcelain | grep -vEe '^.D' | grep -vEe '^D '
+    fi
 }
 
 fix_rename_notation () {
@@ -83,19 +131,19 @@ make_relative () {
 }
 
 modified_in_index () {
-    status | cut -c 4- | fix_rename_notation | make_relative
+    status "$@" | cut -c 4- | fix_rename_notation | make_relative
 }
 
 modified_unmerged () {
-    status | grep -Ee '^(U.|.U)' | cut -c 4- | fix_rename_notation | make_relative
+    status "$@" | grep -Ee '^(U.|.U)' | cut -c 4- | fix_rename_notation | make_relative
 }
 
 modified_only_locally () {
-    status | cut -c 2- | grep -Ee '^M' | cut -c 3- | fix_rename_notation | make_relative
+    status "$@" | cut -c 2- | grep -Ee '^M' | cut -c 3- | fix_rename_notation | make_relative
 }
 
 modified_locally () {
-    status | cut -c 2- | grep -vEe '^[ ]' | cut -c 3- | fix_rename_notation | make_relative
+    status "$@" | cut -c 2- | grep -vEe '^[ ]' | cut -c 3- | fix_rename_notation | make_relative
 }
 
 fail_if_empty () {
@@ -111,19 +159,27 @@ fail_if_empty () {
 
 if [ -z "$commit" ]; then
     if [ $unmerged -eq 1 ]; then
-        modified_unmerged | fail_if_empty
+        modified_unmerged "$@" | fail_if_empty
     elif [ $index -eq 1 ]; then
-        modified_in_index | fail_if_empty
+        modified_in_index "$@" | fail_if_empty
     elif [ $modified -eq 1 ]; then
-        modified_only_locally | fail_if_empty
+        modified_only_locally "$@" | fail_if_empty
     else
-        modified_locally | fail_if_empty
+        modified_locally "$@" | fail_if_empty
     fi
 else
     TAB="	" # literal tab char
-    git log -1 --name-status --pretty=format:"" "$commit" | cut -f2- | rev | cut -d"$TAB" -f1 | rev | make_relative | while read f; do
-        if [ -f "$f" ]; then
-            echo "$f"
-        fi
-    done | fail_if_empty
+    if [ $# -gt 0 ]; then
+        git log -1 --name-status --pretty=format:"" "$commit" -- "$@" | cut -f2- | rev | cut -d"$TAB" -f1 | rev | make_relative | while read f; do
+            if [ -f "$f" ]; then
+                echo "$f"
+            fi
+        done | fail_if_empty
+    else
+        git log -1 --name-status --pretty=format:"" "$commit" | cut -f2- | rev | cut -d"$TAB" -f1 | rev | make_relative | while read f; do
+            if [ -f "$f" ]; then
+                echo "$f"
+            fi
+        done | fail_if_empty
+    fi
 fi

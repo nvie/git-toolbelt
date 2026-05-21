@@ -141,6 +141,13 @@ If you want to locally modified files that are already staged, too, use:
 $ vim (git modified -i)
 ```
 
+To restrict the result to one or more paths, pass pathspecs after `--`. For
+example, to list locally modified files inside the current directory only:
+
+```console
+$ git modified -- .
+```
+
 ### git modified-since
 
 Like git-modified, but for printing a list of files that have been modified

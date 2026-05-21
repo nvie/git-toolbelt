@@ -1,6 +1,8 @@
 # v1.11.0
 
 - New command: `git-edit-author-dates` to interactive rebase to edit author dates
+- Fix: `git-modified` now accepts `-- <pathspec>...` for filtering by path, and
+  errors on invalid commit/flag combinations instead of silently ignoring them
 
 # v1.10.0
 
