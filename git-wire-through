@@ -8,8 +8,16 @@ usage () {
     echo "results back into each commit, as if the command had always been" >&2
     echo "applied." >&2
     echo >&2
+    echo "The command also runs once on the base commit itself. If that" >&2
+    echo "produces changes, they are kept as a new first commit titled" >&2
+    echo "\"Ran '<command>'\"; if not, no extra commit is created." >&2
+    echo >&2
     echo "The command runs in the current working directory, but any side" >&2
     echo "effects elsewhere in the repo are also captured." >&2
+    echo >&2
+    echo "Arguments:" >&2
+    echo "  <command...>  All remaining arguments are joined and run as a single" >&2
+    echo "                shell command, e.g.: git wire-through prettier --write ." >&2
     echo >&2
     echo "Options:" >&2
     echo "  --base=<ref>  Base commit (default: merge-base with upstream tracking branch)" >&2

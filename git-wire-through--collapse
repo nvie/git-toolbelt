@@ -24,6 +24,13 @@ while IFS= read -r line; do
             echo "$line" >> "$temp_file"
             echo "exec git reset --soft HEAD~1 && git commit --amend --no-edit --no-verify --allow-empty" >> "$temp_file"
             ;;
+        pick\ *\[revert-wire-through-base\]*)
+            # Revert of the leading "Ran '<command>'" commit; no author fix
+            # (there is no original commit for it). Fold it into the next
+            # pick (the first original commit).
+            echo "$line" >> "$temp_file"
+            skip_next_as_fixup_c=1
+            ;;
         pick\ *\[revert-wire-through\]*)
             # Emit author fix for the preceding commit group
             original_hash="$(sed -n "${commit_index}p" "$author_info")"
