@@ -2,7 +2,7 @@
 set -eu
 
 usage () {
-    echo "usage: git wire-through [-h] [--base=<base>] <command...>" >&2
+    echo "usage: git wire-through [-h] [--base=<base>] [-m <msg>] <command...>" >&2
     echo >&2
     echo "Runs <command> after every commit in <base>..HEAD and folds the" >&2
     echo "results back into each commit, as if the command had always been" >&2
@@ -10,7 +10,8 @@ usage () {
     echo >&2
     echo "The command also runs once on the base commit itself. If that" >&2
     echo "produces changes, they are kept as a new first commit titled" >&2
-    echo "\"Ran '<command>'\"; if not, no extra commit is created." >&2
+    echo "\"Ran '<command>'\" (or <msg>, if -m is given); if not, no extra" >&2
+    echo "commit is created." >&2
     echo >&2
     echo "The command runs in the current working directory, but any side" >&2
     echo "effects elsewhere in the repo are also captured." >&2
@@ -21,12 +22,15 @@ usage () {
     echo >&2
     echo "Options:" >&2
     echo "  --base=<ref>  Base commit (default: merge-base with upstream tracking branch)" >&2
+    echo "  -m <msg>      Commit message for the leading base commit, if one is" >&2
+    echo "                created (default: \"Ran '<command>'\")" >&2
     echo "  -h, --help    Show this help" >&2
     exit 2
 }
 
 # Parse options
 base=""
+message=""
 while [ $# -gt 0 ]; do
     case "$1" in
         -h|--help) usage ;;
@@ -37,6 +41,12 @@ while [ $# -gt 0 ]; do
                 exit 1
             fi
             base="$2"; shift 2 ;;
+        -m)
+            if [ $# -lt 2 ]; then
+                echo "error: -m requires a value" >&2
+                exit 1
+            fi
+            message="$2"; shift 2 ;;
         *) break ;;
     esac
 done
@@ -46,6 +56,10 @@ if [ $# -eq 0 ]; then
 fi
 
 command="$*"
+
+if [ -z "$message" ]; then
+    message="Ran '$command'"
+fi
 
 # Guards
 git is-clean -v
@@ -98,6 +112,7 @@ git log --reverse --format='%H' "$base"..HEAD > "$author_info"
 # Pass 1: inject command after each commit
 export GIT_WIRE_THROUGH_COMMAND="$command"
 export GIT_WIRE_THROUGH_CWD="$wire_through_cwd"
+export GIT_WIRE_THROUGH_MESSAGE="$message"
 if ! GIT_SEQUENCE_EDITOR="git wire-through--inject" git rebase -i --empty=keep "$base"; then
     rm -f "$author_info"
     failed=1
