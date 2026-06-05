@@ -584,6 +584,14 @@ can override it:
 $ git wire-through --base=main eslint --fix .
 ```
 
+If the command already produces changes on the base commit itself, those are
+kept as a new leading commit titled `Ran '<command>'`. Use `-m` to pick that
+commit message yourself:
+
+```console
+$ git wire-through -m 'Prettier' prettier --write .
+```
+
 This command runs atomically. Every invocation of your command must succeed
 (exit 0) on every commit. If it fails, the whole operation gets aborted and
 your branch is left unchanged.

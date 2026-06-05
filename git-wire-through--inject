@@ -2,18 +2,21 @@
 set -eu
 
 # GIT_SEQUENCE_EDITOR for pass 1 of git-wire-through.
-# Runs the command once on the base state (committing any changes as a
-# leading "Ran '<command>'" commit), then injects exec lines after each
-# picked commit to run the command, stage changes, create a
+# Runs the command once on the base state (committing any changes under
+# GIT_WIRE_THROUGH_MESSAGE as a leading commit), then injects exec lines
+# after each picked commit to run the command, stage changes, create a
 # [fixup-wire-through] commit, and revert it.
 
 command="${GIT_WIRE_THROUGH_COMMAND:?GIT_WIRE_THROUGH_COMMAND not set}"
+: "${GIT_WIRE_THROUGH_MESSAGE:?GIT_WIRE_THROUGH_MESSAGE not set}"
 cwd="${GIT_WIRE_THROUGH_CWD:-.}"
 todo_file="$1"
 temp_file="$(mktemp)"
 
 root_cmd='cd "$(git rev-parse --show-toplevel)"'
-exec_base="exec (cd \"$cwd\" && $command) && $root_cmd && git add --all && (git diff --cached --quiet || (git commit --no-verify -m \"Ran '$command'\" && git revert --no-commit HEAD && git commit --no-verify -m '[revert-wire-through-base]'))"
+# The message env var is expanded when the exec line runs, not here, so the
+# message survives any quoting unscathed
+exec_base="exec (cd \"$cwd\" && $command) && $root_cmd && git add --all && (git diff --cached --quiet || (git commit --no-verify -m \"\$GIT_WIRE_THROUGH_MESSAGE\" && git revert --no-commit HEAD && git commit --no-verify -m '[revert-wire-through-base]'))"
 exec_mid="exec (cd \"$cwd\" && $command) && $root_cmd && git add --all && git commit --no-verify -m '[fixup-wire-through]' --allow-empty && git revert --no-commit HEAD && git commit --no-verify -m '[revert-wire-through]' --allow-empty"
 exec_last="exec (cd \"$cwd\" && $command) && $root_cmd && git add --all && git commit --no-verify -m '[fixup-wire-through]' --allow-empty"
 
@@ -27,9 +30,9 @@ if [ "$count" -eq 0 ]; then
 fi
 
 # Run the command once on the base state first. If it changes anything,
-# those changes become a leading "Ran '<command>'" commit (plus a revert
-# so the first original commit still applies cleanly); if not, no commit
-# is created at all.
+# those changes become a leading commit (plus a revert so the first
+# original commit still applies cleanly); if not, no commit is created
+# at all.
 echo "$exec_base" >> "$temp_file"
 
 # Write new todo: inject exec after every pick
