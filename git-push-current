@@ -1,19 +1,28 @@
 #!/bin/sh
 set -e
-    
+
 usage () {
-    echo "usage: git push-current [-fh] [<remote>]" >&2
+    echo "usage: git push-current [-fh] [-u <remote-branch>] [<remote>]" >&2
     echo >&2
     echo "Pushes the current branch to the given remote.  Assumes 'origin' by default." >&2
     echo >&2
+    echo "The remote branch matches the current branch name, unless the current branch" >&2
+    echo "already tracks a differently-named branch on that remote, in which case that" >&2
+    echo "upstream is used.  As a safety net, pushing onto the remote's default branch" >&2
+    echo "(e.g. main) under a different local name is refused unless forced with -u." >&2
+    echo >&2
     echo "Options:" >&2
+    echo "-u    Push to this specific branch on the remote (and set it as upstream)" >&2
     echo "-f    Force push (will use a lease)" >&2
     echo "-h    Show this help" >&2
 }
 
 force=0
-while getopts fh flag; do
+dst=""
+explicit=0
+while getopts u:fh flag; do
     case "$flag" in
+        u) dst="$OPTARG"; explicit=1;;
         f) force=1;;
         h) usage; exit 2;;
     esac
@@ -23,9 +32,40 @@ shift $(($OPTIND - 1))
 curr=$(git current-branch)
 remote=${1-origin}
 
+# Resolve the destination ref.  An explicit -b wins.  Otherwise reuse an
+# existing upstream on this remote (so deliberately-renamed branches keep
+# working), falling back to the same branch name.
+if [ "$explicit" -eq 0 ]; then
+    up=$(git rev-parse --abbrev-ref --symbolic-full-name "$curr@{upstream}" 2>/dev/null || true)
+    case "$up" in
+        "$remote"/*) dst="${up#"$remote"/}";;
+        *)           dst="$curr";;
+    esac
+fi
+
+# Safety net: a branch forked off main inherits origin/main as its upstream,
+# which is indistinguishable from a deliberate rename.  Refuse to push onto the
+# remote's default branch under a different local name; require -b to override.
+if [ "$explicit" -eq 0 ] && [ "$dst" != "$curr" ]; then
+    default=$(git symbolic-ref --short "refs/remotes/$remote/HEAD" 2>/dev/null || true)
+    default="${default#$remote/}"
+    blocked=0
+    if [ -n "$default" ]; then
+        [ "$dst" = "$default" ] && blocked=1
+    else
+        case "$dst" in main|master) blocked=1;; esac
+    fi
+    if [ "$blocked" -eq 1 ]; then
+        echo "git push-current: refusing to push '$curr' onto '$remote/$dst' (the default branch)." >&2
+        echo "  '$curr' currently tracks '$remote/$dst' (likely forked off it)." >&2
+        echo "  re-run with '-u $dst' to force, or repoint the upstream." >&2
+        exit 1
+    fi
+fi
+
 opts=""
 if [ $force -eq 1 ]; then
     opts="--force-with-lease"
 fi
 
-git push $opts -u "$remote" "$curr"
+git push $opts -u "$remote" "$curr:$dst"

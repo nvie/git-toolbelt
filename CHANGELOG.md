@@ -1,3 +1,8 @@
+# v1.12.0
+
+- `git-push-current` now honors and supports a differently-named upstream
+  branch when one is set. You can also setup one with `-u <remote-branch>`
+
 # v1.11.0
 
 - New command: `git-edit-author-dates` to interactive rebase to edit author dates
