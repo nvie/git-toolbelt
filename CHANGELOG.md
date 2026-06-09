@@ -1,5 +1,9 @@
 # v1.12.0
 
+- New experimental command: `git-wire-through`. Runs a command after every
+  commit in `<base>..HEAD` and folds the results back into those commit, as if
+  the command had always been applied. Useful for re-running formatters or code
+  generators in hindsight.
 - `git-push-current` now honors and supports a differently-named upstream
   branch when one is set. You can also setup one with `-u <remote-branch>`
 
