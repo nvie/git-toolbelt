@@ -7,7 +7,8 @@ make_relative () {
     done
 }
 
-FILES="$(git diff --no-prefix --cached -U0 | awk '/^--- / { print $2 }' | grep -vF /dev/null | make_relative)"
+# `--diff-filter=a` excludes newly-added files (no prior commit to fix up).
+FILES="$(git diff --cached --name-only --diff-filter=a | make_relative)"
 if [ -z "$FILES" ]; then
   echo "No staged files found that have previously been committed." >&2
   exit 2
