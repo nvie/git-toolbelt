@@ -174,7 +174,10 @@ if [ $remotes -eq 1 ]; then
                 if git contains "$base" "$branch"; then
                     if ! git contains "$branch" "$base"; then
                         branchname=$(echo "$branch" | cut -d/ -f2-)
-                        branches_to_remove="$branches_to_remove $branchname"
+                        # Fully-qualify as a ref so a branch named like an
+                        # option (e.g. "--receive-pack=...") can't be parsed as
+                        # a flag by the unquoted `git push` below.
+                        branches_to_remove="$branches_to_remove refs/heads/$branchname"
                         break
                     fi
                 fi
