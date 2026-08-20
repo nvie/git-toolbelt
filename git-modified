@@ -46,7 +46,7 @@ while [ $# -gt 0 ]; do
         -*)
             opts="${1#-}"
             while [ -n "$opts" ]; do
-                c="${opts%${opts#?}}"
+                c="${opts%"${opts#?}"}"
                 opts="${opts#?}"
                 case "$c" in
                     m) modified=1;;

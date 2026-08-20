@@ -48,7 +48,7 @@ fi
 # remote's default branch under a different local name; require -b to override.
 if [ "$explicit" -eq 0 ] && [ "$dst" != "$curr" ]; then
     default=$(git symbolic-ref --short "refs/remotes/$remote/HEAD" 2>/dev/null || true)
-    default="${default#$remote/}"
+    default="${default#"$remote"/}"
     blocked=0
     if [ -n "$default" ]; then
         [ "$dst" = "$default" ] && blocked=1

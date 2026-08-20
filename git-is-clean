@@ -26,7 +26,7 @@ has_unstaged_changes () {
 
 has_untracked_files () {
     num_untracked_files=$(git ls-files --other --exclude-standard | wc -l)
-    [ $num_untracked_files -gt 0 ]
+    [ "$num_untracked_files" -gt 0 ]
 }
 
 is_worktree_clean () {

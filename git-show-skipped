@@ -28,5 +28,5 @@ if [ $quiet -eq 0 ]; then
     list_skipped
 else 
     num_changed=$(list_skipped | wc -l)
-    test $num_changed -eq 0
+    test "$num_changed" -eq 0
 fi
