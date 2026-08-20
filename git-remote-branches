@@ -6,9 +6,10 @@ usage () {
 }
 
 remote_branches () {
-    git branch --remotes --no-color \
-        | grep -v ' -> ' \
-        | cut -c3-
+    # The `$2 == ""` filter drops symbolic refs (e.g. origin/HEAD), whose
+    # %(symref) field is non-empty; real branches have an empty second field.
+    git for-each-ref --format='%(refname:short) %(symref)' refs/remotes/ \
+        | awk '$2 == "" { print $1 }'
 }
 
 if [ $# -eq 1 ]; then
