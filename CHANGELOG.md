@@ -6,6 +6,7 @@
   Bash on Windows (thanks @ernstki!)
 - Fix: `git-modified` no longer garbles or silently drops files whose names
   contain non-ASCII characters
+- Various security fixes
 
 # v1.11.0
 
