@@ -22,10 +22,14 @@ done
 shift $(($OPTIND - 1))
 
 if [ $all -eq 1 ]; then
-    git update-index --no-skip-worktree $(git show-skipped)
+    # One file per call, quoted and after `--`, so filenames containing
+    # globs/spaces or starting with `-` can't glob-expand or pose as flags.
+    git show-skipped | while IFS= read -r file; do
+        git update-index --no-skip-worktree -- "$file"
+    done
 else
     if [ $# -gt 0 ]; then
-        git update-index --no-skip-worktree "$@"
+        git update-index --no-skip-worktree -- "$@"
     else
         usage
         exit 2

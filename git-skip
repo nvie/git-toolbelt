@@ -24,15 +24,15 @@ while getopts ah flag; do
 done
 shift $(($OPTIND - 1))
 
-locally_modified_files () {
-    git status --porcelain --untracked-files=no | cut -c 2- | grep -Ee '^[MD]' | cut -c 3-
-}
-
 if [ $all -eq 1 ]; then
-    git update-index --skip-worktree $(locally_modified_files)
+    # NUL-delimited and passed after `--`, so filenames containing globs,
+    # spaces, or a leading `-` can't glob-expand or pose as flags. `ls-files
+    # -m` is the tracked worktree-modified/deleted set (git-status quotes such
+    # names, ls-files does not).
+    git ls-files -m -z | xargs -0 git update-index --skip-worktree --
 else
     if [ $# -gt 0 ]; then
-        git update-index --skip-worktree "$@"
+        git update-index --skip-worktree -- "$@"
     else
         usage
         exit 2
