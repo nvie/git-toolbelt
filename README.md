@@ -7,8 +7,9 @@
     $ brew tap nvie/tap
     $ brew install nvie/tap/git-toolbelt
 
-If not using Homebrew, you will need to have [GNU coreutils][coreutils]
-installed, for the `realpath` utility. Git for Windows users see [#29](https://github.com/nvie/git-toolbelt/issues/29).
+If not using Homebrew, you will need to have [GNU coreutils][coreutils] installed for the `realpath` utility.
+
+Windows support: These scripts are POSIX shell scripts and are known to work under Git for Windows (Git Bash) or via WSL. A recent change removed reliance on the external `rev` utility so `git-modified` works in Git Bash without extra tools. CI now includes a windows-latest job to catch regressions. If you need to run them in native PowerShell, prefer using WSL or Git Bash for full compatibility.
 
 # git-toolbelt
 
