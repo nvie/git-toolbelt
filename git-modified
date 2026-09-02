@@ -170,13 +170,13 @@ if [ -z "$commit" ]; then
 else
     TAB="	" # literal tab char
     if [ $# -gt 0 ]; then
-        git log -1 --name-status --pretty=format:"" "$commit" -- "$@" | cut -f2- | rev | cut -d"$TAB" -f1 | rev | make_relative | while read f; do
+        git log -1 --name-status --pretty=format:"" "$commit" -- "$@" | cut -f2- | awk -F"$TAB" '{print $NF}' | make_relative | while read f; do
             if [ -f "$f" ]; then
                 echo "$f"
             fi
         done | fail_if_empty
     else
-        git log -1 --name-status --pretty=format:"" "$commit" | cut -f2- | rev | cut -d"$TAB" -f1 | rev | make_relative | while read f; do
+        git log -1 --name-status --pretty=format:"" "$commit" | cut -f2- | awk -F"$TAB" '{print $NF}' | make_relative | while read f; do
             if [ -f "$f" ]; then
                 echo "$f"
             fi
