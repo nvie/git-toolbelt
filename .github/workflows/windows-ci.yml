@@ -1,0 +1,18 @@
+name: Windows CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests (bash)
+        env:
+          REPO_ROOT: ${{ github.workspace }}
+        run: |
+          chmod +x tests/test-git-modified.sh || true
+          bash tests/test-git-modified.sh
+        shell: bash
