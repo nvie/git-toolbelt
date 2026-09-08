@@ -2,25 +2,27 @@
 set -e
 
 usage () {
-    echo "usage: git modified [-miuqh] [<commit>] [-- <pathspec>...]" >&2
-    echo >&2
-    echo "Prints list of files that are locally modified (and exist).  The index is not " >&2
-    echo "considered, unless the -i flag is provided." >&2
-    echo "" >&2
-    echo "If a commit is provided, opens all files that locally exist that have been " >&2
-    echo "changed in that commit." >&2
-    echo "" >&2
-    echo "Pathspecs after '--' restrict the output to matching files." >&2
-    echo >&2
-    echo "This script is ideal for passing all locally modified files into your editor, like:" >&2
-    echo '    $ vim `git modified`' >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-m    Modified files only (excludes untracked files)" >&2
-    echo "-i    Consider the index, too" >&2
-    echo "-u    Print only files that are unmerged (files with conflicts)" >&2
-    echo "-q    Be quiet, only return with 0 exit code when files are modified" >&2
-    echo "-h    Show this help" >&2
+    cat <<'EOF'
+usage: git modified [-miuqh] [<commit>] [-- <pathspec>...]
+
+Prints list of files that are locally modified (and exist).  The index is not 
+considered, unless the -i flag is provided.
+
+If a commit is provided, opens all files that locally exist that have been 
+changed in that commit.
+
+Pathspecs after '--' restrict the output to matching files.
+
+This script is ideal for passing all locally modified files into your editor, like:
+    $ vim `git modified`
+
+Options:
+-m    Modified files only (excludes untracked files)
+-i    Consider the index, too
+-u    Print only files that are unmerged (files with conflicts)
+-q    Be quiet, only return with 0 exit code when files are modified
+-h    Show this help
+EOF
 }
 
 modified=0
@@ -41,7 +43,7 @@ while [ $# -gt 0 ]; do
             ;;
         -h)
             usage
-            exit 2
+            exit 0
             ;;
         -*)
             opts="${1#-}"
@@ -53,7 +55,7 @@ while [ $# -gt 0 ]; do
                     i) index=1;;
                     u) unmerged=1;;
                     q) quiet=1;;
-                    h) usage; exit 2;;
+                    h) usage; exit 0;;
                     *) echo "Unknown option: -$c" >&2; exit 2;;
                 esac
             done

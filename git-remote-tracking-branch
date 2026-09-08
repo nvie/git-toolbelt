@@ -2,24 +2,26 @@
 set -eu
 
 usage () {
-    echo "usage: git remote-tracking-branch [-h] [<branch>]" >&2
-    echo >&2
-    echo "Prints the fully qualified name of the remote tracking" >&2
-    echo "branch for the given local branch name." >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-h    Show this help" >&2
+    cat <<'EOF'
+usage: git remote-tracking-branch [-h] [<branch>]
+
+Prints the fully qualified name of the remote tracking
+branch for the given local branch name.
+
+Options:
+-h    Show this help
+EOF
 }
 
 while getopts h flag; do
     case "$flag" in
-        h) usage; exit 2;;
+        h) usage; exit 0;;
     esac
 done
 shift $(($OPTIND - 1))
 
 if [ $# -gt 1 ]; then
-  usage
+  usage >&2
   exit 2
 fi
 

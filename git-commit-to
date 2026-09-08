@@ -2,11 +2,13 @@
 set -eu
 
 usage () {
-    echo "usage: git commit-to <branch> ..." >&2
+    cat <<'EOF'
+usage: git commit-to <branch> ...
+EOF
 }
 
 if [ $# -eq 0 ]; then
-    usage
+    usage >&2
     exit 2
 fi
 

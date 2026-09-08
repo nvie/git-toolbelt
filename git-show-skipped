@@ -2,20 +2,22 @@
 set -e
 
 usage () {
-    echo "usage: git show-skipped [-qh] <file> [<file> ...]" >&2
-    echo >&2
-    echo "Lists all files that are skipped from the index." >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-q    Be quiet (just return a non-zero exit code when files are skipped)" >&2
-    echo "-h    Show this help" >&2
+    cat <<'EOF'
+usage: git show-skipped [-qh] <file> [<file> ...]
+
+Lists all files that are skipped from the index.
+
+Options:
+-q    Be quiet (just return a non-zero exit code when files are skipped)
+-h    Show this help
+EOF
 }
 
 quiet=0
 while getopts qh flag; do
     case "$flag" in
         q) quiet=1;;
-        h) usage; exit 2;;
+        h) usage; exit 0;;
     esac
 done
 shift $(($OPTIND - 1))

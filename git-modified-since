@@ -2,24 +2,26 @@
 set -e
 
 usage () {
-    echo "usage: git modified-since [-iuqh] [<commit>]" >&2
-    echo >&2
-    echo "Prints list of files that have been modified since the given branch." >&2
-    echo "Defaults to the repo's default branch." >&2
-    echo "" >&2
-    echo "This script is ideal for passing all locally modified files into your editor, like:" >&2
-    echo '    $ vim `git modified-since`' >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-q    Be quiet, only return with 0 exit code when files are modified" >&2
-    echo "-h    Show this help" >&2
+    cat <<'EOF'
+usage: git modified-since [-iuqh] [<commit>]
+
+Prints list of files that have been modified since the given branch.
+Defaults to the repo's default branch.
+
+This script is ideal for passing all locally modified files into your editor, like:
+    $ vim `git modified-since`
+
+Options:
+-q    Be quiet, only return with 0 exit code when files are modified
+-h    Show this help
+EOF
 }
 
 quiet=0
 while getopts qh flag; do
     case "$flag" in
         q) quiet=1;;
-        h) usage; exit 2;;
+        h) usage; exit 0;;
     esac
 done
 shift $(($OPTIND - 1))

@@ -2,15 +2,17 @@
 set -e
 
 usage () {
-    echo "usage: git local-branch-exists <branch>" >&2
-    echo >&2
-    echo "Will return with an exit code of 0 or 1." >&2
+    cat <<'EOF'
+usage: git local-branch-exists <branch>
+
+Will return with an exit code of 0 or 1.
+EOF
 }
 
 if [ $# -eq 1 ]; then
     branch=$1
 else
-    usage
+    usage >&2
     exit 2
 fi
 

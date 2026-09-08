@@ -2,24 +2,26 @@
 set -eu
 
 usage () {
-    echo "usage: git fixup-with [-r] [<base>]" >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-r    When done, trigger an interactive rebase right after." >&2
-    echo >&2
-    echo "Interactively lets you pick a commit from a list to fixup." >&2
-    echo "" >&2
-    echo "The list of commits shown display commits between <base> to HEAD)." >&2
-    echo "<base> defaults to main branch if you're on a different branch, and" >&2
-    echo "defaults to \"origin/main\" when you're on main branch currently." >&2
-    echo "" >&2
+    cat <<'EOF'
+usage: git fixup-with [-r] [<base>]
+
+Options:
+-r    When done, trigger an interactive rebase right after.
+
+Interactively lets you pick a commit from a list to fixup.
+
+The list of commits shown display commits between <base> to HEAD).
+<base> defaults to main branch if you're on a different branch, and
+defaults to "origin/main" when you're on main branch currently.
+
+EOF
 }
 
 rebase=0
 while getopts rh flag; do
     case "$flag" in
         r) rebase=1;;
-        h) usage; exit 2;;
+        h) usage; exit 0;;
     esac
 done
 shift $(($OPTIND - 1))
@@ -37,7 +39,7 @@ elif [ $# -eq 0 ]; then
         base="$main"
     fi
 else
-    usage
+    usage >&2
     exit 2
 fi
 

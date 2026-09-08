@@ -2,13 +2,15 @@
 set -eu
 
 usage () {
-    echo "usage: git workon <branch>" >&2
+    cat <<'EOF'
+usage: git workon <branch>
+EOF
 }
 
 if [ $# -eq 1 ]; then
     branch=$1
 else
-    usage
+    usage >&2
     exit 2
 fi
 

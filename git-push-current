@@ -2,19 +2,21 @@
 set -e
 
 usage () {
-    echo "usage: git push-current [-fh] [-u <remote-branch>] [<remote>]" >&2
-    echo >&2
-    echo "Pushes the current branch to the given remote.  Assumes 'origin' by default." >&2
-    echo >&2
-    echo "The remote branch matches the current branch name, unless the current branch" >&2
-    echo "already tracks a differently-named branch on that remote, in which case that" >&2
-    echo "upstream is used.  As a safety net, pushing onto the remote's default branch" >&2
-    echo "(e.g. main) under a different local name is refused unless forced with -u." >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-u    Push to this specific branch on the remote (and set it as upstream)" >&2
-    echo "-f    Force push (will use a lease)" >&2
-    echo "-h    Show this help" >&2
+    cat <<'EOF'
+usage: git push-current [-fh] [-u <remote-branch>] [<remote>]
+
+Pushes the current branch to the given remote.  Assumes 'origin' by default.
+
+The remote branch matches the current branch name, unless the current branch
+already tracks a differently-named branch on that remote, in which case that
+upstream is used.  As a safety net, pushing onto the remote's default branch
+(e.g. main) under a different local name is refused unless forced with -u.
+
+Options:
+-u    Push to this specific branch on the remote (and set it as upstream)
+-f    Force push (will use a lease)
+-h    Show this help
+EOF
 }
 
 force=0
@@ -24,7 +26,7 @@ while getopts u:fh flag; do
     case "$flag" in
         u) dst="$OPTARG"; explicit=1;;
         f) force=1;;
-        h) usage; exit 2;;
+        h) usage; exit 0;;
     esac
 done
 shift $(($OPTIND - 1))

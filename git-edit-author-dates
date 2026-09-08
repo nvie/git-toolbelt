@@ -2,16 +2,17 @@
 set -eu
 
 usage () {
-    echo "usage: git edit-author-dates [-h] [--to <date>] [<base>]" >&2
-    echo >&2
-    echo "Opens an interactive rebase with exec lines to edit author dates." >&2
-    echo "Each commit's current author date is pre-populated." >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "  -h, --help      Show this help" >&2
-    echo "  --to <date>     Shift all commits so the last one lands at <date>" >&2
-    echo "                  Use 'now' for the current date/time" >&2
-    exit 2
+    cat <<'EOF'
+usage: git edit-author-dates [-h] [--to <date>] [<base>]
+
+Opens an interactive rebase with exec lines to edit author dates.
+Each commit's current author date is pre-populated.
+
+Options:
+  -h, --help      Show this help
+  --to <date>     Shift all commits so the last one lands at <date>
+                  Use 'now' for the current date/time
+EOF
 }
 
 # Internal: act as GIT_SEQUENCE_EDITOR when called with --inject
@@ -63,12 +64,12 @@ shift_target=""
 base=""
 while [ $# -gt 0 ]; do
     case "$1" in
-        -h|--help) usage ;;
+        -h|--help) usage; exit 0 ;;
         --to)
             shift_target="${2:?missing argument for --to}"
             shift; shift
             ;;
-        -*) echo "error: unknown option: $1" >&2; usage ;;
+        -*) echo "error: unknown option: $1" >&2; usage >&2; exit 2 ;;
         *)
             base="$1"
             shift

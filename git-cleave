@@ -2,14 +2,16 @@
 set -e
 
 usage () {
-    echo "usage: git cleave [-h] [-t <prefix>] <path1> [<path2> ...]" >&2
-    echo >&2
-    echo "Splits the last commit into two or more commits. Takes one or more regex values" >&2
-    echo "that are matched against the paths of the files from the commit." >&2
-    echo "" >&2
-    echo "Options:" >&2
-    echo "-t <prefix>  Use this tag to prefix to commit messages" >&2
-    echo "-h           Show this help" >&2
+    cat <<'EOF'
+usage: git cleave [-h] [-t <prefix>] <path1> [<path2> ...]
+
+Splits the last commit into two or more commits. Takes one or more regex values
+that are matched against the paths of the files from the commit.
+
+Options:
+-t <prefix>  Use this tag to prefix to commit messages
+-h           Show this help
+EOF
 }
 
 locally_changed_files () {
@@ -23,14 +25,14 @@ prefix=
 while getopts t:h flag; do
     case "$flag" in
         t) prefix=$OPTARG; shift ;;
-        h) usage; exit 2;;
-        *) usage; exit 2;;
+        h) usage; exit 0;;
+        *) usage >&2; exit 2;;
     esac
 done
 
 main () {
   if [ "$#" -lt 1 ]; then
-    usage
+    usage >&2
     exit 2
   fi
 

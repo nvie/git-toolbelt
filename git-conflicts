@@ -2,15 +2,17 @@
 set -e
 
 usage () {
-    echo "usage: git conflicts [-rqh]" >&2
-    echo >&2
-    echo "Compares merge outcomes against all local branches and display " >&2
-    echo "whether a merge would cause merge conflicts." >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-r    Remote branches (default is only local branches)" >&2
-    echo "-q    Be quiet (only report about conflicts)" >&2
-    echo "-h    Show this help" >&2
+    cat <<'EOF'
+usage: git conflicts [-rqh]
+
+Compares merge outcomes against all local branches and display
+whether a merge would cause merge conflicts.
+
+Options:
+-r    Remote branches (default is only local branches)
+-q    Be quiet (only report about conflicts)
+-h    Show this help
+EOF
 }
 
 quiet=0
@@ -19,7 +21,7 @@ while getopts rqh flag; do
     case "$flag" in
         r) remotes=1;;
         q) quiet=1;;
-        h) usage; exit 2;;
+        h) usage; exit 0;;
     esac
 done
 shift $(($OPTIND - 1))

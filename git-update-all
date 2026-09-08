@@ -2,18 +2,20 @@
 set -e
 
 usage () {
-    echo "usage: git update-all [-h] [remote]" >&2
-    echo >&2
-    echo "Updates (pulls) upstream changes on all local branches." >&2
-    echo "remote defaults to origin." >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-h    Show this help" >&2
+    cat <<'EOF'
+usage: git update-all [-h] [remote]
+
+Updates (pulls) upstream changes on all local branches.
+remote defaults to origin.
+
+Options:
+-h    Show this help
+EOF
 }
 
 while getopts h flag; do
     case "$flag" in
-        h) usage; exit 2;;
+        h) usage; exit 0;;
     esac
 done
 shift $(($OPTIND - 1))

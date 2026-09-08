@@ -2,21 +2,23 @@
 set -e
 
 usage () {
-    echo "usage: git cleanup [-lr] [-nsvh]" >&2
-    echo >&2
-    echo "Deletes all branches that have already been merged into the main branch." >&2
-    echo "Removes those branches both locally or in the origin remote (or both)." >&2
-    echo "Will be most conservative with deletions." >&2
-    echo >&2
-    echo "Minimally requires either (or both) of these flags to be set:" >&2
-    echo "-l    Remove local branches" >&2
-    echo "-r    Remove remote branches (in \`origin\`)" >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-n    Dry-run" >&2
-    echo "-s    Also consider squash merges (implies -l)" >&2
-    echo "-v    Be verbose (show what's skipped)" >&2
-    echo "-h    Show this help" >&2
+    cat <<'EOF'
+usage: git cleanup [-lr] [-nsvh]
+
+Deletes all branches that have already been merged into the main branch.
+Removes those branches both locally or in the origin remote (or both).
+Will be most conservative with deletions.
+
+Minimally requires either (or both) of these flags to be set:
+-l    Remove local branches
+-r    Remove remote branches (in `origin`)
+
+Options:
+-n    Dry-run
+-s    Also consider squash merges (implies -l)
+-v    Be verbose (show what's skipped)
+-h    Show this help
+EOF
 }
 
 dryrun=0
@@ -31,13 +33,13 @@ while getopts nlrsvh flag; do
         r) remotes=1;;
         s) squashed=1; locals=1;;
         v) verbose=1;;
-        h) usage; exit 2;;
+        h) usage; exit 0;;
     esac
 done
 shift $(($OPTIND - 1))
 
 if [ $remotes -eq 0 ] && [ $locals -eq 0 ]; then
-    usage
+    usage >&2
     exit 1
 fi
 

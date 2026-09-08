@@ -2,18 +2,20 @@
 set -eu
     
 usage () {
-    echo "usage: git merge-status [-h] [<branch>]" >&2
-    echo >&2
-    echo "Shows merge status of all local branches against branch (defaults to" >&2
-    echo "the main branch)." >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-h    Show this help" >&2
+    cat <<'EOF'
+usage: git merge-status [-h] [<branch>]
+
+Shows merge status of all local branches against branch (defaults to
+the main branch).
+
+Options:
+-h    Show this help
+EOF
 }
 
 while getopts h flag; do
     case "$flag" in
-        h) usage; exit 2;;
+        h) usage; exit 0;;
     esac
 done
 shift $(($OPTIND - 1))

@@ -2,25 +2,27 @@
 set -e
 
 usage () {
-    echo "usage: git last-commit-to-file [-h] <file> [<file> ...]" >&2
-    echo >&2
-    echo "Returns the SHA of the commit that last touched the given file." >&2
-    echo "If multiple files are given, will return the SHA that most-recently" >&2
-    echo "changed _any_ of the files." >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-h    Show this help" >&2
+    cat <<'EOF'
+usage: git last-commit-to-file [-h] <file> [<file> ...]
+
+Returns the SHA of the commit that last touched the given file.
+If multiple files are given, will return the SHA that most-recently
+changed _any_ of the files.
+
+Options:
+-h    Show this help
+EOF
 }
 
 while getopts h flag; do
     case "$flag" in
-        h) usage; exit 2;;
+        h) usage; exit 0;;
     esac
 done
 shift $(($OPTIND - 1))
 
 if [ $# -lt 1 ]; then
-    usage
+    usage >&2
     exit 2
 fi
 

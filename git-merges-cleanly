@@ -2,27 +2,29 @@
 set -e
 
 usage () {
-    echo "usage: git merges-cleanly [-vh] <branch>" >&2
-    echo >&2
-    echo "Performes a temporal merge against the given branch (but aborts or undoes" >&2
-    echo "the merge) and reports success or failure through the exit code." >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-h    Show this help" >&2
-    echo "-l    List conflicting files" >&2
+    cat <<'EOF'
+usage: git merges-cleanly [-vh] <branch>
+
+Performes a temporal merge against the given branch (but aborts or undoes
+the merge) and reports success or failure through the exit code.
+
+Options:
+-h    Show this help
+-l    List conflicting files
+EOF
 }
 
 showlist=0
 while getopts lh flag; do
     case "$flag" in
-        h) usage; exit 2;;
+        h) usage; exit 0;;
         l) showlist=1;;
     esac
 done
 shift $(($OPTIND - 1))
 
 if [ $# -ne 1 ]; then
-    usage
+    usage >&2
     exit 2
 fi
 

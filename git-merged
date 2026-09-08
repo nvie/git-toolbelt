@@ -2,20 +2,22 @@
 set -eu
     
 usage () {
-    echo "usage: git merged [-uh] [<branch>]" >&2
-    echo >&2
-    echo "Shows what local branches have been merged into branch (defaults to main branch)." >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-u    Show unmerged branches instead of merged branches" >&2
-    echo "-h    Show this help" >&2
+    cat <<'EOF'
+usage: git merged [-uh] [<branch>]
+
+Shows what local branches have been merged into branch (defaults to main branch).
+
+Options:
+-u    Show unmerged branches instead of merged branches
+-h    Show this help
+EOF
 }
 
 unmerged=0
 while getopts uh flag; do
     case "$flag" in
         u) unmerged=1;;
-        h) usage; exit 2;;
+        h) usage; exit 0;;
     esac
 done
 shift $(($OPTIND - 1))

@@ -2,15 +2,17 @@
 set -e
 
 usage () {
-    echo "usage: git tag-exists <tag>" >&2
-    echo >&2
-    echo "Will return with an exit code of 0 or 1." >&2
+    cat <<'EOF'
+usage: git tag-exists <tag>
+
+Will return with an exit code of 0 or 1.
+EOF
 }
 
 if [ $# -eq 1 ]; then
     tag=$1
 else
-    usage
+    usage >&2
     exit 2
 fi
 

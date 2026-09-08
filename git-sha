@@ -2,14 +2,16 @@
 set -e
 
 usage () {
-    echo "usage: git sha [-sq] [<object>]" >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-s    Output short SHAs" >&2
-    echo "-q    Be quiet (only return exit code 0 when object exists)" >&2
-    echo "-h    Show this help" >&2
-    echo >&2
-    echo "<object> defaults to HEAD"
+    cat <<'EOF'
+usage: git sha [-sq] [<object>]
+
+Options:
+-s    Output short SHAs
+-q    Be quiet (only return exit code 0 when object exists)
+-h    Show this help
+
+<object> defaults to HEAD
+EOF
 }
 
 short=0
@@ -18,7 +20,7 @@ while getopts sqh flag; do
     case "$flag" in
         s) short=1;;
         q) quiet=1;;
-        h) usage; exit 2;;
+        h) usage; exit 0;;
     esac
 done
 shift $(($OPTIND - 1))

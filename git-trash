@@ -2,15 +2,17 @@
 set -eu
 
 usage () {
-    echo "usage: git trash" >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-h    Show this help" >&2
+    cat <<'EOF'
+usage: git trash
+
+Options:
+-h    Show this help
+EOF
 }
 
 while getopts h flag; do
     case "$flag" in
-        h) usage; exit 2;;
+        h) usage; exit 0;;
     esac
 done
 shift $(($OPTIND - 1))

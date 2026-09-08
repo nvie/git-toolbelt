@@ -2,16 +2,18 @@
 set -e
 
 usage () {
-    echo "usage: git sync-commit-date [-fq]" >&2
-    echo >&2
-    echo "Rewrites the HEAD commit by setting the commit date to the author date." >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-f    Don't verify" >&2
-    echo "-q    Be quiet" >&2
-    echo "-h    Show this help" >&2
-    echo >&2
-    echo "<commit> defaults to HEAD"
+    cat <<'EOF'
+usage: git sync-commit-date [-fq]
+
+Rewrites the HEAD commit by setting the commit date to the author date.
+
+Options:
+-f    Don't verify
+-q    Be quiet
+-h    Show this help
+
+<commit> defaults to HEAD
+EOF
 }
 
 verbose=1
@@ -20,7 +22,7 @@ while getopts fqh flag; do
     case "$flag" in
         f) force=1;;
         q) verbose=0;;
-        h) usage; exit 2;;
+        h) usage; exit 0;;
     esac
 done
 shift $(($OPTIND - 1))

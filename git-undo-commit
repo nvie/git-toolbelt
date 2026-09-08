@@ -2,21 +2,23 @@
 set -e
 
 usage () {
-    echo "usage: git undo-commit [-fh] <file> [<file> ...]" >&2
-    echo >&2
-    echo "Remove the last commit, but keep its changes staged (like right before the commit)." >&2
-    echo "If you specify the -f flag, it removes the changes too." >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-f    Don't keep the commit's changes (destructive)" >&2
-    echo "-h    Show this help" >&2
+    cat <<'EOF'
+usage: git undo-commit [-fh] <file> [<file> ...]
+
+Remove the last commit, but keep its changes staged (like right before the commit).
+If you specify the -f flag, it removes the changes too.
+
+Options:
+-f    Don't keep the commit's changes (destructive)
+-h    Show this help
+EOF
 }
 
 force=0
 while getopts fh flag; do
     case "$flag" in
         f) force=1;;
-        h) usage; exit 2;;
+        h) usage; exit 0;;
     esac
 done
 shift $(($OPTIND - 1))

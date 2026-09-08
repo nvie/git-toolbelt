@@ -2,24 +2,26 @@
 set -e
 
 usage () {
-    echo "usage: git skip [-ah] <file> [<file> ...]" >&2
-    echo >&2
-    echo "Skip (ignore) local changes to git-aware files to prevent them from" >&2
-    echo "showing up in status reports or diffs, as if they haven't been changed" >&2
-    echo "locally at all." >&2
-    echo >&2
-    echo "To reset, use git-unskip." >&2
-    echo >&2
-    echo "Options:" >&2
-    echo "-a    Skip all locally modified files" >&2
-    echo "-h    Show this help" >&2
+    cat <<'EOF'
+usage: git skip [-ah] <file> [<file> ...]
+
+Skip (ignore) local changes to git-aware files to prevent them from
+showing up in status reports or diffs, as if they haven't been changed
+locally at all.
+
+To reset, use git-unskip.
+
+Options:
+-a    Skip all locally modified files
+-h    Show this help
+EOF
 }
 
 all=0
 while getopts ah flag; do
     case "$flag" in
         a) all=1;;
-        h) usage; exit 2;;
+        h) usage; exit 0;;
     esac
 done
 shift $(($OPTIND - 1))
@@ -34,7 +36,7 @@ else
     if [ $# -gt 0 ]; then
         git update-index --skip-worktree -- "$@"
     else
-        usage
+        usage >&2
         exit 2
     fi
 fi
