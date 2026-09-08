@@ -38,5 +38,7 @@ git cherry-pick "$commit"
 git checkout "$orig_branch"
 
 if [ $stashed -eq 1 ]; then
-    git stash pop
+    # `--index` so staged changes come back staged, instead of getting mixed
+    # in with the unstaged ones.
+    git stash pop --index
 fi
