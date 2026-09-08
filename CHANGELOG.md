@@ -2,6 +2,10 @@
 
 - `git-push-current` now honors and supports a differently-named upstream
   branch when one is set. You can also setup one with `-u <remote-branch>`
+- `git-modified` no longer needs the `rev` utility, which does not exist in Git
+  Bash on Windows (thanks @ernstki!)
+- Fix: `git-modified` no longer garbles or silently drops files whose names
+  contain non-ASCII characters
 
 # v1.11.0
 

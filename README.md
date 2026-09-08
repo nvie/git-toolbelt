@@ -8,7 +8,10 @@
     $ brew install nvie/tap/git-toolbelt
 
 If not using Homebrew, you will need to have [GNU coreutils][coreutils]
-installed, for the `realpath` utility. Git for Windows users see [#29](https://github.com/nvie/git-toolbelt/issues/29).
+installed, for the `realpath` utility.
+
+These are POSIX shell scripts, so they need a Unix shell. On Windows, use Git
+for Windows (Git Bash) or WSL. They will not run in native PowerShell.
 
 # git-toolbelt
 

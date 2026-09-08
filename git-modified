@@ -114,9 +114,9 @@ fi
 
 status () {
     if [ $# -gt 0 ]; then
-        git status --porcelain -- "$@" | grep -vEe '^.D' | grep -vEe '^D '
+        git -c core.quotePath=false status --porcelain -- "$@" | grep -vEe '^.D' | grep -vEe '^D '
     else
-        git status --porcelain | grep -vEe '^.D' | grep -vEe '^D '
+        git -c core.quotePath=false status --porcelain | grep -vEe '^.D' | grep -vEe '^D '
     fi
 }
 
@@ -125,7 +125,7 @@ fix_rename_notation () {
 }
 
 make_relative () {
-    while read f; do
+    while read -r f; do
         git relative-path "$f"
     done
 }
@@ -148,7 +148,7 @@ modified_locally () {
 
 fail_if_empty () {
     empty=1
-    while read line; do
+    while read -r line; do
         if [ $quiet -eq 0 ]; then
             echo "$line"
         fi
@@ -168,18 +168,11 @@ if [ -z "$commit" ]; then
         modified_locally "$@" | fail_if_empty
     fi
 else
-    TAB="	" # literal tab char
-    if [ $# -gt 0 ]; then
-        git log -1 --name-status --pretty=format:"" "$commit" -- "$@" | cut -f2- | rev | cut -d"$TAB" -f1 | rev | make_relative | while read f; do
-            if [ -f "$f" ]; then
-                echo "$f"
-            fi
-        done | fail_if_empty
-    else
-        git log -1 --name-status --pretty=format:"" "$commit" | cut -f2- | rev | cut -d"$TAB" -f1 | rev | make_relative | while read f; do
-            if [ -f "$f" ]; then
-                echo "$f"
-            fi
-        done | fail_if_empty
-    fi
+    # --root so the initial commit lists its files, -M so a rename yields only
+    # the destination path.
+    git -c core.quotePath=false diff-tree -r -M --root --no-commit-id --name-only "$commit" -- "$@" | make_relative | while read -r f; do
+        if [ -f "$f" ]; then
+            echo "$f"
+        fi
+    done | fail_if_empty
 fi
