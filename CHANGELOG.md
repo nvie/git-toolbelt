@@ -6,6 +6,10 @@
   Bash on Windows (thanks @ernstki!)
 - Fix: `git-modified` no longer garbles or silently drops files whose names
   contain non-ASCII characters
+- Fix: `git-commit-to` no longer discards unstaged changes to tracked files
+  after moving the commit to the other branch
+- Fix: `git-cherry-pick-to` no longer pops (and drops!) an unrelated stash
+  entry when there was nothing to stash, and restores staged changes as staged
 - Various security fixes
 
 # v1.11.0
