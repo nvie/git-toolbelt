@@ -23,4 +23,17 @@ fi
 # to the starting position.
 git commit "$@"
 git cherry-pick-to "$branch"
-git reset --hard HEAD~1
+
+# The commit now lives on <branch>, so drop it from the current branch again.
+# `--keep` only touches the files the commit changed, leaving unstaged changes
+# to other files alone, and it refuses to run rather than overwrite unstaged
+# changes to the files it does touch.
+if ! git reset --keep HEAD~1; then
+    echo >&2
+    echo "The changes are committed to '$branch', but could not be removed from the" >&2
+    echo "current branch, because some of the files they touch also have unstaged" >&2
+    echo "changes.  Stash or commit those, then run:" >&2
+    echo >&2
+    echo "    git reset --keep HEAD~1" >&2
+    exit 1
+fi

@@ -364,6 +364,11 @@ commit-to will allow you to do so, without checking out the branch necessarily.
     $ git add bar.txt
     $ git commit -m "Add bar to mybranch."
 
+Only the staged changes move to the other branch, unstaged changes are left
+alone. If a file that moves also has unstaged changes, git commit-to will
+refuse to remove the commit from the current branch, rather than overwrite
+them.
+
 ### git cherry-pick-to
 
 Every been on a branch, just made a commit, but really want that commit
