@@ -9,7 +9,7 @@ Prints list of files that have been modified since the given branch.
 Defaults to the repo's default branch.
 
 This script is ideal for passing all locally modified files into your editor, like:
-    $ vim `git modified-since`
+    $ vim $(git modified-since)
 
 Options:
 -q    Be quiet, only return with 0 exit code when files are modified

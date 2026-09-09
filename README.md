@@ -135,19 +135,26 @@ not include any detailed file status, and never includes non-existing files.
 This makes it ideal for the following use-case:
 
 ```console
-$ vim (git modified)
+$ vim $(git modified)
 ```
 
 If you want to locally modified files that are already staged, too, use:
 
 ```console
-$ vim (git modified -i)
+$ vim $(git modified -i)
 ```
 
-To restrict the result to one or more paths, pass pathspecs after `--`. For
-example, to list locally modified files inside the current directory only:
+To restrict the result to one or more paths, pass pathspecs after `--`:
 
 ```console
+$ git modified -- src/
+```
+
+Pathspecs are relative to the current directory, so from within a
+subdirectory this lists only the modified files at or below it:
+
+```console
+$ cd src/
 $ git modified -- .
 ```
 
@@ -161,7 +168,7 @@ files.
 Opens all files modified on your branch (since you branched off `main`).
 
 ```console
-$ vim (git modified-since)
+$ vim $(git modified-since)
 ```
 
 ### git separator

@@ -14,7 +14,7 @@ changed in that commit.
 Pathspecs after '--' restrict the output to matching files.
 
 This script is ideal for passing all locally modified files into your editor, like:
-    $ vim `git modified`
+    $ vim $(git modified)
 
 Options:
 -m    Modified files only (excludes untracked files)
