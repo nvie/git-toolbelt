@@ -83,27 +83,89 @@ fi
 
 tmp_branch="tmp-wire-through/$original_branch"
 
+rebase_in_progress () {
+    [ -d "$(git rev-parse --git-path rebase-merge)" ] || [ -d "$(git rev-parse --git-path rebase-apply)" ]
+}
+
 # Ensure temp branch doesn't already exist
 if git local-branch-exists "$tmp_branch"; then
-    echo "error: temp branch '$tmp_branch' already exists; delete it first" >&2
+    echo "error: temp branch '$tmp_branch' already exists, probably left behind by an interrupted run" >&2
+    echo "To remove it:" >&2
+    if rebase_in_progress; then
+        echo "  git rebase --quit" >&2
+    fi
+    echo "  git branch -D $tmp_branch" >&2
     exit 1
 fi
 
-# Create temp branch
-git checkout -q -b "$tmp_branch"
+# Checks inside cleanup() use git builtins only: dashed externals (like
+# git local-branch-exists) run under a git wrapper that installs its own
+# SIGINT handler, so a second Ctrl+C would still kill them.
+tmp_branch_exists () {
+    git show-ref --heads --quiet --verify -- "refs/heads/$tmp_branch"
+}
 
-# Cleanup trap: on failure, restore original branch
-failed=0
+# Cleanup trap: runs on every exit. Unless the run succeeded, restores the
+# original branch. Always removes the temp branch, and prints the manual
+# steps for whatever could not be restored.
+succeeded=0
+author_info=""
 cleanup () {
-    if [ "$failed" -eq 1 ]; then
-        git rebase --abort 2>/dev/null || true
-        git checkout -q "$original_branch" 2>/dev/null || true
-        git branch -D "$tmp_branch" 2>/dev/null || true
+    status=$?
+    trap '' INT TERM HUP
+
+    if [ -n "$author_info" ]; then
+        rm -f "$author_info"
+    fi
+
+    if [ "$succeeded" -eq 0 ]; then
         echo "" >&2
-        echo "wire-through failed. $original_branch is unchanged at $original_sha." >&2
+        if [ "$status" -gt 128 ]; then
+            echo "wire-through interrupted, restoring $original_branch..." >&2
+        else
+            echo "wire-through failed, restoring $original_branch..." >&2
+        fi
+        if rebase_in_progress && ! git rebase --abort; then
+            echo "warning: 'git rebase --abort' failed, falling back to 'git rebase --quit'" >&2
+            git rebase --quit || true
+        fi
+        git checkout -q -f "$original_branch" || true
+    fi
+
+    if tmp_branch_exists; then
+        git branch -q -D "$tmp_branch" || true
+    fi
+
+    # Verify the end state rather than trusting the steps above
+    todo=""
+    if rebase_in_progress; then
+        todo="$todo  git rebase --quit\n"
+    fi
+    if [ "$(git symbolic-ref -q --short HEAD || true)" != "$original_branch" ]; then
+        todo="$todo  git checkout -f $original_branch\n"
+    fi
+    if [ "$succeeded" -eq 0 ] && [ "$(git rev-parse -q --verify "refs/heads/$original_branch")" != "$original_sha" ]; then
+        todo="$todo  git reset --hard $original_sha\n"
+    fi
+    if tmp_branch_exists; then
+        todo="$todo  git branch -D $tmp_branch\n"
+    fi
+
+    if [ -n "$todo" ]; then
+        echo "" >&2
+        echo "error: could not fully restore the repo. To finish manually, run:" >&2
+        printf '%b' "$todo" >&2
+    elif [ "$succeeded" -eq 0 ]; then
+        echo "$original_branch is unchanged at $original_sha." >&2
     fi
 }
 trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+trap 'exit 129' HUP
+
+# Create temp branch
+git checkout -q -b "$tmp_branch"
 
 # Save original commit hashes (author info will be read from them later)
 author_info="$(mktemp)"
@@ -113,26 +175,16 @@ git log --reverse --format='%H' "$base"..HEAD > "$author_info"
 export GIT_WIRE_THROUGH_COMMAND="$command"
 export GIT_WIRE_THROUGH_CWD="$wire_through_cwd"
 export GIT_WIRE_THROUGH_MESSAGE="$message"
-if ! GIT_SEQUENCE_EDITOR="git wire-through--inject" git rebase -i --empty=keep "$base"; then
-    rm -f "$author_info"
-    failed=1
-    exit 1
-fi
+GIT_SEQUENCE_EDITOR="git wire-through--inject" git rebase -i --empty=keep "$base"
 
 # Pass 2: collapse [fixup-wire-through] commits
 export GIT_WIRE_THROUGH_AUTHOR_INFO="$author_info"
-if ! GIT_SEQUENCE_EDITOR="git wire-through--collapse" git rebase -i --empty=keep "$base"; then
-    rm -f "$author_info"
-    failed=1
-    exit 1
-fi
-rm -f "$author_info"
+GIT_SEQUENCE_EDITOR="git wire-through--collapse" git rebase -i --empty=keep "$base"
 
-# Success: move original branch forward
+# Success: move original branch forward (the trap removes the temp branch)
 result_sha="$(git sha HEAD)"
-git checkout -q "$original_branch"
-git reset --hard "$result_sha"
-git branch -D "$tmp_branch"
+git checkout -q -B "$original_branch" "$result_sha"
+succeeded=1
 
 echo "Done. All commits in $original_branch now include effects of: $command"
 echo ""
