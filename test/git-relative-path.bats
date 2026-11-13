@@ -67,9 +67,6 @@ STUB
 
     run git relative-path foo.txt
 
-    [ "$status" -eq 2 ]
-    assert_output - <<EOF
-No 'realpath' found that supports --relative-to.
-Please install GNU coreutils and try again.
-EOF
+    [ "$status" -eq 1 ]
+    assert_output "No 'realpath' that supports --relative-to found (tried grealpath, realpath). Please install GNU coreutils."
 }

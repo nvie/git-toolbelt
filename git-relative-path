@@ -5,26 +5,16 @@ root="$(git root)"
 # Use the first realpath that supports --relative-to (GNU coreutils does, and
 # so does uutils, but the BSD one on macOS doesn't)
 realpath_bin=""
-found=""
 for candidate in grealpath realpath; do
-    if command -v "$candidate" >/dev/null 2>&1; then
-        found="$candidate"
-        if "$candidate" --relative-to=. . >/dev/null 2>&1; then
-            realpath_bin="$candidate"
-            break
-        fi
+    if "$candidate" --relative-to=. . >/dev/null 2>&1; then
+        realpath_bin="$candidate"
+        break
     fi
 done
 
-if [ -z "$found" ]; then
-    echo "'realpath' or 'grealpath' utility not found. Please install GNU coreutils." >&2
-    exit 1
-fi
-
 if [ -z "$realpath_bin" ]; then
-    echo "No 'realpath' found that supports --relative-to." >&2
-    echo "Please install GNU coreutils and try again." >&2
-    exit 2
+    echo "No 'realpath' that supports --relative-to found (tried grealpath, realpath). Please install GNU coreutils." >&2
+    exit 1
 fi
 
 while [ $# -gt 0 ]; do
