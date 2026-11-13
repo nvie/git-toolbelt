@@ -84,5 +84,4 @@ fi
 if [ $# -eq 0 ]; then
     set -- "$repo/test"
 fi
-cd "$root/tmp"
 isolated bats "$@"
