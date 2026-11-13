@@ -17,6 +17,13 @@ if ! "$realpath_bin" --version 2>/dev/null | grep -q GNU; then
 fi
 
 while [ $# -gt 0 ]; do
-    "$realpath_bin" --relative-to=. "$root/$1"
+    path="$("$realpath_bin" --relative-to=. "$root/$1")"
+
+    # Keep names like "-rf" or "+cmd" from being parsed as options or
+    # commands when the output is passed on a command line.
+    case "$path" in
+        -*|+*) path="./$path";;
+    esac
+    printf '%s\n' "$path"
     shift
 done
