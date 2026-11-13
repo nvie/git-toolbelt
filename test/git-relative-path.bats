@@ -28,24 +28,23 @@ EOF
 EOF
 }
 
-# Puts a `realpath` and `grealpath` first on PATH that print the given
-# version string, and otherwise behave like the real GNU realpath
-stub_realpath_version () {
-    gnu_realpath="$(command -v grealpath || command -v realpath)"
+# Puts `realpath` and `grealpath` stubs first on PATH, both running the given
+# script. The script can delegate to the real one via $real_realpath.
+stub_realpath () {
+    real_realpath="$(command -v grealpath || command -v realpath)"
     mkdir -p "$BATS_TEST_TMPDIR/bin"
     for name in realpath grealpath; do
-        cat > "$BATS_TEST_TMPDIR/bin/$name" <<STUB
-#!/bin/sh
-if [ "\$1" = --version ]; then echo "$1"; exit 0; fi
-exec "$gnu_realpath" "\$@"
-STUB
+        printf "#!/bin/sh\nreal_realpath='%s'\n%s\n" "$real_realpath" "$1" > "$BATS_TEST_TMPDIR/bin/$name"
         chmod +x "$BATS_TEST_TMPDIR/bin/$name"
     done
     PATH="$BATS_TEST_TMPDIR/bin:$PATH"
 }
 
 @test "works with a non-GNU realpath that supports --relative-to" {
-    stub_realpath_version "realpath (uutils coreutils) 0.12.0"
+    stub_realpath '
+        if [ "$1" = --version ]; then echo "realpath (uutils coreutils) 0.12.0"; exit 0; fi
+        exec "$real_realpath" "$@"
+    '
     init_repo
     mkdir src
     cd src
@@ -57,12 +56,10 @@ STUB
 }
 
 @test "refuses a realpath that doesn't support --relative-to" {
-    mkdir bin
-    for name in realpath grealpath; do
-        printf '#!/bin/sh\necho "realpath: illegal option -- -" >&2\nexit 1\n' > "bin/$name"
-        chmod +x "bin/$name"
-    done
-    PATH="$PWD/bin:$PATH"
+    stub_realpath '
+        echo "realpath: illegal option -- -" >&2
+        exit 1
+    '
     init_repo
 
     run git relative-path foo.txt
