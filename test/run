@@ -1,0 +1,88 @@
+#!/bin/sh
+#
+# Runs the test suite in quarantine. Two layers keep a buggy script or a
+# buggy test from touching anything on this machine:
+#
+# 1. The OS sandbox (sandbox-exec on macOS, bubblewrap on Linux) denies all
+#    file writes outside a throwaway root directory, and all network access.
+# 2. A scrubbed environment (`env -i`) with its own HOME and TMPDIR inside
+#    that root, and no global or system Git config.
+#
+# Usage: test/run [<bats args>...]    (defaults to every test in test/)
+#
+set -eu
+
+repo="$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd -P)"
+
+if ! command -v bats >/dev/null 2>&1; then
+    echo "bats not found. Install bats-core (brew install bats-core, or apt install bats)." >&2
+    exit 2
+fi
+
+root="$(mktemp -d)"
+root="$(CDPATH='' cd -- "$root" && pwd -P)"
+trap 'rm -rf "$root"' EXIT
+trap 'exit 130' INT TERM
+mkdir "$root/home" "$root/tmp"
+
+case "$(uname -s)" in
+    Darwin)
+        if ! command -v sandbox-exec >/dev/null 2>&1; then
+            echo "sandbox-exec not found; refusing to run tests without a sandbox." >&2
+            exit 2
+        fi
+        sandbox () {
+            sandbox-exec -D ROOT="$root" -f "$repo/test/sandbox.sb" "$@"
+        }
+        ;;
+    Linux)
+        if ! command -v bwrap >/dev/null 2>&1; then
+            echo "bwrap not found; refusing to run tests without a sandbox." >&2
+            echo "Install bubblewrap (apt install bubblewrap)." >&2
+            exit 2
+        fi
+        sandbox () {
+            bwrap --ro-bind / / --dev /dev --proc /proc --bind "$root" "$root" \
+                --unshare-net --die-with-parent -- "$@"
+        }
+        ;;
+    *)
+        echo "No sandbox available on $(uname -s); refusing to run tests." >&2
+        exit 2
+        ;;
+esac
+
+isolated () {
+    sandbox env -i \
+        PATH="$repo:$PATH" \
+        HOME="$root/home" \
+        TMPDIR="$root/tmp" \
+        TERM="${TERM:-dumb}" \
+        LANG="${LANG:-C}" \
+        GIT_CONFIG_NOSYSTEM=1 \
+        GIT_CONFIG_GLOBAL=/dev/null \
+        GIT_CEILING_DIRECTORIES="$root" \
+        GIT_AUTHOR_NAME=Test GIT_AUTHOR_EMAIL=test@example.com \
+        GIT_COMMITTER_NAME=Test GIT_COMMITTER_EMAIL=test@example.com \
+        GIT_TOOLBELT_SANDBOX=1 \
+        "$@"
+}
+
+# Prove the sandbox works before trusting it with the suite: a write inside
+# the root must succeed, and a write outside of it must fail
+if ! isolated sh -c ': > "$1"' _ "$root/.sandbox-probe"; then
+    echo "Could not run anything inside the sandbox; refusing to run tests." >&2
+    exit 2
+fi
+probe="$repo/test/.sandbox-probe"
+if isolated sh -c ': > "$1"' _ "$probe" 2>/dev/null; then
+    rm -f "$probe"
+    echo "The sandbox did not block a write outside $root; refusing to run tests." >&2
+    exit 2
+fi
+
+if [ $# -eq 0 ]; then
+    set -- "$repo/test"
+fi
+cd "$root/tmp"
+isolated bats "$@"

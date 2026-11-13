@@ -4,6 +4,7 @@
 #
 #   make link     link $(PREFIX)/git-* -> the scripts in this directory
 #   make unlink   remove those links again
+#   make test     run the test suite (sandboxed, see test/run)
 #
 # No sudo. PREFIX defaults to whichever of ~/.local/bin or ~/bin is already on
 # your PATH, so linking takes effect in shells you already have open rather
@@ -20,11 +21,12 @@ ON_PATH := $(firstword $(filter $(subst :, ,$(PATH)),$(CANDIDATES)))
 PREFIX ?= $(if $(ON_PATH),$(ON_PATH),$(firstword $(CANDIDATES)))
 
 .DEFAULT_GOAL := help
-.PHONY: help link unlink
+.PHONY: help link unlink test
 
 help:
 	@echo "make link      link $(words $(SCRIPTS)) commands into $(PREFIX)"
 	@echo "make unlink    remove them again"
+	@echo "make test      run the test suite"
 
 link:
 	@mkdir -p "$(PREFIX)"
@@ -52,3 +54,6 @@ unlink:
 		esac; \
 	done; \
 	echo "Removed $$removed link(s) from $(PREFIX)"
+
+test:
+	@test/run

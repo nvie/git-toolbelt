@@ -24,6 +24,15 @@ already on your `PATH`), so edits in the clone take effect immediately. Nothing
 is copied, so the links break if you move or delete the clone. `make unlink`
 removes them again.
 
+## Running the tests
+
+    $ brew install bats-core    # or: apt install bats bubblewrap
+    $ make test
+
+Tests run in a sandbox (`sandbox-exec` on macOS, `bwrap` on Linux) that only
+allows writes inside a throwaway directory and has no network access, so a bug
+in a script or a test can't touch your files or repositories.
+
 # git-toolbelt
 
 Helper tools to make everyday life with Git much easier. Commands marked with

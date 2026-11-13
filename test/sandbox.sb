@@ -1,0 +1,14 @@
+;; macOS sandbox profile for test/run: everything may be read, but writes are
+;; only allowed inside the throwaway ROOT directory, and there is no network.
+(version 1)
+(allow default)
+(deny network*)
+(deny file-write*)
+(allow file-write*
+    (subpath (param "ROOT"))
+    (literal "/dev/null")
+    (literal "/dev/zero")
+    (literal "/dev/tty")
+    (literal "/dev/dtracehelper")
+    (regex #"^/dev/fd/")
+    (regex #"^/dev/ttys[0-9]+$"))
