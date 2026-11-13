@@ -10,6 +10,12 @@ setup () {
     cd "$BATS_TEST_TMPDIR"
 }
 
+# Creates a Git repo with an empty initial commit in the current directory
+init_repo () {
+    git init -q -b main
+    git commit -q --allow-empty -m "Initial commit"
+}
+
 # Asserts that the output of the last `run` is exactly the expected text,
 # given as an argument, or on stdin with `-`/`--stdin`:
 #
