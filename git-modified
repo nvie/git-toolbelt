@@ -115,44 +115,41 @@ fi
 # -------------------------------------------------
 
 status () {
-    if [ $# -gt 0 ]; then
-        git -c core.quotePath=false status --porcelain -- "$@" | grep -vEe '^.D' | grep -vEe '^D '
-    else
-        git -c core.quotePath=false status --porcelain | grep -vEe '^.D' | grep -vEe '^D '
-    fi
-}
-
-fix_rename_notation () {
-    sed -Ee 's/.* -> (.*)/\1/'
+    git status --porcelain -z -- "$@" | tr '\0' '\n' | while IFS= read -r entry; do
+        case "$entry" in
+            R*|C*|?R*|?C*) IFS= read -r _;;
+        esac
+        printf '%s\n' "$entry"
+    done | grep -vEe '^.D' | grep -vEe '^D '
 }
 
 make_relative () {
-    while read -r f; do
+    while IFS= read -r f; do
         git relative-path "$f"
     done
 }
 
 modified_in_index () {
-    status "$@" | cut -c 4- | fix_rename_notation | make_relative
+    status "$@" | cut -c 4- | make_relative
 }
 
 modified_unmerged () {
-    status "$@" | grep -Ee '^(U.|.U)' | cut -c 4- | fix_rename_notation | make_relative
+    status "$@" | grep -Ee '^(U.|.U)' | cut -c 4- | make_relative
 }
 
 modified_only_locally () {
-    status "$@" | cut -c 2- | grep -Ee '^M' | cut -c 3- | fix_rename_notation | make_relative
+    status "$@" | cut -c 2- | grep -Ee '^M' | cut -c 3- | make_relative
 }
 
 modified_locally () {
-    status "$@" | cut -c 2- | grep -vEe '^[ ]' | cut -c 3- | fix_rename_notation | make_relative
+    status "$@" | cut -c 2- | grep -vEe '^[ ]' | cut -c 3- | make_relative
 }
 
 fail_if_empty () {
     empty=1
-    while read -r line; do
+    while IFS= read -r line; do
         if [ $quiet -eq 0 ]; then
-            echo "$line"
+            printf '%s\n' "$line"
         fi
         empty=0
     done
@@ -172,9 +169,9 @@ if [ -z "$commit" ]; then
 else
     # --root so the initial commit lists its files, -M so a rename yields only
     # the destination path.
-    git -c core.quotePath=false diff-tree -r -M --root --no-commit-id --name-only "$commit" -- "$@" | make_relative | while read -r f; do
+    git diff-tree -z -r -M --root --no-commit-id --name-only "$commit" -- "$@" | tr '\0' '\n' | make_relative | while IFS= read -r f; do
         if [ -f "$f" ]; then
-            echo "$f"
+            printf '%s\n' "$f"
         fi
     done | fail_if_empty
 fi
