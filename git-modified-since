@@ -32,20 +32,20 @@ if [ $# -ge 1 ]; then
 fi
 
 make_relative () {
-    while read f; do
+    while IFS= read -r f; do
         git relative-path "$f"
     done
 }
 
 get_changed_files () {
-    git diff --stat --name-only "$commit"... -- | make_relative
+    git diff -z --name-only "$commit"... -- | tr '\0' '\n' | make_relative
 }
 
 fail_if_empty () {
     empty=1
-    while read line; do
+    while IFS= read -r line; do
         if [ $quiet -eq 0 ]; then
-            echo "$line"
+            printf '%s\n' "$line"
         fi
         empty=0
     done
