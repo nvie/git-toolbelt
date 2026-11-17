@@ -5,8 +5,8 @@
 #
 # 1. The OS sandbox (sandbox-exec on macOS, bubblewrap on Linux) denies all
 #    file writes outside a throwaway root directory, and all network access.
-# 2. A scrubbed environment (`env -i`) with its own HOME and TMPDIR inside
-#    that root, and no global or system Git config.
+# 2. A scrubbed environment (`env -i`) with its own HOME, TMPDIR and working
+#    directory inside that root, and no global or system Git config.
 #
 # Usage: test/run [<bats args>...]    (defaults to every test in test/)
 #
@@ -68,12 +68,39 @@ isolated () {
         "$@"
 }
 
-# Prove the sandbox works before trusting it with the suite: a write inside
-# the root must succeed, and a write outside of it must fail
-if ! isolated sh -c ': > "$1"' _ "$root/.sandbox-probe"; then
-    echo "Could not run anything inside the sandbox; refusing to run tests." >&2
+if [ $# -eq 0 ]; then
+    set -- "$repo/test"
+fi
+
+is_test_path () {
+    case "$1" in
+        *.bats) [ -f "$1" ] ;;
+        *) [ -d "$1" ] ;;
+    esac
+}
+
+# bats runs from inside the root, so resolve test paths against the caller's
+# directory first
+for arg; do
+    shift
+    if is_test_path "$arg"; then
+        arg="$(CDPATH='' cd -- "$(dirname -- "$arg")" && pwd -P)/$(basename -- "$arg")"
+    fi
+    set -- "$@" "$arg"
+done
+
+# The working directory must be writable inside the sandbox: on macOS,
+# /bin/sh and /bin/bash are bash 3.2, which ignores TMPDIR for here-documents
+# and falls back to the working directory
+cd "$root/tmp"
+
+# Prove the sandbox works before trusting it with the suite: a write to the
+# working directory must succeed, and a write outside the root must fail
+if ! isolated sh -c ': > .sandbox-probe'; then
+    echo "Could not write to the working directory inside the sandbox; refusing to run tests." >&2
     exit 2
 fi
+rm -f .sandbox-probe
 probe="$repo/test/.sandbox-probe"
 if isolated sh -c ': > "$1"' _ "$probe" 2>/dev/null; then
     rm -f "$probe"
@@ -81,7 +108,4 @@ if isolated sh -c ': > "$1"' _ "$probe" 2>/dev/null; then
     exit 2
 fi
 
-if [ $# -eq 0 ]; then
-    set -- "$repo/test"
-fi
 isolated bats "$@"
